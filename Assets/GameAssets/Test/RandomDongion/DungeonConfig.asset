@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac09dba01a559964f822e1dbdab86552, type: 3}
+  m_Name: DungeonConfig
+  m_EditorClassIdentifier: 
+  _gridColumns: 5
+  _gridRows: 5
+  _roomEntries:
+  - roomType: 0
+    prefab: {fileID: 2479624218539067536, guid: a2f9e5d40172ee144869daf3f217fee3, type: 3}
+    roomSize: {x: 20, y: 20}
+    placementsNumber: 1
+  - roomType: 1
+    prefab: {fileID: 7352099295547281389, guid: dc7f0bb05108ae642822019c449fe16c, type: 3}
+    roomSize: {x: 20, y: 20}
+    placementsNumber: 4
+  _corridorPrefab: {fileID: 4605936739357065723, guid: 414038d59feeecd4b8826b4127e1e560, type: 3}
+  _corridorBaseLength: 20
+  _corridorWidth: 4
+  _extraLoopCount: 1
+  _maxRetryCount: 30
+  _cellSizeOverride: 0
+  _minCorridorLength: 4

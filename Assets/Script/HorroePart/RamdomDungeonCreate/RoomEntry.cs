@@ -15,6 +15,6 @@ namespace DungeonSystem
         // cellSizeŒvŽZ‚ÉŽg—p‚·‚é</summary>
         public Vector2 roomSize;
 
-        public int PlacementsNunber;
+        public int placementsNumber;
     }
 }

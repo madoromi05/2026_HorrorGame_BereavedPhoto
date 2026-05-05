@@ -33,7 +33,7 @@ namespace DungeonSystem
         {
             return new Bounds(
                 Position,
-                new Vector3(RoomSize.x, 0f, Size.y));
+                new Vector3(RoomSize.x, 0f, RoomSize.y));
         }
     }
 }
