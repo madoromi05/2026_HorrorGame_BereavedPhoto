@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: Scenario
   m_EditorClassIdentifier: 
   stories:
-  - Background: {fileID: 0}
-    CharacterImage: {fileID: 0}
-    CharacterName: 
-    StoryText: 
+  - Background: {fileID: 21300000, guid: 854df1ef650e5574b883eb15bba492c6, type: 3}
+    CharacterImages: {fileID: 21300000, guid: 577aa4589f0fe92449cfc5b1a719e7bb, type: 3}
+    CharacterName: Test
+    StoryText: Test
+  - Background: {fileID: 21300000, guid: 854df1ef650e5574b883eb15bba492c6, type: 3}
+    CharacterImages: {fileID: 21300000, guid: 577aa4589f0fe92449cfc5b1a719e7bb, type: 3}
+    CharacterName: Test2
+    StoryText: Test2

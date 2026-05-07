@@ -5,7 +5,7 @@ using UnityEngine;
 /// CharacterControllerを使用するためコリジョンが有効。
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(InputCallbackController))]
+[RequireComponent(typeof(InputPlayerController))]
 public class FPSMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 5f;
@@ -15,12 +15,12 @@ public class FPSMover : MonoBehaviour
     private float _currentYaw;
 
     private CharacterController _characterController;
-    private InputCallbackController _inputCallbackController;
+    private InputPlayerController _inputCallbackController;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
-        _inputCallbackController = GetComponent<InputCallbackController>();
+        _inputCallbackController = GetComponent<InputPlayerController>();
         _currentYaw = transform.eulerAngles.y;
     }
 

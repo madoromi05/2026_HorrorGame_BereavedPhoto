@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputCallbackController : MonoBehaviourÅ@, InputSystem_Actions.IPlayerActions
+public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlayerActions
 {
     private InputSystem_Actions _inputActions;
 

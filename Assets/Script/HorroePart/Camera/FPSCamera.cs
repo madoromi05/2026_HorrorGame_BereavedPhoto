@@ -4,7 +4,7 @@ using UnityEngine;
 /// FPSƒJƒƒ‰‚Ìã‰º‰ñ“]‚Ì‚İ‚ğ’S“–‚·‚éB
 /// Y²‰ñ“]‚ÍFPSMover‚ª’S“–‚·‚éB
 /// </summary>
-[RequireComponent(typeof(InputCallbackController))]
+[RequireComponent(typeof(InputPlayerController))]
 public class FPSCamera : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
@@ -13,11 +13,11 @@ public class FPSCamera : MonoBehaviour
     [SerializeField] private float _maxPitch = 90f;
 
     private float _currentPitch;
-    private InputCallbackController _inputCallbackController;
+    private InputPlayerController _inputCallbackController;
 
     private void Awake()
     {
-        _inputCallbackController = GetComponent<InputCallbackController>();
+        _inputCallbackController = GetComponent<InputPlayerController>();
     }
 
     private void OnEnable()
