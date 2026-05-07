@@ -12,7 +12,7 @@ public class StoryData : ScriptableObject
 public class Story
 {
     public Sprite Background;
-    public Sprite CharacterImage;
+    public Sprite CharacterImages;
     public string CharacterName;
     [TextArea]
     public string StoryText;
