@@ -48,22 +48,22 @@ public class DungeonGridBuilder
         var doorPositions = new List<Vector2Int>();
 
         // ŠOüWall‚ğæ‚É‘‚«‚Ş
-        for (int x = -1; x <= roomData.size.x; x++)
+        for (int x = -1; x <= roomData.gridSize.x; x++)
         {
-            for (int y = -1; y <= roomData.size.y; y++)
+            for (int y = -1; y <= roomData.gridSize.y; y++)
             {
                 var worldPos = section.gridPosition + new Vector2Int(x, y);
                 if (!IsInGrid(worldPos)) continue;
                 // •”‰®‚Ì“à‘¤‚Íã‘‚«‚µ‚È‚¢
-                if (x >= 0 && x < roomData.size.x && y >= 0 && y < roomData.size.y) continue;
+                if (x >= 0 && x < roomData.gridSize.x && y >= 0 && y < roomData.gridSize.y) continue;
                 m_grid[worldPos.x, worldPos.y] = GridType.Wall;
             }
         }
 
         // “à•”‚ÌFloor‚ÆDoor‚ğ”z’u
-        for (int x = 0; x < roomData.size.x; x++)
+        for (int x = 0; x < roomData.gridSize.x; x++)
         {
-            for (int y = 0; y < roomData.size.y; y++)
+            for (int y = 0; y < roomData.gridSize.y; y++)
             {
                 var localPos = new Vector2Int(x, y);
                 var worldPos = section.gridPosition + localPos;

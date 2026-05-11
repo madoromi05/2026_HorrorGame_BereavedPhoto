@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c8ae8d043cbfe4593e0d30cb6aba03, type: 3}
   m_Name: RoomGridData
   m_EditorClassIdentifier: 
-  size: {x: 5, y: 5}
+  gridSize: {x: 0, y: 0}
   doorPositions:
-  - {x: 0, y: 0}
+  - {x: 3, y: 3}
+  - {x: 6, y: 3}
