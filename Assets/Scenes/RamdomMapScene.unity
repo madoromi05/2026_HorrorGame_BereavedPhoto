@@ -574,6 +574,37 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &1861702829
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1861702830}
+  m_Layer: 0
+  m_Name: Ramdom
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1861702830
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1861702829}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 394.22873, y: 273.10614, z: 77.78394}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2065011626
 GameObject:
   m_ObjectHideFlags: 0
@@ -752,7 +783,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2908999681611935076, guid: dc7f0bb05108ae642822019c449fe16c, type: 3}
+    - {fileID: 4850566473476607948, guid: dc7f0bb05108ae642822019c449fe16c, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc7f0bb05108ae642822019c449fe16c, type: 3}
@@ -809,7 +842,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6100617266154417139, guid: a2f9e5d40172ee144869daf3f217fee3, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2f9e5d40172ee144869daf3f217fee3, type: 3}
@@ -870,7 +904,9 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8531595657745532447, guid: 414038d59feeecd4b8826b4127e1e560, type: 3}
+    - {fileID: 3782013023633654747, guid: 414038d59feeecd4b8826b4127e1e560, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 414038d59feeecd4b8826b4127e1e560, type: 3}
@@ -884,3 +920,4 @@ SceneRoots:
   - {fileID: 8631555676241658523}
   - {fileID: 4101543361663654310}
   - {fileID: 1352221095501770712}
+  - {fileID: 1861702830}
