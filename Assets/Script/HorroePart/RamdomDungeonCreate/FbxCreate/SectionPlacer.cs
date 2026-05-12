@@ -32,11 +32,11 @@ public class SectionPlacer
 
         // グリッド座標をUnityワールド座標に変換
         // GridPositionはセクションの左上グリッド座標。
-        var gridSize = new Vector2(section.RoomGridData.GridSize.x, section.RoomGridData.GridSize.y);
+        var roomGridSize = section.RoomGridData.GridSize;
         var worldPos = new Vector3(
-            (section.RoomGridPosition.x + gridSize.x / 2f) * _gridSize,
+            (section.RoomGridPosition.x + (roomGridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
             0f,
-            (section.RoomGridPosition.y + gridSize.y / 2f) * _gridSize
+            (section.RoomGridPosition.y + (roomGridSize.y - 1) * 0.5f + 0.5f) * _gridSize
         );
 
         DebugCustom.Log($"[Placer] RoomGridPosition={section.RoomGridPosition} GridSize={section.RoomGridData.GridSize}");

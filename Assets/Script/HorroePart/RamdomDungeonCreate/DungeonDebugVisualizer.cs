@@ -9,6 +9,7 @@ using UnityEngine;
 public class DungeonDebugVisualizer
 {
     private float _gridSize;
+    private const float kSectionOffsetY = -5f;
 
     // Grid セルの色
     private static readonly Color kFloorColor = new Color(0.1f, 0.9f, 0.1f, 0.75f);
@@ -41,8 +42,7 @@ public class DungeonDebugVisualizer
         VisualizeGrid(grid, parent);
     }
 
-    // ─── Section
-
+    // Section
     private void VisualizeSections(SectionData[] sections, Transform parent)
     {
         var sectionRoot = new GameObject("Debug_Sections").transform;
@@ -56,12 +56,12 @@ public class DungeonDebugVisualizer
             // 半透明の床面
             var center = new Vector3(
                 (section.GridPosition.x + section.GridSize.x * 0.5f) * _gridSize,
-                -0.05f,
+                kSectionOffsetY,
                 (section.GridPosition.y + section.GridSize.y * 0.5f) * _gridSize
             );
             var size = new Vector3(
                 section.GridSize.x * _gridSize - 0.1f,
-                0.02f,
+                kSectionOffsetY,
                 section.GridSize.y * _gridSize - 0.1f
             );
             var label = $"Section[{i}]_{section.Role}";
@@ -81,7 +81,7 @@ public class DungeonDebugVisualizer
         float h = section.GridSize.y * _gridSize;
         float ox = section.GridPosition.x * _gridSize;
         float oz = section.GridPosition.y * _gridSize;
-        float y = -0.04f;
+        float y = kSectionOffsetY;
 
         // 上下左右の細い棒 4 本で枠を構成
         CreateBox(new Vector3(ox + w * 0.5f, y, oz + t * 0.5f),          new Vector3(w, 0.04f, t), borderColor, $"Border_Top_{index}", parent);
@@ -112,7 +112,7 @@ public class DungeonDebugVisualizer
                             (y + 0.5f) * _gridSize
                 );
                 // 色付き（少し小さく、上層）
-                CreateBox(worldPos + Vector3.up * 0.01f, new Vector3(inner, 0.02f, inner), color, $"Cell_{cellType}_{x}_{y}", gridRoot);
+                CreateBox(worldPos + Vector3.up * -0.5f, new Vector3(inner, -0.05f, inner), color, $"Cell_{cellType}_{x}_{y}", gridRoot);
             }
         }
     }
@@ -125,7 +125,7 @@ public class DungeonDebugVisualizer
         _              => kEmptyColor,
     };
 
-    // ─── 共通プリミティブ生成 ────────────────────────────────────────────────────
+    // 共通プリミティブ生成
 
     private void CreateBox(Vector3 position, Vector3 scale, Color color, string name, Transform parent)
     {
@@ -159,7 +159,7 @@ public class DungeonDebugVisualizer
         {
             // URP / HDRP 系
             mat.SetColor("_BaseColor", color);
-            mat.SetFloat("_Surface", 1f);                                                      // 1 = Transparent
+            mat.SetFloat("_Surface", 1f);
             mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
             mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
             mat.SetFloat("_ZWrite", 0f);

@@ -18,6 +18,6 @@ MonoBehaviour:
     RoomGridDatas:
     - {fileID: 11400000, guid: cb146f48383ed19459c627cd273d4709, type: 2}
   - RoomType: 0
-    Prefab: {fileID: 6586465173288284740, guid: 23a638fa82b861b47a0ae8ad7824e813, type: 3}
+    Prefab: {fileID: 4544807805352437314, guid: 0425adad1dbb306449151c378ff49c9d, type: 3}
     RoomGridDatas:
-    - {fileID: 11400000, guid: 4ed1c1c4580fe5b43b0b03961ba3e6ad, type: 2}
+    - {fileID: 11400000, guid: f3df7261c998cf04aa747d31d9817016, type: 2}
