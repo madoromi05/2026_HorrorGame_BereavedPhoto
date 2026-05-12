@@ -1,120 +1,161 @@
 using DungeonSystem;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.CoreUtils;
 
 /// <summary>
-/// FieldBluePrint‚Ìî•ñ‚ğ‚à‚Æ‚ÉA2D‚Ìƒ_ƒ“ƒWƒ‡ƒ“ƒOƒŠƒbƒh‚ğ\’z‚·‚éƒNƒ‰ƒX
+/// FieldBluePrintã®æƒ…å ±ã‚’ã‚‚ã¨ã«ã€2Dã®ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³ã‚°ãƒªãƒƒãƒ‰ã‚’æ§‹ç¯‰ã™ã‚‹ã‚¯ãƒ©ã‚¹
 /// </summary>
 public class DungeonGridBuilder
 {
-    private GridType[,] m_grid;
-    private FieldBluePrint m_bluePrint;
+    private GridType[,] _grid;
+    private FieldBluePrint _bluePrint;
+    private SectionData[] _sections;
 
-    // •”‰®‚ ‚è‹æ‰æ ¨ ƒOƒŠƒbƒhã‚ÌDoorÀ•WƒŠƒXƒg
-    private Dictionary<SectionData, List<Vector2Int>> m_sectionDoorMap;
+    // ã‚»ã‚¯ã‚·ãƒ§ãƒ³æ¯ â†’ ã‚°ãƒªãƒƒãƒ‰ä¸Šã®Dooråº§æ¨™ãƒªã‚¹ãƒˆ
+    private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
 
-    // •”‰®‚È‚µ‹æ‰æ ¨ ’Ê˜H‚Ì’†Œp“_À•W
-    private Dictionary<SectionData, Vector2Int> m_pathPointMap;
+    // éƒ¨å±‹ãªã— â†’ é€šè·¯ã®ä¸­å¿ƒç‚¹åº§æ¨™
+    private Dictionary<SectionData, Vector2Int> _pathPointMap;
 
-    //•”‰®‚ÌİŒv}‚ğó‚¯æ‚èA2ŸŒ³ƒOƒŠƒbƒh‚ğ\’z‚µ‚Ä•Ô‚·
-    public GridType[,] Build(FieldBluePrint bluePrint)
+    // A*ã§é€šéä¸å¯ã«ã™ã‚‹éƒ¨å±‹å†…éƒ¨ã‚»ãƒ«ï¼ˆDoorä»¥å¤–ã®Floorï¼‰
+    // é€šè·¯ãŒDoorã‚»ãƒ«çµŒç”±ã§ã®ã¿éƒ¨å±‹ã«æ¥ç¶šã•ã‚Œã‚‹ã“ã¨ã‚’ä¿è¨¼ã™ã‚‹
+    private HashSet<Vector2Int> _roomInteriorCells;
+
+    // è¨­è¨ˆå›³ã‚’å—ã‘å–ã‚Šã€2Dã‚°ãƒªãƒƒãƒ‰ã‚’æ§‹ç¯‰ã—ã¦è¿”ã™
+    public (GridType[,] grid, SectionData[] sections) Build(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {
-        m_bluePrint = bluePrint;
-        m_grid = new GridType[bluePrint.mapSize.x, bluePrint.mapSize.y];
-        m_sectionDoorMap = new Dictionary<SectionData, List<Vector2Int>>();
-        m_pathPointMap = new Dictionary<SectionData, Vector2Int>();
+        _bluePrint = bluePrint;
+        _grid = new GridType[bluePrint.MapSize.x, bluePrint.MapSize.y];
+        _sectionDoorMap = new Dictionary<SectionData, List<Vector2Int>>();
+        _pathPointMap = new Dictionary<SectionData, Vector2Int>();
+        _roomInteriorCells = new HashSet<Vector2Int>();
+
+        _sections = GenerateSections(roomDataBase);
 
         PlaceRooms();
+        LogGridStats("After PlaceRooms");
+        ConnectSections();
+        LogGridStats("After ConnectSections");
+        AddExtraBranches();
+        LogGridStats("After AddExtraBranches");
 
-        return m_grid;
+        return (_grid, _sections);
     }
 
-    // Še‹æ‰æ‚É•”‰® or ’†Œp“_‚ğ”z’u‚·‚é
+    // Startã¯å¿…ãš1ã€æ®‹ã‚Šã¯Normalã¨ã—ã¦Sectionã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«å‰²ã‚Šå½“ã¦ã‚‹
+    private SectionData[] GenerateSections(RoomDataBase roomDataBase)
+    {
+        var divide = _bluePrint.SectionDivide;
+        var sectionSize = new Vector2Int(
+            _bluePrint.MapSize.x / divide.x,
+            _bluePrint.MapSize.y / divide.y
+        );
+
+        int totalCount = divide.x * divide.y;
+        var sections = new SectionData[totalCount];
+
+        int startIndex = Random.Range(0, totalCount);
+
+        for (int x = 0; x < divide.x; x++)
+        {
+            for (int y = 0; y < divide.y; y++)
+            {
+                int index = x + y * divide.x;
+                var role = index == startIndex ? RoomType.Start : RoomType.Normal;
+
+                sections[index] = new SectionData
+                {
+                    GridPosition = new Vector2Int(x * sectionSize.x, y * sectionSize.y),
+                    GridSize = sectionSize,
+                    Role = role,
+                    RoomGridData = (role == RoomType.Start || Random.value < 0.5f) ? roomDataBase.GetRandomRoomGridData(role) : null
+                };
+            }
+        }
+
+        return sections;
+    }
+
     private void PlaceRooms()
     {
-        foreach (var section in m_bluePrint.sections)
+        foreach (var section in _sections)
         {
-            if (section.roomGridData != null)
+            if (section.RoomGridData != null)
                 PlaceRoomGrid(section);
             else
                 PlacePath(section);
         }
     }
 
-    // RoomGridData‚ğƒOƒŠƒbƒh‚É‘‚«‚Ş
+    // RoomGridDataã‚’ã‚°ãƒªãƒƒãƒ‰ã«æ›¸ãè¾¼ã‚€
+    // éƒ¨å±‹ã¯section.GridPositionã‚’èµ·ç‚¹ã«é…ç½®ã™ã‚‹ï¼ˆFBXã®å›ºå®šå£ã¨åº§æ¨™ã‚’åˆã‚ã›ã‚‹ãŸã‚ï¼‰
     private void PlaceRoomGrid(SectionData section)
     {
-        var roomData = section.roomGridData;
+        var roomData = section.RoomGridData;
         var doorPositions = new List<Vector2Int>();
 
-        // ŠOüWall‚ğæ‚É‘‚«‚Ş
-        for (int x = -1; x <= roomData.gridSize.x; x++)
-        {
-            for (int y = -1; y <= roomData.gridSize.y; y++)
-            {
-                var worldPos = section.gridPosition + new Vector2Int(x, y);
-                if (!IsInGrid(worldPos)) continue;
-                // •”‰®‚Ì“à‘¤‚Íã‘‚«‚µ‚È‚¢
-                if (x >= 0 && x < roomData.gridSize.x && y >= 0 && y < roomData.gridSize.y) continue;
-                m_grid[worldPos.x, worldPos.y] = GridType.Wall;
-            }
-        }
+        // ã‚»ã‚¯ã‚·ãƒ§ãƒ³å†…ã§ãƒ©ãƒ³ãƒ€ãƒ ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è¨ˆç®—ï¼ˆ1ã‚»ãƒ«ä»¥ä¸Šã®ãƒãƒ¼ã‚¸ãƒ³ã‚’ç¢ºä¿ï¼‰
+        int spaceX = section.GridSize.x - roomData.GridSize.x;
+        int spaceY = section.GridSize.y - roomData.GridSize.y;
+        int offsetX = spaceX >= 2 ? Random.Range(1, spaceX) : 0;
+        int offsetY = spaceY >= 2 ? Random.Range(1, spaceY) : 0;
+        section.RoomGridPosition = section.GridPosition + new Vector2Int(offsetX, offsetY);
 
-        // “à•”‚ÌFloor‚ÆDoor‚ğ”z’u
-        for (int x = 0; x < roomData.gridSize.x; x++)
+        Debug.Log($"[Grid] RoomGridPosition={section.RoomGridPosition} GridSize={roomData.GridSize}");
+
+        for (int x = 0; x < roomData.GridSize.x; x++)
         {
-            for (int y = 0; y < roomData.gridSize.y; y++)
+            for (int y = 0; y < roomData.GridSize.y; y++)
             {
                 var localPos = new Vector2Int(x, y);
-                var worldPos = section.gridPosition + localPos;
+                var worldPos = section.RoomGridPosition + localPos;
                 if (!IsInGrid(worldPos)) continue;
 
-                if (roomData.doorPositions.Contains(localPos))
+                if (roomData.DoorPositions.Contains(localPos))
                 {
-                    m_grid[worldPos.x, worldPos.y] = GridType.Door;
+                    _grid[worldPos.x, worldPos.y] = GridType.Door;
                     doorPositions.Add(worldPos);
+                }
+                else if (roomData.WallPositions != null && roomData.WallPositions.Contains(localPos))
+                {
+                    _grid[worldPos.x, worldPos.y] = GridType.Wall;
                 }
                 else
                 {
-                    m_grid[worldPos.x, worldPos.y] = GridType.Floor;
+                    _grid[worldPos.x, worldPos.y] = GridType.Floor;
+                    _roomInteriorCells.Add(worldPos);
                 }
             }
         }
-        m_sectionDoorMap[section] = doorPositions;
+        _sectionDoorMap[section] = doorPositions;
     }
 
-    // •”‰®‚È‚µ‹æ‰æ‚Ì’†S‚ğ’†Œp“_‚Æ‚µ‚Ä‹L˜^‚·‚é
     private void PlacePath(SectionData section)
     {
-        var center = section.gridPosition + section.gridSize / 2;
-        m_pathPointMap[section] = center;
+        var center = section.GridPosition + section.GridSize / 2;
+        _pathPointMap[section] = center;
     }
 
-    // ‘S‹æ‰æ‚ğ‡”Ô‚ÉÚ‘±‚·‚é
     private void ConnectSections()
     {
-        var sections = m_bluePrint.sections;
         var connectedSections = new HashSet<SectionData>();
+        connectedSections.Add(_sections[0]);
 
-        // Å‰‚ÌSection‚ğÚ‘±Ï‚İ‚Æ‚µ‚ÄŠJn
-        connectedSections.Add(sections[0]);
-
-        // –¢Ú‘±Section‚ª‚È‚­‚È‚é‚Ü‚ÅŒJ‚è•Ô‚·
-        while (connectedSections.Count < sections.Length)
+        while (connectedSections.Count < _sections.Length)
         {
             SectionData bestFrom = null;
             SectionData bestTo = null;
             float minDist = float.MaxValue;
 
-            // Ú‘±Ï‚İ‚Æ–¢Ú‘±‚Ì’†‚©‚çÅ‹ß–TƒyƒA‚ğ’T‚·
             foreach (var connected in connectedSections)
             {
-                foreach (var section in sections)
+                foreach (var section in _sections)
                 {
                     if (connectedSections.Contains(section)) continue;
 
-                    var connectedCenter = connected.gridPosition + connected.gridSize / 2;
-                    var sectionCenter = section.gridPosition + section.gridSize / 2;
+                    var connectedCenter = connected.GridPosition + connected.GridSize / 2;
+                    var sectionCenter = section.GridPosition + section.GridSize / 2;
                     var dist = Vector2Int.Distance(connectedCenter, sectionCenter);
 
                     if (dist < minDist)
@@ -133,55 +174,53 @@ public class DungeonGridBuilder
         }
     }
 
-    // —]•ª‚È’Ê˜H‚ğƒ‰ƒ“ƒ_ƒ€‚ÉN–{’Ç‰Á‚·‚é
     private void AddExtraBranches()
     {
-        var sections = m_bluePrint.sections;
-        int extraCount = Random.Range(
-            m_bluePrint.minExtraBranchNum,
-            m_bluePrint.maxExtraBranchNum + 1
-        );
+        int extraCount = Random.Range(_bluePrint.MinExtraBranchNum, _bluePrint.MaxExtraBranchNum + 1);
 
         for (int i = 0; i < extraCount; i++)
         {
-            var from = sections[Random.Range(0, sections.Length)];
-            var to = sections[Random.Range(0, sections.Length)];
+            var from = _sections[Random.Range(0, _sections.Length)];
+            var to = _sections[Random.Range(0, _sections.Length)];
             if (from == to) continue;
             ConnectTwoSections(from, to);
         }
     }
-    // 2‚Â‚ÌSection‚ğÅ‹ß–TDoor‚à‚µ‚­‚ÍPath‚ÅŒq‚®
+
     private void ConnectTwoSections(SectionData from, SectionData to)
     {
         var startPos = GetConnectionPoint(from, to);
         var endPos = GetConnectionPoint(to, from);
 
         var path = RunAStar(startPos, endPos);
-        if (path == null) return;
+        if (path == null) { DebugCustom.LogWarning($"[DungeonGrid] A* failed: {startPos} -> {endPos}"); return; }
 
         foreach (var pos in path)
         {
-            // Door‚ÆFloori•”‰®“àj‚Íã‘‚«‚µ‚È‚¢
-            if (m_grid[pos.x, pos.y] == GridType.Door) continue;
-            if (m_grid[pos.x, pos.y] == GridType.Floor) continue;
-            m_grid[pos.x, pos.y] = GridType.Floor;
+            if (_grid[pos.x, pos.y] == GridType.Door) continue;
+            if (_grid[pos.x, pos.y] == GridType.Floor) continue;
+            _grid[pos.x, pos.y] = GridType.Floor;
         }
     }
 
-    // Section‚ÌDoor or Path‚Ì’†‚©‚çtarget‚ÉÅ‚à‹ß‚¢À•W‚ğ•Ô‚·
     private Vector2Int GetConnectionPoint(SectionData section, SectionData target)
     {
-        var targetCenter = target.gridPosition + target.gridSize / 2;
+        var targetCenter = target.GridPosition + target.GridSize / 2;
 
-        if (m_sectionDoorMap.TryGetValue(section, out var doors))
+        if (_sectionDoorMap.TryGetValue(section, out var doors))
             return FindNearest(doors, targetCenter);
 
-        return m_pathPointMap[section];
+        return _pathPointMap[section];
     }
 
-    // ƒŠƒXƒg‚Ì’†‚©‚çtargetPos‚ÉÅ‚à‹ß‚¢À•W‚ğ•Ô‚·
     private Vector2Int FindNearest(List<Vector2Int> positions, Vector2Int targetPos)
     {
+        if (positions == null || positions.Count == 0)
+        {
+            DebugCustom.LogWarning("FindNearest: DoorPositionsãŒç©ºã§ã™ã€‚RoomGridDataã®DoorPositionsã‚’ç¢ºèªã—ã¦ãã ã•ã„ã€‚");
+            return targetPos;
+        }
+
         var nearest = positions[0];
         var minDist = float.MaxValue;
 
@@ -198,11 +237,14 @@ public class DungeonGridBuilder
         return nearest;
     }
 
-    // A*‚Å start ‚©‚ç end ‚Ü‚Å‚ÌŒo˜H‚ğ•Ô‚·
-    // Wall‚Ì‚İ’Ês•s‰ÂA‚»‚êˆÈŠO‚Í’Ês‰Â
+    /// <summary>
+    /// A*ã§startã‹ã‚‰endã¾ã§ã®çµŒè·¯ã‚’è¿”ã™
+    /// Wallã¯A*ã®ãƒ–ãƒ­ãƒƒã‚¯å¯¾è±¡ã€‚
+    /// éƒ¨å±‹å†…éƒ¨ï¼ˆDoorä»¥å¤–ã®Floorï¼‰ã‚‚ãƒ–ãƒ­ãƒƒã‚¯ã—ã€é€šè·¯ãŒDoorã‚»ãƒ«çµŒç”±ã§ã®ã¿éƒ¨å±‹ã«ç¹‹ãŒã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
+    /// çµŒè·¯ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯nullã‚’è¿”ã™
+    /// </summary>
     private List<Vector2Int> RunAStar(Vector2Int start, Vector2Int end)
     {
-        // ƒRƒXƒg‚ÆeÀ•W‚ÌŠÇ—
         var openSet = new SortedSet<(float f, Vector2Int pos)>(
             Comparer<(float f, Vector2Int pos)>.Create((a, b) =>
                 a.f != b.f ? a.f.CompareTo(b.f) :
@@ -217,11 +259,7 @@ public class DungeonGridBuilder
         gCost[start] = 0f;
         openSet.Add((Heuristic(start, end), start));
 
-        var neighbors = new[]
-        {
-            Vector2Int.up, Vector2Int.down,
-            Vector2Int.left, Vector2Int.right
-        };
+        var neighbors = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         while (openSet.Count > 0)
         {
@@ -235,13 +273,15 @@ public class DungeonGridBuilder
             {
                 var neighbor = current + dir;
                 if (!IsInGrid(neighbor)) continue;
-                if (m_grid[neighbor.x, neighbor.y] == GridType.Wall) continue;
+                if (_grid[neighbor.x, neighbor.y] == GridType.Wall) continue;
+                // éƒ¨å±‹å†…éƒ¨ï¼ˆDoorä»¥å¤–ï¼‰ã¯A*é€šéä¸å¯ï¼šDoorã‚»ãƒ«çµŒç”±ã§ã®ã¿æ¥ç¶šã•ã›ã‚‹
+                if (_roomInteriorCells.Contains(neighbor)) continue;
 
-                float moveCost = m_grid[neighbor.x, neighbor.y] switch
+                float moveCost = _grid[neighbor.x, neighbor.y] switch
                 {
                     GridType.Floor => 0.5f,
-                    GridType.Door => 0.5f,
-                    _ => 1.0f
+                    GridType.Door  => 0.5f,
+                    _              => 1.0f
                 };
 
                 float newG = gCost[current] + moveCost;
@@ -253,14 +293,11 @@ public class DungeonGridBuilder
             }
         }
 
-        // Œo˜H‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡
         return null;
     }
 
     private float Heuristic(Vector2Int a, Vector2Int b)
-    {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-    }
+        => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
 
     private List<Vector2Int> BuildPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
     {
@@ -275,8 +312,21 @@ public class DungeonGridBuilder
     }
 
     private bool IsInGrid(Vector2Int pos)
+        => pos.x >= 0 && pos.x < _grid.GetLength(0)
+        && pos.y >= 0 && pos.y < _grid.GetLength(1);
+
+    private void LogGridStats(string label)
     {
-        return pos.x >= 0 && pos.x < m_grid.GetLength(0)
-            && pos.y >= 0 && pos.y < m_grid.GetLength(1);
+        int empty = 0, floor = 0, wall = 0, door = 0;
+        for (int x = 0; x < _grid.GetLength(0); x++)
+            for (int y = 0; y < _grid.GetLength(1); y++)
+                switch (_grid[x, y])
+                {
+                    case GridType.Empty: empty++; break;
+                    case GridType.Floor: floor++; break;
+                    case GridType.Wall:  wall++;  break;
+                    case GridType.Door:  door++;  break;
+                }
+        DebugCustom.Log($"[DungeonGrid] {label} -> Empty:{empty} Floor:{floor} Wall:{wall} Door:{door}");
     }
 }

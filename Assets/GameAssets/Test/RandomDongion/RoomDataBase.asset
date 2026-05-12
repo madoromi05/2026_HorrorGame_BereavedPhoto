@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 271287aa15266e44ea96add7647b4c99, type: 3}
   m_Name: RoomDataBase
   m_EditorClassIdentifier: 
-  m_entries:
-  - roomType: 0
-    prefab: {fileID: 0}
+  _entries:
+  - RoomType: 1
+    Prefab: {fileID: 6586465173288284740, guid: 0cf5d18676ee8d44d8c11f3177ebb822, type: 3}
+    RoomGridDatas:
+    - {fileID: 11400000, guid: cb146f48383ed19459c627cd273d4709, type: 2}
+  - RoomType: 0
+    Prefab: {fileID: 6586465173288284740, guid: 23a638fa82b861b47a0ae8ad7824e813, type: 3}
+    RoomGridDatas:
+    - {fileID: 11400000, guid: 4ed1c1c4580fe5b43b0b03961ba3e6ad, type: 2}

@@ -1,55 +1,70 @@
-/// <summary>
-/// GridType.FloorƒZƒ‹‚ğCorridorResolver‚Å”»’è‚µFBX‚ğInstantiate‚·‚é
-/// eƒIƒuƒWƒFƒNƒg‚ÍDungeonGenerator‚©‚çó‚¯æ‚é
+ï»¿/// <summary>
+/// GridType.Floor ã‚»ãƒ«ã‚’ CorridorResolver ã§åˆ¤å®šã— FBX ã‚’ Instantiate ã™ã‚‹
+/// éƒ¨å±‹å†…éƒ¨ã®ã‚»ãƒ«ã¯ã‚¹ã‚­ãƒƒãƒ—ã—ã¦å»Šä¸‹ã®ã¿ã«é…ç½®ã™ã‚‹
 /// </summary>
 using DungeonSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CorridorPlacer
 {
-    private CorridorDataBase m_corridorDataBase;
-
-    // ’Ê˜HƒZƒ‹‚Ì—×Úó‹µ‚©‚çCorridorType‚Æ‰ñ“]Šp“x‚ğ”»’è‚·‚é
-    private CorridorResolver m_corridorResolver;
-
-    // 1ƒOƒŠƒbƒh‚ÌUnityƒ[ƒ‹ƒhã‚ÌƒTƒCƒY
-    private float m_gridSize;
+    private CorridorDataBase _corridorDataBase;
+    private CorridorResolver _corridorResolver;
+    private float _gridSize;
 
     public CorridorPlacer(CorridorDataBase corridorDataBase, float gridSize)
     {
-        m_corridorDataBase = corridorDataBase;
-        m_corridorResolver = new CorridorResolver();
-        m_gridSize = gridSize;
+        _corridorDataBase = corridorDataBase;
+        _corridorResolver = new CorridorResolver();
+        _gridSize = gridSize;
     }
 
     /// <summary>
-    /// ƒOƒŠƒbƒh‘S‘Ì‚ğ‘–¸‚µGridType.FloorƒZƒ‹‚ÉCorridorFBX‚ğInstantiate‚·‚é
+    /// ã‚°ãƒªãƒƒãƒ‰å…¨ä½“ã‚’èµ°æŸ»ã—ã€å»Šä¸‹ã‚»ãƒ«ï¼ˆéƒ¨å±‹å†…éƒ¨ã‚’é™¤ã Floor/Doorï¼‰ã« Corridor ã‚’é…ç½®ã™ã‚‹
     /// </summary>
-    public void Place(GridType[,] grid, Transform corridorParent)
+    public void Place(GridType[,] grid, SectionData[] sections, Transform corridorParent)
     {
+        var roomCells = BuildRoomCellSet(sections);
+
         for (int x = 0; x < grid.GetLength(0); x++)
         {
             for (int y = 0; y < grid.GetLength(1); y++)
             {
-                if (grid[x, y] != GridType.Floor) continue;
-                PlaceCorridor(grid, new Vector2Int(x, y), corridorParent);
+                if (grid[x, y] != GridType.Floor && grid[x, y] != GridType.Door) continue;
+                var pos = new Vector2Int(x, y);
+                if (roomCells.Contains(pos)) continue;
+                PlaceCorridor(grid, pos, corridorParent);
             }
         }
     }
 
-    // ‘ÎÛƒZƒ‹‚ÌCorridorType‚Æ‰ñ“]Šp“x‚ğ‰ğŒˆ‚µPrefab‚ğ”z’u‚·‚é
+    // éƒ¨å±‹å†…éƒ¨ã‚»ãƒ«ã®åº§æ¨™ã‚»ãƒƒãƒˆã‚’æ§‹ç¯‰ã™ã‚‹ï¼ˆéƒ¨å±‹ã‚’æŒã¤ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã¿ï¼‰
+    private HashSet<Vector2Int> BuildRoomCellSet(SectionData[] sections)
+    {
+        var cells = new HashSet<Vector2Int>();
+        foreach (var section in sections)
+        {
+            if (section.RoomGridData == null) continue;
+            var size = section.RoomGridData.GridSize;
+            for (int x = 0; x < size.x; x++)
+                for (int y = 0; y < size.y; y++)
+                    cells.Add(section.RoomGridPosition + new Vector2Int(x, y));
+        }
+        return cells;
+    }
+
     private void PlaceCorridor(GridType[,] grid, Vector2Int gridPos, Transform corridorParent)
     {
-        var (corridorType, rotationY) = m_corridorResolver.Resolve(grid, gridPos);
+        var (corridorType, rotationY) = _corridorResolver.Resolve(grid, gridPos);
 
-        var prefab = m_corridorDataBase.GetPrefab(corridorType);
+        var prefab = _corridorDataBase.GetPrefab(corridorType);
         if (prefab == null) return;
 
-        // 2DƒOƒŠƒbƒh‚ÌXYÀ•W‚ğ3D‚ÌXZ•½–Ê‚É•ÏŠ·‚·‚é
+        // ã‚»ãƒ«ã®ä¸­å¿ƒåº§æ¨™ã«é…ç½®ã™ã‚‹
         var worldPos = new Vector3(
-            gridPos.x * m_gridSize,
+            (gridPos.x + 0.5f) * _gridSize,
             0f,
-            gridPos.y * m_gridSize
+            (gridPos.y + 0.5f) * _gridSize
         );
 
         var rotation = Quaternion.Euler(0f, rotationY, 0f);

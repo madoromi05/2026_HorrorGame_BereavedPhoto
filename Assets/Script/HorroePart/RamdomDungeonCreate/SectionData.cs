@@ -1,14 +1,15 @@
 using DungeonSystem;
 using UnityEngine;
-/// <summary>
-/// �����_���_���W����2D�O���b�h�̃f�[�^
-/// </summary>
 
+/// <summary>
+/// ランダムダンジョン生成用2Dグリッドのデータ
+/// </summary>
 [System.Serializable]
 public class SectionData
 {
-    public Vector2Int gridSize;
-    public Vector2Int gridPosition;
-    public RoomType role;
-    public RoomGridData roomGridData;
+    public Vector2Int GridSize;
+    public Vector2Int GridPosition;
+    public Vector2Int RoomGridPosition; // 部屋の左上グリッド座標（セクション座標 + ランダムオフセット）
+    public RoomType Role;
+    public RoomGridData RoomGridData;
 }

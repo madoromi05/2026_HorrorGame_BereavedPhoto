@@ -1,23 +1,29 @@
-/// <summary>
-/// ƒ_ƒ“ƒWƒ‡ƒ“¶¬‚Ì‘S‘Ìƒtƒ[‚ğ“Š‡‚·‚éƒNƒ‰ƒX
-/// ŠePlacer‚ÆBuilder‚ğ‘g‚İ—§‚Ä‡‚ÉŒÄ‚Ño‚·
+ï»¿ï»¿/// <summary>
+/// ï¿½_ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‘Sï¿½Ìƒtï¿½ï¿½ï¿½[ï¿½ğ“Šï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
+/// ï¿½ePlacerï¿½ï¿½Builderï¿½ï¿½gï¿½İ—ï¿½ï¿½Äï¿½ï¿½ÉŒÄ‚Ñoï¿½ï¿½
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
+using static UnityEngine.Rendering.CoreUtils;
 
 public class DungeonGenerator : MonoBehaviour
 {
-    [SerializeField] private FieldBluePrint m_bluePrint;
-    [SerializeField] private RoomDataBase m_roomDataBase;
-    [SerializeField] private CorridorDataBase m_corridorDataBase;
+    [SerializeField] private FieldBluePrint _bluePrint;
+    [SerializeField] private RoomDataBase _roomDataBase;
+    [SerializeField] private CorridorDataBase _corridorDataBase;
 
-    // •”‰®E’Ê˜H‚ğHierarchyã‚Å•ª‚¯‚ÄŠÇ—‚·‚é‚½‚ß‚ÌeƒIƒuƒWƒFƒNƒg
-    [SerializeField] private Transform m_roomParent;
-    [SerializeField] private Transform m_corridorParent;
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Eï¿½Ê˜Hï¿½ï¿½Hierarchyï¿½ï¿½Å•ï¿½ï¿½ï¿½ï¿½ÄŠÇ—ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ß‚Ìeï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½g
+    [SerializeField] private Transform _roomParent;
+    [SerializeField] private Transform _corridorParent;
 
-    private DungeonGridBuilder m_gridBuilder;
-    private SectionPlacer m_sectionPlacer;
-    private CorridorPlacer m_corridorPlacer;
+    [Header("Debug")]
+    [SerializeField] private bool _isDebugMode;
+    [SerializeField] private Transform _debugParent;
+
+    private DungeonGridBuilder _gridBuilder;
+    private DungeonDebugVisualizer _debugVisualizer;
+    private SectionPlacer _sectionPlacer;
+    private CorridorPlacer _corridorPlacer;
 
     private void Start()
     {
@@ -25,22 +31,29 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒ_ƒ“ƒWƒ‡ƒ“‚ğ¶¬‚·‚é
-    /// ƒOƒŠƒbƒh\’z ¨ •”‰®”z’u ¨ ’Ê˜H”z’u‚Ì‡‚ÉÀs‚·‚é
+    /// ï¿½_ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ğ¶ï¿½ï¿½ï¿½ï¿½ï¿½
+    /// ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½\ï¿½z ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½zï¿½u ï¿½ï¿½ ï¿½Ê˜Hï¿½zï¿½uï¿½Ìï¿½ï¿½Éï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void Generate()
     {
+        Debug.Log("[Generator] Generate() called");
         Initialize();
 
-        var grid = m_gridBuilder.Build(m_bluePrint);
-        m_sectionPlacer.Place(m_bluePrint.sections, m_roomParent);
-        m_corridorPlacer.Place(grid, m_corridorParent);
+        var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);
+        Debug.Log($"[Generator] sections[0].RoomGridPosition={sections[0].RoomGridPosition}");  // è¿½åŠ 
+
+        _sectionPlacer.Place(sections, _roomParent);
+        _corridorPlacer.Place(grid, sections, _corridorParent);
+
+        if (_isDebugMode && _debugParent != null)
+            _debugVisualizer.Visualize(grid, sections, _debugParent);
     }
 
     private void Initialize()
     {
-        m_gridBuilder = new DungeonGridBuilder();
-        m_sectionPlacer = new SectionPlacer(m_roomDataBase, m_bluePrint.gridSize);
-        m_corridorPlacer = new CorridorPlacer(m_corridorDataBase, m_bluePrint.gridSize);
+        _gridBuilder = new DungeonGridBuilder();
+        _sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize);
+        _corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
+        _debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
     }
 }

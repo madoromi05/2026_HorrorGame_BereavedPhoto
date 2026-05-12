@@ -12,12 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849f068f49f3e3b4e8f1cebce6b6e999, type: 3}
   m_Name: FieldBluePrint
   m_EditorClassIdentifier: 
-  gridSize: 5
-  mapSize: {x: 0, y: 0}
-  sections:
-  - gridSize: {x: 0, y: 0}
-    gridPosition: {x: 0, y: 0}
-    role: 0
-    roomGridData: {fileID: 0}
-  minExtraBranchNum: 0
-  maxExtraBranchNum: 0
+  OneGridSize: 5
+  MapSize: {x: 30, y: 30}
+  SectionDivide: {x: 3, y: 3}
+  MinExtraBranchNum: 1
+  MaxExtraBranchNum: 3

@@ -1,6 +1,6 @@
-/// <summary>
-/// ’Ê˜HƒZƒ‹‚Ìã‰º¶‰E‚Ì—×Úó‹µ‚©‚çCorridorType‚Æ‰ñ“]Šp“x‚ğ•Ô‚·
-/// ”»’è‚ÍGridType.Floor‚ÆGridType.Door‚ğÚ‘±•ûŒü‚Æ‚µ‚ÄƒJƒEƒ“ƒg‚·‚é
+ï»¿ï»¿/// <summary>
+/// ï¿½Ê˜Hï¿½Zï¿½ï¿½ï¿½Ìã‰ºï¿½ï¿½ï¿½Eï¿½Ì—×Úó‹µ‚ï¿½ï¿½ï¿½CorridorTypeï¿½Æ‰ï¿½]ï¿½pï¿½xï¿½ï¿½Ô‚ï¿½
+/// ï¿½ï¿½ï¿½ï¿½ï¿½GridType.Floorï¿½ï¿½GridType.Doorï¿½ï¿½Ú‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½ÄƒJï¿½Eï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -15,14 +15,14 @@ public class CorridorResolver
         Vector2Int.left   // West
     };
 
-    // Ú‘±•ûŒüƒCƒ“ƒfƒbƒNƒX’è”
+    // ï¿½Ú‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½è”
     private const int kNorth = 0;
     private const int kEast = 1;
     private const int kSouth = 2;
     private const int kWest = 3;
 
     /// <summary>
-    /// w’èƒZƒ‹‚ÌCorridorType‚Æ‰ñ“]Šp“x(Y²)‚ğ•Ô‚·
+    /// ï¿½wï¿½ï¿½Zï¿½ï¿½ï¿½ï¿½CorridorTypeï¿½Æ‰ï¿½]ï¿½pï¿½x(Yï¿½ï¿½)ï¿½ï¿½Ô‚ï¿½
     /// </summary>
     public (CorridorType type, float rotationY) Resolve(GridType[,] grid, Vector2Int pos)
     {
@@ -50,11 +50,11 @@ public class CorridorResolver
         int connectionCount = (north ? 1 : 0) + (east ? 1 : 0)
                             + (south ? 1 : 0) + (west ? 1 : 0);
 
-        // \š
+        // ï¿½\ï¿½ï¿½
         if (connectionCount == 4)
             return (CorridorType.Crossroad, 0f);
 
-        // Tš
+        // Tï¿½ï¿½
         if (connectionCount == 3)
         {
             if (!west) return (CorridorType.T_Junction, 0f);
@@ -63,22 +63,29 @@ public class CorridorResolver
             if (!south) return (CorridorType.T_Junction, 270f);
         }
 
-        // ’¼üELš
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ELï¿½ï¿½
         if (connectionCount == 2)
         {
-            // ’¼üi“ì–kj
+            // ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½kï¿½j
             if (north && south) return (CorridorType.Straight, 0f);
-            // ’¼üi“Œ¼j
-            if (east && west) return (CorridorType.Straight, 90f);
+            // ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½j
+            if (east && west)  return (CorridorType.Straight, 90f);
 
-            // Lš
+            // Lï¿½ï¿½
             if (north && east) return (CorridorType.Corner, 0f);
             if (east  && south) return (CorridorType.Corner, 90f);
             if (south && west) return (CorridorType.Corner, 180f);
             if (west  && north) return (CorridorType.Corner, 270f);
         }
 
-        DebugCustom.LogWarning("CorridorResolver: ”»’è•s”\‚Èƒpƒ^[ƒ“‚Å‚·");
+        // è¡Œãæ­¢ã¾ã‚Šï¼ˆ1æ–¹å‘ã®ã¿æ¥ç¶šï¼‰
+        if (connectionCount == 1)
+        {
+            if (north || south) return (CorridorType.Straight, 0f);
+            return (CorridorType.Straight, 90f);
+        }
+
+        // å­¤ç«‹ã‚»ãƒ«ï¼ˆæ¥ç¶šãªã—ï¼‰
         return (CorridorType.Straight, 0f);
     }
 

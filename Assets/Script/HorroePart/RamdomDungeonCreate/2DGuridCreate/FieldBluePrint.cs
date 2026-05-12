@@ -6,12 +6,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FieldBluePrint", menuName = "Dungeon/FieldBluePrint")]
 public class FieldBluePrint : ScriptableObject
 {
-    public float gridSize = 5f;
+    public float OneGridSize = 5f;      // 1グリッドの実際のサイズ（ユニティのワールド単位）
 
-    public Vector2Int mapSize;           // マップ全体のグリッドサイズ
-    public SectionData[] sections;
+    public Vector2Int MapSize;           // マップ全体のグリッドサイズ
+    public Vector2Int SectionDivide;     // セクション分割数
 
     // 全Section接続後に追加するランダム通路の本数範囲
-    public int minExtraBranchNum;
-    public int maxExtraBranchNum;
+    public int MinExtraBranchNum;
+    public int MaxExtraBranchNum;
 }

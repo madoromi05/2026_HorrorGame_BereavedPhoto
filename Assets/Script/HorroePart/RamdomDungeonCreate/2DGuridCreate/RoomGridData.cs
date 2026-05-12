@@ -2,13 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// •”‰®ˆêŒÂ‚ÌƒOƒŠƒbƒh‚Ìƒf[ƒ^
+/// éƒ¨å±‹ã®ã‚°ãƒªãƒƒãƒ‰ãƒ‡ãƒ¼ã‚¿ã€‚
+/// GridSizeå†…ã®å„ã‚»ãƒ«ã¯Inspectorã®GUIã§ Floor / Door / Wall ã‚’è¨­å®šã™ã‚‹ã€‚
+/// Floor = é€šè¡Œå¯èƒ½ãªå®¤å†…ã‚»ãƒ«
+/// Door  = å£ã®é–‹å£éƒ¨ï¼ˆé€šè·¯ã¨ã®æ¥ç¶šç‚¹ï¼‰
+/// Wall  = é€šè¡Œä¸å¯ã®å£ã‚»ãƒ«ï¼ˆFBXã®å£ãƒ¡ãƒƒã‚·ãƒ¥ã¨ä¸€è‡´ã•ã›ã‚‹ã“ã¨ï¼‰
 /// </summary>
-
-
 [CreateAssetMenu(fileName = "RoomGridData", menuName = "Dungeon/RoomGridData")]
 public class RoomGridData : ScriptableObject
 {
-    public Vector2Int gridSize;                 // •”‰®‚ªè—L‚·‚éƒOƒŠƒbƒhƒTƒCƒY
-    public List<Vector2Int> doorPositions;      // •”‰®“à‚ÌDoorƒZƒ‹ˆÊ’u
+    public Vector2Int GridSize;
+    public List<Vector2Int> DoorPositions  = new List<Vector2Int>();
+    public List<Vector2Int> WallPositions  = new List<Vector2Int>();
 }

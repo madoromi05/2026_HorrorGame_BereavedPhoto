@@ -1,50 +1,49 @@
 /// <summary>
-/// SectionData‚ğŒ³‚É•”‰®Prefab‚ğInstantiate‚·‚é
-/// eƒIƒuƒWƒFƒNƒg‚ÍDungeonGenerator‚©‚çó‚¯æ‚é
+/// SectionDataã‚’ã‚‚ã¨ã«éƒ¨å±‹Prefabã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹
+/// å„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯DungeonGeneratorã‹ã‚‰å—ã‘å–ã‚‹
 /// </summary>
-
 using DungeonSystem;
 using UnityEngine;
 
 public class SectionPlacer
 {
-    private RoomDataBase m_roomDataBase;
-    private float m_gridSize;
+    private RoomDataBase _roomDataBase;
+    private float _gridSize;
 
     public SectionPlacer(RoomDataBase roomDataBase, float gridSize)
     {
-        m_roomDataBase = roomDataBase;
-        m_gridSize = gridSize;
+        _roomDataBase = roomDataBase;
+        _gridSize = gridSize;
     }
 
-    /// <summary>
-    /// ‘SSection‚ğ‘–¸‚µ•”‰®Prefab‚ğInstantiate‚·‚é
-    /// roomGridData‚ªnullASectioni’Ê˜H’†Œp“_j‚Ìê‡‚ÍƒXƒLƒbƒv‚·‚é
-    /// </summary>
     public void Place(SectionData[] sections, Transform roomParent)
     {
         foreach (var section in sections)
         {
-            if (section.roomGridData == null) continue;
+            if (section.RoomGridData == null) continue;
             PlaceRoom(section, roomParent);
         }
     }
-    /// <summary>
-    /// Section‚ÌRoomType‚É‘Î‰‚·‚éPrefab‚ğƒ[ƒ‹ƒhÀ•W‚É”z’u‚·‚é
-    /// </summary>
+
     private void PlaceRoom(SectionData section, Transform roomParent)
     {
-        var prefab = m_roomDataBase.GetPrefab(section.role);
+        var prefab = _roomDataBase.GetPrefab(section.Role);
         if (prefab == null) return;
 
-        // ƒOƒŠƒbƒhÀ•W‚ğUnityƒ[ƒ‹ƒhÀ•W‚É•ÏŠ·
+        // ã‚°ãƒªãƒƒãƒ‰åº§æ¨™ã‚’Unityãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã«å¤‰æ›
+        // GridPositionã¯ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®å·¦ä¸Šã‚°ãƒªãƒƒãƒ‰åº§æ¨™ã€‚
+        var gridSize = new Vector2(section.RoomGridData.GridSize.x, section.RoomGridData.GridSize.y);
         var worldPos = new Vector3(
-            section.gridPosition.x * m_gridSize,
+            (section.RoomGridPosition.x + gridSize.x / 2f) * _gridSize,
             0f,
-            section.gridPosition.y * m_gridSize
+            (section.RoomGridPosition.y + gridSize.y / 2f) * _gridSize
         );
 
+        DebugCustom.Log($"[Placer] RoomGridPosition={section.RoomGridPosition} GridSize={section.RoomGridData.GridSize}");
+        DebugCustom.Log($"[Placer] worldPos={worldPos}");
+        DebugCustom.Log($"[Placer] _gridSize={_gridSize}");
+
         var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
-        instance.name = $"Room_{section.role}_{section.gridPosition}";
+        instance.name = $"Room_{section.Role}_{section.GridPosition}";
     }
 }
