@@ -21,10 +21,7 @@ public class DungeonGridBuilder
     // 設計図を受け取り、2Dグリッドを構築して返す
     public (GridType[,] grid, SectionData[] sections) Build(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {
-        _bluePrint = bluePrint;
-        _grid = new GridType[bluePrint.MapSize.x, bluePrint.MapSize.y];
-        _sectionDoorMap = new Dictionary<SectionData, List<Vector2Int>>();
-        _pathPointMap = new Dictionary<SectionData, Vector2Int>();
+        InitializeState(bluePrint);
 
         _sections = GenerateSections(roomDataBase);
 
@@ -38,6 +35,14 @@ public class DungeonGridBuilder
         LogGridStats("After ConnectUnconnectedDoors");
 
         return (_grid, _sections);
+    }
+
+    private void InitializeState(FieldBluePrint bluePrint)
+    {
+        _bluePrint = bluePrint;
+        _grid = new GridType[bluePrint.MapSize.x, bluePrint.MapSize.y];
+        _sectionDoorMap = new Dictionary<SectionData, List<Vector2Int>>();
+        _pathPointMap = new Dictionary<SectionData, Vector2Int>();
     }
 
     // Startは必ず1、残りはNormalとしてSectionをランダムに割り当てる
@@ -184,10 +189,16 @@ public class DungeonGridBuilder
     {
         int extraCount = Random.Range(_bluePrint.MinExtraBranchNum, _bluePrint.MaxExtraBranchNum + 1);
 
+        int maxRetry = 10;
         for (int i = 0; i < extraCount; i++)
         {
-            var from = _sections[Random.Range(0, _sections.Length)];
-            var to = _sections[Random.Range(0, _sections.Length)];
+            SectionData from, to;
+            int retry = 0;
+            do
+            {
+                from = _sections[Random.Range(0, _sections.Length)];
+                to = _sections[Random.Range(0, _sections.Length)];
+            } while (from == to && ++retry < maxRetry);
             if (from == to) continue;
             ConnectTwoSections(from, to);
         }
@@ -270,7 +281,7 @@ public class DungeonGridBuilder
 
         while (openSet.Count > 0)
         {
-            var (_, current) = openSet.Min;
+            var (currentF, current) = openSet.Min;
             openSet.Remove(openSet.Min);
 
             if (current == end)

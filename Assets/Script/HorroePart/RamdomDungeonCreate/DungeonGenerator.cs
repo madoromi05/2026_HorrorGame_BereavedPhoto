@@ -4,7 +4,6 @@
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
-using static UnityEngine.Rendering.CoreUtils;
 
 public class DungeonGenerator : MonoBehaviour
 {
