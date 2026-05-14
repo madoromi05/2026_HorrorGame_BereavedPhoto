@@ -14,4 +14,5 @@ public class RoomGridData : ScriptableObject
     public Vector2Int GridSize;
     public List<Vector2Int> DoorPositions  = new List<Vector2Int>();
     public List<Vector2Int> WallPositions  = new List<Vector2Int>();
+    public List<Vector2Int> PlayerPositions = new List<Vector2Int>();
 }

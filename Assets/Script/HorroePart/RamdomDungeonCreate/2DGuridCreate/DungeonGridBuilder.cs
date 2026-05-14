@@ -133,6 +133,10 @@ public class DungeonGridBuilder
                 {
                     _grid[worldPos.x, worldPos.y] = GridType.Wall;
                 }
+                else if (roomData.PlayerPositions != null && roomData.PlayerPositions.Contains(localPos))
+                {
+                    _grid[worldPos.x, worldPos.y] = GridType.PlayerPosition;
+                }
                 else
                 {
                     _grid[worldPos.x, worldPos.y] = GridType.Floor;

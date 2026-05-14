@@ -19,6 +19,7 @@ public class RoomGridDataEditor : Editor
     private static readonly Color kColorFloor = new Color(0.20f, 0.65f, 0.20f);
     private static readonly Color kColorDoor  = new Color(1.00f, 0.85f, 0.00f);
     private static readonly Color kColorWall  = new Color(0.55f, 0.12f, 0.12f);
+    private static readonly Color kColorPlayerPosition = new Color(0.20f, 0.60f, 1.00f);
     private static readonly Color kColorBorder = new Color(0.1f, 0.1f, 0.1f);
 
     public override void OnInspectorGUI()
@@ -40,6 +41,7 @@ public class RoomGridDataEditor : Editor
         // リストが null の場合は初期化
         if (data.DoorPositions == null) data.DoorPositions = new List<Vector2Int>();
         if (data.WallPositions == null) data.WallPositions = new List<Vector2Int>();
+        if (data.PlayerPositions == null) data.PlayerPositions = new List<Vector2Int>();
 
         EditorGUILayout.Space(6);
 
@@ -56,6 +58,7 @@ public class RoomGridDataEditor : Editor
         // 統計
         int wallCount  = data.WallPositions.Count;
         int doorCount  = data.DoorPositions.Count;
+        int playerCount = data.PlayerPositions.Count;
         int floorCount = data.GridSize.x * data.GridSize.y - doorCount - wallCount;
         EditorGUILayout.LabelField($"Floor: {floorCount}   Door: {doorCount}   Wall: {wallCount}");
 
@@ -66,6 +69,7 @@ public class RoomGridDataEditor : Editor
             Undo.RecordObject(data, "Reset Room Grid");
             data.DoorPositions.Clear();
             data.WallPositions.Clear();
+            data.PlayerPositions.Clear();
             EditorUtility.SetDirty(data);
         }
     }
@@ -76,6 +80,7 @@ public class RoomGridDataEditor : Editor
         DrawColorBox(kColorFloor); EditorGUILayout.LabelField("Floor",  GUILayout.Width(48));
         DrawColorBox(kColorDoor);  EditorGUILayout.LabelField("Door",   GUILayout.Width(48));
         DrawColorBox(kColorWall);  EditorGUILayout.LabelField("Wall",   GUILayout.Width(48));
+        DrawColorBox(kColorPlayerPosition); EditorGUILayout.LabelField("Player", GUILayout.Width(48));
         EditorGUILayout.LabelField("← クリックで切り替え");
         EditorGUILayout.EndHorizontal();
     }
@@ -127,6 +132,11 @@ public class RoomGridDataEditor : Editor
                     EditorGUI.DrawRect(innerRect, kColorWall);
                     GUI.Label(innerRect, $"{x},{y}\nW", labelStyle);
                 }
+                else if (data.PlayerPositions.Contains(pos))
+                {
+                    EditorGUI.DrawRect(innerRect, kColorPlayerPosition);
+                    GUI.Label(innerRect, $"{x},{y}\nP", labelStyle);
+                }
                 else
                 {
                     EditorGUI.DrawRect(innerRect, kColorFloor);
@@ -155,8 +165,9 @@ public class RoomGridDataEditor : Editor
     {
         bool isDoor = data.DoorPositions.Contains(pos);
         bool isWall = data.WallPositions.Contains(pos);
+        bool isPlayer = data.PlayerPositions.Contains(pos);
 
-        if (!isDoor && !isWall)
+        if (!isDoor && !isWall && !isPlayer)
         {
             // Floor → Door
             data.DoorPositions.Add(pos);

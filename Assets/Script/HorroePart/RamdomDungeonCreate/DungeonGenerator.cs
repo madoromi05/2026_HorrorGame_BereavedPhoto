@@ -14,6 +14,8 @@ public class DungeonGenerator : MonoBehaviour
 
     [SerializeField] private Transform _roomParent;
     [SerializeField] private Transform _corridorParent;
+    [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private float _playerSpawnOffsetY = 0f;
 
     [Header("Debug")]
     [SerializeField] private bool _isDebugMode;
@@ -35,11 +37,9 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     public void Generate()
     {
-        Debug.Log("[Generator] Generate() called");
         Initialize();
 
         var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);
-        Debug.Log($"[Generator] sections[0].RoomGridPosition={sections[0].RoomGridPosition}");  // 追加
 
         _sectionPlacer.Place(sections, _roomParent);
         _corridorPlacer.Place(grid, _corridorParent);
@@ -51,7 +51,7 @@ public class DungeonGenerator : MonoBehaviour
     private void Initialize()
     {
         _gridBuilder = new DungeonGridBuilder();
-        _sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize);
+        _sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerPrefab, _playerSpawnOffsetY);
         _corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
         _debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
     }

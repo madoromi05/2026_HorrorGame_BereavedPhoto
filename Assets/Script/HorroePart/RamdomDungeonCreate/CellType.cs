@@ -8,6 +8,7 @@ namespace DungeonSystem
         Floor,
         Door,
         Corridor,
+        PlayerPosition,
     }
 
     //通路のグリッドタイプ
