@@ -10,19 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Test
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 6d47828ff5858fa4fbbc62e6dad67b5a
-  m_SerializeEntries:
-  - m_GUID: 5fae029abc4c64b438c7fb21d2578a20
-    m_Address: Assets/GameAssets/Test/AssetableTestObject.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_GroupName: Test
+  m_GUID: 4ae56e85282ed1f45b56b50d4c48b034
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 597cf9d93d7686c4f950de2f31a9f28d, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: c35c560adf341a94094bd2584c56c600, type: 2}
-    - {fileID: 11400000, guid: e67d8129cc707094eba384bb9f3b4d74, type: 2}
+    - {fileID: 11400000, guid: dab7b28aca6beef44b96a5f3951a0aca, type: 2}
+    - {fileID: 11400000, guid: d2193180806446f46b811572185e1e07, type: 2}
