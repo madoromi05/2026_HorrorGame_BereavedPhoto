@@ -1,6 +1,7 @@
-﻿﻿/// <summary>
-/// �_���W���������̑S�̃t���[�𓝊�����N���X
-/// �ePlacer��Builder��g�ݗ��ď��ɌĂяo��
+﻿/// <summary>
+/// ダンジョン生成の起点となるMonoBehaviour。
+/// GridBuilder・SectionPlacer・CorridorPlacerを順に呼び出し、
+/// グリッド構築 → 部屋配置 → 通路配置の流れを制御する。
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private RoomDataBase _roomDataBase;
     [SerializeField] private CorridorDataBase _corridorDataBase;
 
-    // �����E�ʘH��Hierarchy��ŕ����ĊǗ����邽�߂̐e�I�u�W�F�N�g
     [SerializeField] private Transform _roomParent;
     [SerializeField] private Transform _corridorParent;
 
@@ -30,8 +30,8 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// �_���W�����𐶐�����
-    /// �O���b�h�\�z �� �����z�u �� �ʘH�z�u�̏��Ɏ��s����
+    /// ダンジョンを生成する。
+    /// 複数箇所から呼び直せるよう、初期化も内包している。
     /// </summary>
     public void Generate()
     {

@@ -1,6 +1,6 @@
-﻿﻿/// <summary>
-/// �ʘH�Z���̏㉺���E�̗אڏ󋵂���CorridorType�Ɖ�]�p�x��Ԃ�
-/// �����GridType.Floor��GridType.Door��ڑ������Ƃ��ăJ�E���g����
+﻿/// <summary>
+/// 指定セルの隣接状況からCorridorTypeと回転角度(Y軸)を返す。
+/// 隣接4方向にCorridor/Doorがあれば接続ありと判定する。
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -15,14 +15,13 @@ public class CorridorResolver
         Vector2Int.left   // West
     };
 
-    // �ڑ������C���f�b�N�X�萔
     private const int kNorth = 0;
     private const int kEast = 1;
     private const int kSouth = 2;
     private const int kWest = 3;
 
     /// <summary>
-    /// �w��Z����CorridorType�Ɖ�]�p�x(Y��)��Ԃ�
+    /// 一グリッド受け取り、隣接するセルの状態を解析してCorridorTypeと回転角度を返す。
     /// </summary>
     public (CorridorType type, float rotationY) Resolve(GridType[,] grid, Vector2Int pos)
     {
@@ -40,6 +39,9 @@ public class CorridorResolver
         return DetermineCorridorType(connected);
     }
 
+    /// <summary>
+    /// 指定座標の接続状態を解析し、配置すべきCorridorTypeと回転角度を返す。
+    /// </summary>
     private (CorridorType type, float rotationY) DetermineCorridorType(bool[] connected)
     {
         bool north = connected[kNorth];
@@ -50,11 +52,11 @@ public class CorridorResolver
         int connectionCount = (north ? 1 : 0) + (east ? 1 : 0)
                             + (south ? 1 : 0) + (west ? 1 : 0);
 
-        // �\��
+        // 4方向すべて接続：十字路
         if (connectionCount == 4)
             return (CorridorType.Crossroad, 0f);
 
-        // T��
+        // 3方向接続：T字路
         if (connectionCount == 3)
         {
             if (!west) return (CorridorType.T_Junction, 0f);
@@ -63,15 +65,12 @@ public class CorridorResolver
             if (!south) return (CorridorType.T_Junction, 270f);
         }
 
-        // �����EL��
+        // 2方向接続：直線またはコーナー
         if (connectionCount == 2)
         {
-            // �����i��k�j
             if (north && south) return (CorridorType.Straight, 0f);
-            // �����i�����j
             if (east && west)  return (CorridorType.Straight, 90f);
 
-            // L��
             if (north && east) return (CorridorType.Corner, 0f);
             if (east  && south) return (CorridorType.Corner, 90f);
             if (south && west) return (CorridorType.Corner, 180f);
