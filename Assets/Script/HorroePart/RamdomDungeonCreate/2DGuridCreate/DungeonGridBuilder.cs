@@ -18,10 +18,6 @@ public class DungeonGridBuilder
     // 部屋なし → 通路の中心点座標
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
 
-    // A*で通過不可にする部屋内部セル（Door以外のFloor）
-    // 通路がDoorセル経由でのみ部屋に接続されることを保証する
-    private HashSet<Vector2Int> _roomInteriorCells;
-
     // 設計図を受け取り、2Dグリッドを構築して返す
     public (GridType[,] grid, SectionData[] sections) Build(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {
@@ -29,7 +25,6 @@ public class DungeonGridBuilder
         _grid = new GridType[bluePrint.MapSize.x, bluePrint.MapSize.y];
         _sectionDoorMap = new Dictionary<SectionData, List<Vector2Int>>();
         _pathPointMap = new Dictionary<SectionData, Vector2Int>();
-        _roomInteriorCells = new HashSet<Vector2Int>();
 
         _sections = GenerateSections(roomDataBase);
 
@@ -39,6 +34,8 @@ public class DungeonGridBuilder
         LogGridStats("After ConnectSections");
         AddExtraBranches();
         LogGridStats("After AddExtraBranches");
+        ConnectUnconnectedDoors();
+        LogGridStats("After ConnectUnconnectedDoors");
 
         return (_grid, _sections);
     }
@@ -47,9 +44,16 @@ public class DungeonGridBuilder
     private SectionData[] GenerateSections(RoomDataBase roomDataBase)
     {
         var divide = _bluePrint.SectionDivide;
+
+        // マージンを考慮してセクションのサイズを計算
+        const int kMargin = 1;
+        var innerSize = new Vector2Int(
+       _bluePrint.MapSize.x - kMargin * 2,
+       _bluePrint.MapSize.y - kMargin * 2
+        );
         var sectionSize = new Vector2Int(
-            _bluePrint.MapSize.x / divide.x,
-            _bluePrint.MapSize.y / divide.y
+            innerSize.x / divide.x,
+            innerSize.y / divide.y
         );
 
         int totalCount = divide.x * divide.y;
@@ -66,7 +70,10 @@ public class DungeonGridBuilder
 
                 sections[index] = new SectionData
                 {
-                    GridPosition = new Vector2Int(x * sectionSize.x, y * sectionSize.y),
+                    GridPosition = new Vector2Int(
+                        kMargin + x * sectionSize.x,
+                        kMargin + y * sectionSize.y
+                    ),
                     GridSize = sectionSize,
                     Role = role,
                     RoomGridData = (role == RoomType.Start || Random.value < 0.5f) ? roomDataBase.GetRandomRoomGridData(role) : null
@@ -124,7 +131,6 @@ public class DungeonGridBuilder
                 else
                 {
                     _grid[worldPos.x, worldPos.y] = GridType.Floor;
-                    _roomInteriorCells.Add(worldPos);
                 }
             }
         }
@@ -199,7 +205,8 @@ public class DungeonGridBuilder
         {
             if (_grid[pos.x, pos.y] == GridType.Door) continue;
             if (_grid[pos.x, pos.y] == GridType.Floor) continue;
-            _grid[pos.x, pos.y] = GridType.Floor;
+            if (_grid[pos.x, pos.y] == GridType.Corridor) continue;
+            _grid[pos.x, pos.y] = GridType.Corridor;
         }
     }
 
@@ -275,13 +282,13 @@ public class DungeonGridBuilder
                 if (!IsInGrid(neighbor)) continue;
                 if (_grid[neighbor.x, neighbor.y] == GridType.Wall) continue;
                 // 部屋内部（Door以外）はA*通過不可：Doorセル経由でのみ接続させる
-                if (_roomInteriorCells.Contains(neighbor)) continue;
+                if (_grid[neighbor.x, neighbor.y] == GridType.Floor) continue;
 
                 float moveCost = _grid[neighbor.x, neighbor.y] switch
                 {
-                    GridType.Floor => 0.5f,
-                    GridType.Door  => 0.5f,
-                    _              => 1.0f
+                    GridType.Door     => 0.5f,
+                    GridType.Corridor => 0.5f,
+                    _ => 1.0f
                 };
 
                 float newG = gCost[current] + moveCost;
@@ -307,6 +314,7 @@ public class DungeonGridBuilder
             path.Add(current);
             current = cameFrom[current];
         }
+        path.Add(current);
         path.Reverse();
         return path;
     }
@@ -317,16 +325,158 @@ public class DungeonGridBuilder
 
     private void LogGridStats(string label)
     {
-        int empty = 0, floor = 0, wall = 0, door = 0;
+        int empty = 0, floor = 0, wall = 0, door = 0, corridor = 0;
         for (int x = 0; x < _grid.GetLength(0); x++)
             for (int y = 0; y < _grid.GetLength(1); y++)
                 switch (_grid[x, y])
                 {
                     case GridType.Empty: empty++; break;
                     case GridType.Floor: floor++; break;
-                    case GridType.Wall:  wall++;  break;
-                    case GridType.Door:  door++;  break;
+                    case GridType.Wall: wall++; break;
+                    case GridType.Door: door++; break;
+                    case GridType.Corridor: corridor++; break;
                 }
-        DebugCustom.Log($"[DungeonGrid] {label} -> Empty:{empty} Floor:{floor} Wall:{wall} Door:{door}");
+        DebugCustom.Log($"[DungeonGrid] {label} -> Empty:{empty} Floor:{floor} Wall:{wall} Door:{door} Corridor:{corridor}");
+    }
+
+    /// <summary>
+    /// セクション間接続後も通路と繋がっていないDoorを検出し、
+    /// グリッド上の最近傍Floor/Doorセルへ向けてA*で通路を延伸する。
+    /// 全Doorが必ず通路ネットワークに参加することを保証するための後処理。
+    /// </summary>
+    private void ConnectUnconnectedDoors()
+    {
+        var corridorCells = CollectCorridorCells();
+        // ConnectSections が全て失敗した場合など corridorCells が空のケースでは
+        // 全セクションを強制的に1本繋いでから再収集し、接続先が必ず存在する状態にする
+        if (corridorCells.Count == 0)
+        {
+            DebugCustom.LogWarning("[DungeonGrid] corridorCells が空のため強制接続を実行します");
+            for (int i = 0; i < _sections.Length - 1; i++)
+                ConnectTwoSections(_sections[i], _sections[i + 1]);
+            corridorCells = CollectCorridorCells();
+        }
+
+        // 強制接続後もCorridorが生成できなかった場合は処理不能なので中断する
+        if (corridorCells.Count == 0)
+        {
+            DebugCustom.LogWarning("[DungeonGrid] 強制接続後もcorridorCellsが空です。マップ設定を確認してください");
+            return;
+        }
+        foreach (var (section, doors) in _sectionDoorMap)
+        {
+            foreach (var doorPos in doors)
+            {
+                if (IsDoorConnected(doorPos)) continue;
+
+                // DoorはFloor（部屋内部）に囲まれているためA*の起点にできない。
+                // Doorの隣のEmptyセル（部屋の外側方向）を起点にすることで
+                // A*が部屋内部をすり抜けずに通路を延伸できる。
+                var astarStart = FindExitCell(doorPos);
+                if (astarStart == null)
+                {
+                    DebugCustom.LogWarning($"[DungeonGrid] Door {doorPos} の外側出口セルが見つかりません");
+                    continue;
+                }
+
+                // corridorCells が空の場合（ConnectSections が全失敗した極端なケース）は
+                // 他セクションの中心点を代替接続先として使い、孤立したままにしない
+                var target = FindNearestCorridorCell(astarStart.Value, corridorCells);
+                if (target == null)
+                {
+                    DebugCustom.LogWarning($"[DungeonGrid] 孤立Door {doorPos} の接続先が見つかりませんでした");
+                    continue;
+                }
+
+                var path = RunAStar(astarStart.Value, target.Value);
+                if (path == null)
+                {
+                    DebugCustom.LogWarning($"[DungeonGrid] 孤立Door A* 失敗: {astarStart.Value} -> {target.Value}");
+                    continue;
+                }
+
+                // Doorと出口セルを含めて通路として書き込む
+                _grid[astarStart.Value.x, astarStart.Value.y] = GridType.Corridor;
+                foreach (var pos in path)
+                {
+                    if (_grid[pos.x, pos.y] == GridType.Door) continue;
+                    if (_grid[pos.x, pos.y] == GridType.Floor) continue;
+                    if (_grid[pos.x, pos.y] == GridType.Corridor) continue;
+                    _grid[pos.x, pos.y] = GridType.Corridor;
+                }
+
+                corridorCells.Add(astarStart.Value);
+                corridorCells.UnionWith(path);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Doorの隣にあるEmptyセル（部屋の外側方向の出口）を返す。
+    /// 全方向EmptyでなければnullをReturn。
+    /// </summary>
+    private Vector2Int? FindExitCell(Vector2Int doorPos)
+    {
+        foreach (var dir in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+        {
+            var neighbor = doorPos + dir;
+            if (!IsInGrid(neighbor)) continue;
+            if (_grid[neighbor.x, neighbor.y] == GridType.Empty)
+                return neighbor;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 部屋内部を除くFloor/Doorセルを「接続済み通路セル」として収集する。
+    /// _roomInteriorCells に含まれないFloorのみを対象とする。
+    /// </summary>
+    private HashSet<Vector2Int> CollectCorridorCells()
+    {
+        var cells = new HashSet<Vector2Int>();
+        for (int x = 0; x < _grid.GetLength(0); x++)
+        {
+            for (int y = 0; y < _grid.GetLength(1); y++)
+            {
+                var type = _grid[x, y];
+                if (type == GridType.Corridor)
+                    cells.Add(new Vector2Int(x, y));
+            }
+        }
+        return cells;
+    }
+
+    /// <summary>
+    /// DoorセルのN/E/S/W方向に通路Floor（部屋内部を除く）が隣接していれば接続済みと判定する。
+    /// </summary>
+    private bool IsDoorConnected(Vector2Int doorPos)
+    {
+        foreach (var dir in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+        {
+            var neighbor = doorPos + dir;
+            if (!IsInGrid(neighbor)) continue;
+            if (_grid[neighbor.x, neighbor.y] == GridType.Corridor) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 候補セルの中からdoorPosに最も近いセルを返す。
+    /// 候補が空の場合はnullを返す。
+    /// </summary>
+    private Vector2Int? FindNearestCorridorCell(Vector2Int doorPos, HashSet<Vector2Int> candidates)
+    {
+        Vector2Int? nearest = null;
+        float minDist = float.MaxValue;
+
+        foreach (var pos in candidates)
+        {
+            float dist = Vector2Int.Distance(doorPos, pos);
+            if (dist >= minDist) continue;
+            minDist = dist;
+            nearest = pos;
+        }
+
+        return nearest;
     }
 }

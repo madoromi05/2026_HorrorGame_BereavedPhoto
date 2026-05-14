@@ -16,6 +16,7 @@ public class DungeonDebugVisualizer
     private static readonly Color kWallColor  = new Color(0.9f, 0.1f, 0.1f, 0.75f);
     private static readonly Color kDoorColor  = new Color(1.0f, 0.9f, 0.0f, 0.90f);
     private static readonly Color kEmptyColor = new Color(0.5f, 0.5f, 0.5f, 0.20f);
+    private static readonly Color kCorridorColor = new Color(0.2f, 0.6f, 1.0f, 0.75f);
 
     // Section の色（インデックスで循環）
     private static readonly Color[] kSectionColors = new Color[]
@@ -120,6 +121,7 @@ public class DungeonDebugVisualizer
     private Color GetCellColor(GridType type) => type switch
     {
         GridType.Floor => kFloorColor,
+        GridType.Corridor => kCorridorColor,
         GridType.Wall  => kWallColor,
         GridType.Door  => kDoorColor,
         _              => kEmptyColor,

@@ -43,7 +43,7 @@ public class DungeonGenerator : MonoBehaviour
         Debug.Log($"[Generator] sections[0].RoomGridPosition={sections[0].RoomGridPosition}");  // 追加
 
         _sectionPlacer.Place(sections, _roomParent);
-        _corridorPlacer.Place(grid, sections, _corridorParent);
+        _corridorPlacer.Place(grid, _corridorParent);
 
         if (_isDebugMode && _debugParent != null)
             _debugVisualizer.Visualize(grid, sections, _debugParent);

@@ -7,6 +7,7 @@ namespace DungeonSystem
         Wall,
         Floor,
         Door,
+        Corridor,
     }
 
     //通路のグリッドタイプ
@@ -15,7 +16,8 @@ namespace DungeonSystem
         Straight,
         Corner,
         T_Junction,
-        Crossroad
+        Crossroad,
+        DeadEnd,
     }
 
     public enum Direction

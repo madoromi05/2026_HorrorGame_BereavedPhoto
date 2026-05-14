@@ -22,35 +22,17 @@ public class CorridorPlacer
     /// <summary>
     /// グリッド全体を走査し、廊下セル（部屋内部を除く Floor/Door）に Corridor を配置する
     /// </summary>
-    public void Place(GridType[,] grid, SectionData[] sections, Transform corridorParent)
+    public void Place(GridType[,] grid, Transform corridorParent)
     {
-        var roomCells = BuildRoomCellSet(sections);
-
         for (int x = 0; x < grid.GetLength(0); x++)
         {
             for (int y = 0; y < grid.GetLength(1); y++)
             {
-                if (grid[x, y] != GridType.Floor && grid[x, y] != GridType.Door) continue;
-                var pos = new Vector2Int(x, y);
-                if (roomCells.Contains(pos)) continue;
-                PlaceCorridor(grid, pos, corridorParent);
+                if (grid[x, y] != GridType.Corridor) continue;
+
+                PlaceCorridor(grid, new Vector2Int(x, y), corridorParent);
             }
         }
-    }
-
-    // 部屋内部セルの座標セットを構築する（部屋を持つセクションのみ）
-    private HashSet<Vector2Int> BuildRoomCellSet(SectionData[] sections)
-    {
-        var cells = new HashSet<Vector2Int>();
-        foreach (var section in sections)
-        {
-            if (section.RoomGridData == null) continue;
-            var size = section.RoomGridData.GridSize;
-            for (int x = 0; x < size.x; x++)
-                for (int y = 0; y < size.y; y++)
-                    cells.Add(section.RoomGridPosition + new Vector2Int(x, y));
-        }
-        return cells;
     }
 
     private void PlaceCorridor(GridType[,] grid, Vector2Int gridPos, Transform corridorParent)

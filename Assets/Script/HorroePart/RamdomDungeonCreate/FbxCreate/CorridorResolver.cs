@@ -34,7 +34,7 @@ public class CorridorResolver
             if (!IsInGrid(grid, neighbor)) continue;
 
             var cellType = grid[neighbor.x, neighbor.y];
-            connected[i] = cellType == GridType.Floor || cellType == GridType.Door;
+            connected[i] = cellType == GridType.Corridor || cellType == GridType.Door;
         }
 
         return DetermineCorridorType(connected);
@@ -81,8 +81,10 @@ public class CorridorResolver
         // 行き止まり（1方向のみ接続）
         if (connectionCount == 1)
         {
-            if (north || south) return (CorridorType.Straight, 0f);
-            return (CorridorType.Straight, 90f);
+            if (south) return (CorridorType.DeadEnd, 0f);   // 開口部South：南から接続
+            if (west) return (CorridorType.DeadEnd, 90f);   // 開口部West：西から接続
+            if (north) return (CorridorType.DeadEnd, 180f); // 開口部North：北から接続
+            if (east) return (CorridorType.DeadEnd, 270f);  // 開口部East：東から接続
         }
 
         // 孤立セル（接続なし）
