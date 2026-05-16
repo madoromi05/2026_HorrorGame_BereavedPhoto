@@ -8,6 +8,7 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
 
     public event Action<Vector2> OnMovePerformed;
     public event Action<Vector2> OnLookPerformed;
+    public event Action OnInteractPerformed;
 
     //---------- óLå¯âª ----------
     private void OnEnable()
@@ -44,7 +45,10 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        throw new NotImplementedException();
+        if (context.performed)
+        {
+            OnInteractPerformed?.Invoke();
+        }
     }
 
     public void OnCrouch(InputAction.CallbackContext context)
