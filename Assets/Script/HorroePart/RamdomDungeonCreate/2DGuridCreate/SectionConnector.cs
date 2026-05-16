@@ -110,6 +110,7 @@ public class SectionConnector
             return;
         }
 
+        var newlyPainted = new List<Vector2Int>();
         foreach (var pos in path)
         {
             var cellType = _grid[pos.x, pos.y];
@@ -117,23 +118,26 @@ public class SectionConnector
             if (cellType == GridType.Floor) continue;
             if (cellType == GridType.Corridor) continue;
             _grid[pos.x, pos.y] = GridType.Corridor;
+            newlyPainted.Add(pos);
         }
 
-        if (_corridorWidth > 0)
-            ExpandPath(path);
+        if (_corridorWidth > 1)
+            ExpandPath(path, newlyPainted);
     }
 
     /// <summary>
     /// 経路の各セルから _corridorWidth の範囲（正方形）を Corridor に塗る。
     /// Door / Floor / Wall は保護して上書きしない。
     /// </summary>
-    private void ExpandPath(List<Vector2Int> corridorPath)
+    private void ExpandPath(List<Vector2Int> corridorPath, List<Vector2Int> newlyPainted)
     {
         int extraWidth = _corridorWidth - 1;
 
+        var paintedSet = new HashSet<Vector2Int>(newlyPainted);
         for (int i = 0; i < corridorPath.Count; i++)
         {
             var center = corridorPath[i];
+            if (!paintedSet.Contains(center)) continue;
 
             // 前後のセルとの差分から進行方向を求め、垂直軸を決定する。
             // 経路の端は隣接セルが 1 つしかないため、前後どちらかを代用する。
