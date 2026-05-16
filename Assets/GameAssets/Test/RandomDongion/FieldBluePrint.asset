@@ -17,3 +17,4 @@ MonoBehaviour:
   SectionDivide: {x: 3, y: 3}
   MinExtraBranchNum: 2
   MaxExtraBranchNum: 4
+  CorridorWidth: 2

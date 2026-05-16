@@ -94,11 +94,6 @@ public class SectionPlacer
              0,
             (section.RoomGridPosition.y + (roomGridSize.y - 1) * 0.5f + 0.5f) * _gridSize
         );
-
-        DebugCustom.Log($"[Placer] RoomGridPosition={section.RoomGridPosition} GridSize={section.RoomGridData.GridSize}");
-        DebugCustom.Log($"[Placer] worldPos={worldPos}");
-        DebugCustom.Log($"[Placer] _gridSize={_gridSize}");
-
         var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
     }

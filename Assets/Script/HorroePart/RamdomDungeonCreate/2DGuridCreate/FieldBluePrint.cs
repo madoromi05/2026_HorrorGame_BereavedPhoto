@@ -14,4 +14,6 @@ public class FieldBluePrint : ScriptableObject
     // ‘SSectionÚ‘±Œã‚É’Ç‰Á‚·‚éƒ‰ƒ“ƒ_ƒ€’Ê˜H‚Ì–{””ÍˆÍ
     public int MinExtraBranchNum;
     public int MaxExtraBranchNum;
+
+    [Range(1, 3)] public int CorridorWidth;
 }

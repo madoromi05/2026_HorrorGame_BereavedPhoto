@@ -16,9 +16,9 @@ MonoBehaviour:
   - CorridorType: 0
     CorridorPrefab: {fileID: 6488183903742532064, guid: 21b6d2ebbd921b64c9950361508e676b, type: 3}
   - CorridorType: 1
-    CorridorPrefab: {fileID: 6488183903742532064, guid: 05216f210e1479c44b646ce5709126b4, type: 3}
+    CorridorPrefab: {fileID: 6488183903742532064, guid: c430b8a1605020a43addee0434ea5167, type: 3}
   - CorridorType: 2
-    CorridorPrefab: {fileID: 6488183903742532064, guid: ba0bf8f7f02bf034881fb38b9c2a6914, type: 3}
+    CorridorPrefab: {fileID: 6488183903742532064, guid: 6fccfe74c86c303448890433ed7fbb4b, type: 3}
   - CorridorType: 3
     CorridorPrefab: {fileID: 6488183903742532064, guid: c88836c4556ad5a41899e6aabd5d13b9, type: 3}
   - CorridorType: 4

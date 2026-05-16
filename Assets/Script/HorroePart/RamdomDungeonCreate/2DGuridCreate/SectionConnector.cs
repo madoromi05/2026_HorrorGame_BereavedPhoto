@@ -13,25 +13,28 @@ public class SectionConnector
     private SectionData[] _sections;
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
+    private int _corridorWidth;
 
     /// <summary>
     /// MST で全セクションを接続したあと、追加分岐を生成する。
     /// </summary>
     public void Connect(
-        GridType[,] grid,
-        SectionData[] sections,
-        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
-        Dictionary<SectionData, Vector2Int> pathPointMap,
-        FieldBluePrint bluePrint)
+    GridType[,] grid,
+    SectionData[] sections,
+    Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
+    Dictionary<SectionData, Vector2Int> pathPointMap,
+    FieldBluePrint bluePrint)
     {
         _grid = grid;
         _sections = sections;
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
+        _corridorWidth = bluePrint.CorridorWidth;
 
         ConnectAllSections();
         AddExtraBranches(bluePrint);
     }
+
 
     // Prim 法に近い最小全域木でセクションを順番に接続する
     private void ConnectAllSections()
@@ -115,6 +118,50 @@ public class SectionConnector
             if (cellType == GridType.Corridor) continue;
             _grid[pos.x, pos.y] = GridType.Corridor;
         }
+
+        if (_corridorWidth > 0)
+            ExpandPath(path);
+    }
+
+    /// <summary>
+    /// 経路の各セルから _corridorWidth の範囲（正方形）を Corridor に塗る。
+    /// Door / Floor / Wall は保護して上書きしない。
+    /// </summary>
+    private void ExpandPath(List<Vector2Int> corridorPath)
+    {
+        int extraWidth = _corridorWidth - 1;
+
+        for (int i = 0; i < corridorPath.Count; i++)
+        {
+            var center = corridorPath[i];
+
+            // 前後のセルとの差分から進行方向を求め、垂直軸を決定する。
+            // 経路の端は隣接セルが 1 つしかないため、前後どちらかを代用する。
+            var prev = (i > 0) ? corridorPath[i - 1] : corridorPath[i + 1];
+            var next = (i < corridorPath.Count - 1) ? corridorPath[i + 1] : corridorPath[i - 1];
+            var dir = next - prev;
+
+            // 進行方向が X 軸方向（東西）なら垂直は Y 軸、Y 軸方向（南北）なら垂直は X 軸
+            var perp = (dir.x != 0)
+                ? new Vector2Int(0, 1)
+                : new Vector2Int(1, 0);
+
+            // 垂直方向へ extraWidth セル追加する（経路本体 + extraWidth = CorridorWidth）
+            for (int w = 1; w <= extraWidth; w++)
+            {
+                PaintCell(center + perp * w);
+            }
+        }
+    }
+
+    private void PaintCell(Vector2Int pos)
+    {
+        if (!IsInGrid(pos)) return;
+        var cellType = _grid[pos.x, pos.y];
+        if (cellType == GridType.Door) return;
+        if (cellType == GridType.Floor) return;
+        if (cellType == GridType.Wall) return;
+        _grid[pos.x, pos.y] = GridType.Corridor;
     }
 
     // 対象セクションの接続点を返す。
@@ -196,7 +243,7 @@ public class SectionConnector
                 float moveCost = cellType switch
                 {
                     GridType.Door => 0.5f,
-                    GridType.Corridor => 0.1f,
+                    GridType.Corridor => 0.5f,
                     _ => 1.0f,
                 };
 
