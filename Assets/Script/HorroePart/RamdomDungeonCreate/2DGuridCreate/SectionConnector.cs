@@ -196,7 +196,7 @@ public class SectionConnector
                 float moveCost = cellType switch
                 {
                     GridType.Door => 0.5f,
-                    GridType.Corridor => 0.5f,
+                    GridType.Corridor => 0.1f,
                     _ => 1.0f,
                 };
 

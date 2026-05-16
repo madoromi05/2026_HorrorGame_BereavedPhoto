@@ -186,6 +186,8 @@ MonoBehaviour:
   _corridorParent: {fileID: 65000619}
   _playerPrefab: {fileID: 4642278563404172912, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
   _playerSpawnOffsetY: 3
+  _enemyPrefab: {fileID: 4642278563404172912, guid: 7e8b38daad7a1824ea89f441a29d54e3, type: 3}
+  _enemySpawnOffsetY: 3
   _isDebugMode: 1
   _debugParent: {fileID: 1991305615}
 --- !u!4 &260069575

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FieldBluePrint
   m_EditorClassIdentifier: 
   OneGridSize: 5
-  MapSize: {x: 30, y: 30}
+  MapSize: {x: 36, y: 36}
   SectionDivide: {x: 3, y: 3}
-  MinExtraBranchNum: 1
-  MaxExtraBranchNum: 3
+  MinExtraBranchNum: 2
+  MaxExtraBranchNum: 4
