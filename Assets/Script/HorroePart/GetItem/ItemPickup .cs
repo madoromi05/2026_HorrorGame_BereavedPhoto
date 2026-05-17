@@ -9,6 +9,7 @@ namespace HorrorGame.Item
     /// 取得後は自身を非活性化してワールドから消す。
     /// Inspectorでitemをnullにすると何も起きないため必ず設定すること。
     /// </summary>
+    [AddComponentMenu("HorrorGame/Item/ItemPickup")]
     [RequireComponent(typeof(Collider))]
     public class ItemPickup : MonoBehaviour, IInteractable
     {
