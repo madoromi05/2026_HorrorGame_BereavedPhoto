@@ -6,9 +6,6 @@ namespace HorrorGame.Item
 {
     /// <summary>
     /// プレイヤーが取得したアイテムを管理するコンポーネント。
-    /// 現在はItemTypeの所持フラグのみを扱う。
-    /// 将来的にスタック数・重量・スロット制限を追加する場合は
-    /// InventorySlot構造体を導入してこのクラスを拡張すること。
     /// PlayerInteractorと同じGameObjectにアタッチして使用する。
     /// </summary>
     public class Inventory : MonoBehaviour
@@ -23,14 +20,14 @@ namespace HorrorGame.Item
         {
             if (itemData == null)
             {
-                Debug.LogWarning("[Inventory] nullのItemDataを追加しようとしました。");
+                DebugCustom.LogWarning("[Inventory] nullのItemDataを追加しようとしました。");
                 return;
             }
 
             acquiredItems.Add(itemData.ItemType);
             OnItemAdded?.Invoke(itemData);
 
-            Debug.Log($"[Inventory] 取得: {itemData.DisplayName}");
+            DebugCustom.Log($"[Inventory] 取得: {itemData.DisplayName}");
         }
 
         /// <summary>指定種別のアイテムを所持しているか。ドア解錠などの判定に使う。</summary>
@@ -40,7 +37,7 @@ namespace HorrorGame.Item
         [ContextMenu("Log Inventory")]
         private void LogInventory()
         {
-            Debug.Log($"[Inventory] 所持アイテム数: {acquiredItems.Count}");
+            DebugCustom.Log($"[Inventory] 所持アイテム数: {acquiredItems.Count}");
             foreach (var item in acquiredItems)
             {
                 Debug.Log($"  - {item}");

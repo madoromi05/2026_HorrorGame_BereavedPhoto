@@ -12,11 +12,7 @@ namespace HorrorGame.Interaction
         /// <summary>インタラクト可能な状態かどうか。</summary>
         bool CanInteract { get; }
 
-        /// <summary>プレイヤーが範囲内に入ったときに呼ばれる。UIヒント表示などに使う。</summary>
-        void OnFocus();
-
-        /// <summary>プレイヤーが範囲外に出たときに呼ばれる。UIヒントを非表示にする。</summary>
-        void OnLoseFocus();
+        string HintText { get; }
 
         /// <summary>インタラクトキーが押されたときに呼ばれる。</summary>
         void OnInteract();

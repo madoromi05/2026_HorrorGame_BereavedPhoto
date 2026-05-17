@@ -16,16 +16,7 @@ namespace HorrorGame.Item
         [SerializeField] private ItemData item;
 
         public bool CanInteract => item != null;
-
-        public void OnFocus()
-        {
-            // TODO: UIヒント表示（例:「[E] {item.DisplayName}を取得」）
-        }
-
-        public void OnLoseFocus()
-        {
-            // TODO: UIヒント非表示
-        }
+        public string HintText => item != null ? $"[E] {item.DisplayName}を取得" : string.Empty;
 
         /// <summary>
         /// プレイヤーのInventoryにアイテムを追加し、このGameObjectを非活性化する。
@@ -41,7 +32,7 @@ namespace HorrorGame.Item
             var inventory = FindFirstObjectByType<Inventory>();
             if (inventory == null)
             {
-                Debug.LogWarning("[ItemPickup] Inventoryが見つかりません。");
+                DebugCustom.LogWarning("[ItemPickup] Inventoryが見つかりません。");
                 return;
             }
 
