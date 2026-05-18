@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 4617609571765535354}
   - component: {fileID: -4225457132487258664}
   - component: {fileID: -2300082283393957555}
-  - component: {fileID: -8907279812266083297}
+  - component: {fileID: 8063413905240853698}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy_room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -181,7 +181,7 @@ MonoBehaviour:
   detectRange: 10
   chaseSpeed: 4
   rotateSpeed: 10
---- !u!114 &-8907279812266083297
+--- !u!114 &8063413905240853698
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

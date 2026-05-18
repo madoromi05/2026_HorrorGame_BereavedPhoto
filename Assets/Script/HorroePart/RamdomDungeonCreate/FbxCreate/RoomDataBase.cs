@@ -8,11 +8,23 @@ using UnityEngine;
 public class RoomDataBase : ScriptableObject
 {
     [System.Serializable]
+    public class EnemyEntry
+    {
+        public GameObject EnemyPrefab;
+        public int SpawnCount = 1;
+    }
+
+    [System.Serializable]
     public class RoomEntry
     {
-        public RoomType RoomType;               // 部屋の種類
-        public GameObject Prefab;               // 部屋Prefab
-        public RoomGridData[] RoomGridDatas;    // 部屋のグリッドデータ
+        public RoomType RoomType;
+
+        // この部屋タイプを何部屋まで生成するか（0 = 上限なし）
+        public int MaxCount;
+
+        public GameObject Prefab;
+        public RoomGridData[] RoomGridDatas;
+        public EnemyEntry[] EnemyEntries;
     }
 
     //RoomTypeごとに「Prefab」と「RoomGridDataの候補リスト」をセットで登録する
@@ -31,8 +43,8 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定RoomTypeのRoomGridDataをランダムに返す
-    /// RoomGridDatasが空の場合はnullを返す
+    /// 指定RoomTypeのRoomGridDataをランダムに返す。
+    /// RoomGridDatasが空の場合はnullを返す。
     /// </summary>
     public RoomGridData GetRandomRoomGridData(RoomType roomType)
     {
@@ -45,5 +57,31 @@ public class RoomDataBase : ScriptableObject
 
         DebugCustom.LogWarning($"RoomDataBase: {roomType}に対応するRoomGridDataが見つかりません");
         return null;
+    }
+
+    /// <summary>
+    /// 指定RoomTypeの最大生成数を返す。0は上限なしを意味する。
+    /// </summary>
+    public int GetMaxCount(RoomType roomType)
+    {
+        foreach (var entry in _entries)
+        {
+            if (entry.RoomType == roomType)
+                return entry.MaxCount;
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// 指定RoomTypeの敵エントリ一覧を返す。未設定の場合は空配列を返す。
+    /// </summary>
+    public EnemyEntry[] GetEnemyEntries(RoomType roomType)
+    {
+        foreach (var entry in _entries)
+        {
+            if (entry.RoomType == roomType)
+                return entry.EnemyEntries ?? System.Array.Empty<EnemyEntry>();
+        }
+        return System.Array.Empty<EnemyEntry>();
     }
 }

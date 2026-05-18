@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &247972240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 247972241}
+  m_Layer: 0
+  m_Name: EnemyParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &247972241
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247972240}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &585100928
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,9 +374,9 @@ MonoBehaviour:
   _corridorDataBase: {fileID: 11400000, guid: 60c45aa961c682944a196d65af9d0a97, type: 2}
   _roomParent: {fileID: 1764451145}
   _corridorParent: {fileID: 1719023657}
+  _enemyParent: {fileID: 247972241}
   _playerPrefab: {fileID: 4642278563404172912, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
   _playerSpawnOffsetY: 3
-  _enemyPrefab: {fileID: 4642278563404172912, guid: 7e8b38daad7a1824ea89f441a29d54e3, type: 3}
   _enemySpawnOffsetY: 3
   _isDebugMode: 1
   _debugParent: {fileID: 1489007741}
@@ -542,3 +573,4 @@ SceneRoots:
   - {fileID: 2069842059}
   - {fileID: 1861702830}
   - {fileID: 585100931}
+  - {fileID: 247972241}

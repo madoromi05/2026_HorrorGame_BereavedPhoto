@@ -34,5 +34,8 @@ namespace DungeonSystem
     {
         Normal,
         Start,
+        Mother,
+        Father,
+        Sister,
     }
 }

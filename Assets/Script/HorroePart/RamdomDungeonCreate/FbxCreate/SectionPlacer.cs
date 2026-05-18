@@ -1,97 +1,62 @@
 /// <summary>
-/// SectionDataをもとに部屋Prefabをインスタンス化する
-/// 各オブジェクトはDungeonGeneratorから受け取る
+/// SectionDataをもとに部屋PrefabとプレイヤーをInstantiateする。
+/// 敵の生成はEnemySpawnerに委譲しており、このクラスは部屋配置のみを担う。
 /// </summary>
 using DungeonSystem;
-using System.Linq;
 using UnityEngine;
 
 public class SectionPlacer
 {
-    private RoomDataBase _roomDataBase;
-    private float _gridSize;
-    private GameObject _playerPrefab;
-    private float _playerSpawnOffsetY;
-    private GameObject _enemyPrefab;
-    private float _enemySpawnOffsetY;
+    private readonly RoomDataBase _roomDataBase;
+    private readonly float _gridSize;
+    private readonly GameObject _playerPrefab;
+    private readonly float _playerSpawnOffsetY;
+    private readonly EnemySpawner _enemySpawner;
 
-    public SectionPlacer(RoomDataBase roomDataBase, float gridSize, GameObject playerPrefab, float playerSpawnOffsetY, GameObject enemyPrefab, float enemySpawnOffsetY)
+    public SectionPlacer(
+        RoomDataBase roomDataBase,
+        float gridSize,
+        GameObject playerPrefab,
+        float playerSpawnOffsetY,
+        EnemySpawner enemySpawner)
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
         _playerPrefab = playerPrefab;
         _playerSpawnOffsetY = playerSpawnOffsetY;
-        _enemyPrefab = enemyPrefab;
-        _enemySpawnOffsetY = enemySpawnOffsetY;
+        _enemySpawner = enemySpawner;
     }
 
-    public void Place(SectionData[] sections, Transform roomParent)
+    /// <summary>
+    /// 全セクションに部屋とプレイヤーを配置し、最後に敵を配置する。
+    /// 敵配置をプレイヤー生成後に行うのは、EnemyControllerへPlayerTransformを注入するため。
+    /// </summary>
+    public void Place(SectionData[] sections, Transform roomParent, Transform enemyParent, GridType[,] grid)
     {
-        var normalRoomsWithData = sections
-        .Where(s => s.Role != RoomType.Start && s.RoomGridData != null)
-        .ToList();
-
-        var enemyTargetSection = normalRoomsWithData.Count > 0
-            ? normalRoomsWithData[Random.Range(0, normalRoomsWithData.Count)]
-            : null;
-
         Transform playerTransform = null;
 
         foreach (var section in sections)
         {
             if (section.RoomGridData == null) continue;
+
             PlaceRoom(section, roomParent);
 
             if (section.Role == RoomType.Start)
                 playerTransform = PlacePlayer(section, roomParent);
         }
 
-        foreach (var section in sections)
-        {
-            if (section == enemyTargetSection)
-                PlaceEnemy(section, roomParent, playerTransform);
-        }
+        _enemySpawner.Place(sections, enemyParent, playerTransform, grid);
     }
 
-    /// <summary>
-    /// セクションの部屋中央に敵を配置する。
-    /// </summary>
-    private void PlaceEnemy(SectionData section, Transform roomParent, Transform playerTransform)
-    {
-        if (_enemyPrefab == null) return;
-
-        var worldPos = ResolveRoomCenterWorldPosition(section, _enemySpawnOffsetY);
-        var instance = Object.Instantiate(_enemyPrefab, worldPos, Quaternion.identity, roomParent);
-        instance.name = $"Enemy_{section.GridPosition}";
-
-        // 生成後にPlayerのTransformを注入する
-        if (instance.TryGetComponent<EnemyController>(out var enemy))
-            enemy.SetPlayer(playerTransform);
-    }
-
-    /// <summary>
-    /// 部屋グリッドの中央ワールド座標を返す。
-    /// </summary>
-    private Vector3 ResolveRoomCenterWorldPosition(SectionData section, float offsetY)
-    {
-        var gridSize = section.RoomGridData.GridSize;
-        return new Vector3(
-            (section.RoomGridPosition.x + (gridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
-            offsetY,
-            (section.RoomGridPosition.y + (gridSize.y - 1) * 0.5f + 0.5f) * _gridSize
-        );
-    }
     private void PlaceRoom(SectionData section, Transform roomParent)
     {
         var prefab = _roomDataBase.GetPrefab(section.Role);
         if (prefab == null) return;
 
-        // グリッド座標をUnityワールド座標に変換
-        // GridPositionはセクションの左上グリッド座標。
         var roomGridSize = section.RoomGridData.GridSize;
         var worldPos = new Vector3(
             (section.RoomGridPosition.x + (roomGridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
-             0,
+            0f,
             (section.RoomGridPosition.y + (roomGridSize.y - 1) * 0.5f + 0.5f) * _gridSize
         );
         var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
@@ -99,8 +64,8 @@ public class SectionPlacer
     }
 
     /// <summary>
-    /// Start セクションの RoomGridData に登録された PlayerPositions の先頭セルにプレイヤーを配置する。
-    /// PlayerPositions が未設定の場合は部屋中央にフォールバックする。
+    /// StartセクションのRoomGridDataに登録されたPlayerPositionsの先頭セルにプレイヤーを配置する。
+    /// PlayerPositionsが未設定の場合は部屋中央にフォールバックする。
     /// </summary>
     private Transform PlacePlayer(SectionData section, Transform roomParent)
     {
@@ -117,7 +82,6 @@ public class SectionPlacer
         var roomData = section.RoomGridData;
         if (roomData.PlayerPositions != null && roomData.PlayerPositions.Count > 0)
         {
-            // グリッドローカル座標 → ワールド座標
             var localPos = roomData.PlayerPositions[0];
             return new Vector3(
                 (section.RoomGridPosition.x + localPos.x + 0.5f) * _gridSize,
@@ -126,7 +90,12 @@ public class SectionPlacer
             );
         }
 
-        // PlayerPositions 未設定時は部屋中央にフォールバック
-        return ResolveRoomCenterWorldPosition(section, _playerSpawnOffsetY);
+        // PlayerPositions未設定時は部屋中央にフォールバック
+        var gridSize = section.RoomGridData.GridSize;
+        return new Vector3(
+            (section.RoomGridPosition.x + (gridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
+            _playerSpawnOffsetY,
+            (section.RoomGridPosition.y + (gridSize.y - 1) * 0.5f + 0.5f) * _gridSize
+        );
     }
 }

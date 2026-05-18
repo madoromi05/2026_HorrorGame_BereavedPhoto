@@ -14,9 +14,10 @@ public class DungeonGenerator : MonoBehaviour
 
     [SerializeField] private Transform _roomParent;
     [SerializeField] private Transform _corridorParent;
+    [SerializeField] private Transform _enemyParent;
+
     [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private float _playerSpawnOffsetY = 0f;
-    [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
 
     [Header("Debug")]
@@ -43,7 +44,7 @@ public class DungeonGenerator : MonoBehaviour
 
         var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);
 
-        _sectionPlacer.Place(sections, _roomParent);
+        _sectionPlacer.Place(sections, _roomParent, _enemyParent, grid);
         _corridorPlacer.Place(grid, _corridorParent);
 
         if (_isDebugMode && _debugParent != null)
@@ -53,7 +54,16 @@ public class DungeonGenerator : MonoBehaviour
     private void Initialize()
     {
         _gridBuilder = new DungeonGridBuilder();
-        _sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerPrefab, _playerSpawnOffsetY, _enemyPrefab, _enemySpawnOffsetY);
+
+        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
+
+        _sectionPlacer = new SectionPlacer(
+            _roomDataBase,
+            _bluePrint.OneGridSize,
+            _playerPrefab,
+            _playerSpawnOffsetY,
+            enemySpawner);
+
         _corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
         _debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
     }
