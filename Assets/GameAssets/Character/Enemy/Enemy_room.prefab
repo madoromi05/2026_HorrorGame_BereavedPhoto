@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 4617609571765535354}
   - component: {fileID: -4225457132487258664}
   - component: {fileID: -2300082283393957555}
-  - component: {fileID: 8063413905240853698}
+  - component: {fileID: 688066171168184635}
+  - component: {fileID: -952072270238074727}
   m_Layer: 0
   m_Name: Enemy_room
   m_TagString: Untagged
@@ -180,8 +181,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectRange: 10
   chaseSpeed: 4
+  accelerationForce: 30
   rotateSpeed: 10
---- !u!114 &8063413905240853698
+--- !u!114 &688066171168184635
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -190,10 +192,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 4642278563404172912}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a2df105d2192384e8d898b43c5902be, type: 3}
+  m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  normalSmoothing: 15
+--- !u!114 &-952072270238074727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642278563404172912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 285f67f302142544e93cda3a3147f908, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   wanderSpeed: 2
   wanderInterval: 3
+  accelerationForce: 20
+  rotateSpeed: 10
   rayDistance: 1.5
-  avoidAngle: 45
+  rayOriginOffset: 0.4

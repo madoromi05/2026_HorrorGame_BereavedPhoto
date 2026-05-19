@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -4225457132487258664}
   - component: {fileID: -2300082283393957555}
   - component: {fileID: -8907279812266083297}
+  - component: {fileID: 2612355546425580720}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -180,6 +181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectRange: 10
   chaseSpeed: 4
+  accelerationForce: 30
   rotateSpeed: 10
 --- !u!114 &-8907279812266083297
 MonoBehaviour:
@@ -194,6 +196,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wanderSpeed: 2
-  wanderInterval: 3
-  rayDistance: 1.5
-  avoidAngle: 45
+  rotateSpeed: 10
+  accelerationForce: 20
+  arrivalRadius: 1
+--- !u!114 &2612355546425580720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642278563404172912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

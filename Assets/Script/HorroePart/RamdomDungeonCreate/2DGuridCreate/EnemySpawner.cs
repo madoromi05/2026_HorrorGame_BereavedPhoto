@@ -24,8 +24,9 @@ public class EnemySpawner
     /// 全セクションを走査し、RoomDataBaseの設定に従って敵を生成する。
     /// playerTransformがnullの場合は追跡なしで生成する。
     /// gridはMapWandererのウェイポイント構築に使用する。
+    /// enemyLookDebugがtrueのとき生成した敵にEnemyDebugVisualizerを付与する。
     /// </summary>
-    public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid)
+    public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid, bool enemyLookDebug = false)
     {
         foreach (var section in sections)
         {
@@ -35,7 +36,7 @@ public class EnemySpawner
             foreach (var entry in enemyEntries)
             {
                 if (entry.EnemyPrefab == null) continue;
-                SpawnEnemies(section, entry, enemyParent, playerTransform, grid);
+                SpawnEnemies(section, entry, enemyParent, playerTransform, grid, enemyLookDebug);
             }
         }
     }
@@ -45,7 +46,8 @@ public class EnemySpawner
         RoomDataBase.EnemyEntry entry,
         Transform enemyParent,
         Transform playerTransform,
-        GridType[,] grid)
+        GridType[,] grid,
+        bool enemyLookDebug)
     {
         var roomBounds = CalcRoomBounds(section);
 
@@ -58,13 +60,18 @@ public class EnemySpawner
             if (instance.TryGetComponent<EnemyController>(out var controller))
                 controller.SetPlayer(playerTransform);
 
-            // 部屋内徘徊型には生成部屋のAABBを注入する
             if (instance.TryGetComponent<RoomWanderer>(out var roomWanderer))
                 roomWanderer.SetRoomBounds(roomBounds);
 
-            // マップ全体徘徊型にはグリッド情報を注入して通路ウェイポイントを構築させる
             if (instance.TryGetComponent<MapWanderer>(out var mapWanderer))
                 mapWanderer.SetGrid(grid, _gridSize);
+
+            // DebugMode かつ EnemyLook が有効なとき発光ビジュアライズを適用する
+            if (enemyLookDebug)
+            {
+                var visualizer = instance.AddComponent<EnemyDebugVisualizer>();
+                visualizer.Apply();
+            }
         }
     }
 

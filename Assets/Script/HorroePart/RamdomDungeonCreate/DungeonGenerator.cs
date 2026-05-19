@@ -23,6 +23,7 @@ public class DungeonGenerator : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool _isDebugMode;
     [SerializeField] private Transform _debugParent;
+    [SerializeField] private bool _isEnemyLookDebug;
 
     private DungeonGridBuilder _gridBuilder;
     private DungeonDebugVisualizer _debugVisualizer;
@@ -44,7 +45,7 @@ public class DungeonGenerator : MonoBehaviour
 
         var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);
 
-        _sectionPlacer.Place(sections, _roomParent, _enemyParent, grid);
+        _sectionPlacer.Place(sections, _roomParent, _enemyParent, grid, _isDebugMode && _isEnemyLookDebug);
         _corridorPlacer.Place(grid, _corridorParent);
 
         if (_isDebugMode && _debugParent != null)
