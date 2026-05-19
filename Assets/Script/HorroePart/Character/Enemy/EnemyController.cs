@@ -23,7 +23,7 @@ public class EnemyController : MonoBehaviour
     private WallSlider _wallSlider;
     private Transform _player;
     private IEnemyBehavior _wanderBehavior;
-
+    private GameOverHandler _gameOverHandler;
     private bool _wasChasingLastFrame;
 
     private void Awake()
@@ -51,6 +51,13 @@ public class EnemyController : MonoBehaviour
     public void SetPlayer(Transform player)
     {
         _player = player;
+        _gameOverHandler = player.GetComponent<GameOverHandler>();
+
+        if (_gameOverHandler == null)
+        {
+            DebugCustom.LogWarning($"[EnemyController] GameOverHandler ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {player.name}");
+
+        }
     }
 
     private void FixedUpdate()
@@ -110,5 +117,11 @@ public class EnemyController : MonoBehaviour
         // –Ú•W‘¬“x‚ð’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ð‚©‚¯‚È‚¢ivelocity ‚ð’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ð–h‚®j
         if (Vector3.Dot(diff, slideDir) > 0f)
             _rb.AddForce(diff * accelerationForce, ForceMode.Force);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject != _player.gameObject) return;
+        _gameOverHandler?.TriggerGameOver();
     }
 }
