@@ -19,8 +19,7 @@ public class RoomDataBase : ScriptableObject
     {
         public RoomType RoomType;
 
-        // この部屋タイプを何部屋まで生成するか（0 = 上限なし）
-        public int MaxCount;
+        public int RoomCount;
 
         public GameObject Prefab;
         public RoomGridData[] RoomGridDatas;
@@ -67,7 +66,7 @@ public class RoomDataBase : ScriptableObject
         foreach (var entry in _entries)
         {
             if (entry.RoomType == roomType)
-                return entry.MaxCount;
+                return entry.RoomCount;
         }
         return 0;
     }

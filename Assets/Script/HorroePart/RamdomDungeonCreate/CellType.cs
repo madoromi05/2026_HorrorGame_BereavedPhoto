@@ -32,10 +32,10 @@ namespace DungeonSystem
     //•”‰®‚ÌŽí—Þ
     public enum RoomType
     {
-        Normal,
         Start,
         Mother,
         Father,
         Sister,
+        Normal,
     }
 }

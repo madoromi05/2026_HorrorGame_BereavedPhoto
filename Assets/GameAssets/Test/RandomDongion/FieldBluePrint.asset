@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 849f068f49f3e3b4e8f1cebce6b6e999, type: 3}
   m_Name: FieldBluePrint
   m_EditorClassIdentifier: 
-  OneGridSize: 5
+  OneGridSize: 8
   MapSize: {x: 36, y: 36}
   SectionDivide: {x: 3, y: 3}
   MinExtraBranchNum: 2
   MaxExtraBranchNum: 4
-  CorridorWidth: 2
+  CorridorWidth: 1

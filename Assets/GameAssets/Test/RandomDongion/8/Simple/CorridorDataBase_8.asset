@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27a5520914973944a871b4bb6fcba49d, type: 3}
-  m_Name: CorridorDataBase
+  m_Name: CorridorDataBase_8
   m_EditorClassIdentifier: 
   _entries:
   - CorridorType: 0
-    CorridorPrefab: {fileID: 6488183903742532064, guid: 05216f210e1479c44b646ce5709126b4, type: 3}
+    CorridorPrefab: {fileID: 6488183903742532064, guid: b0edce27cee316644b9affadc33af783, type: 3}
   - CorridorType: 1
     CorridorPrefab: {fileID: 6488183903742532064, guid: c430b8a1605020a43addee0434ea5167, type: 3}
   - CorridorType: 2
     CorridorPrefab: {fileID: 6488183903742532064, guid: 6fccfe74c86c303448890433ed7fbb4b, type: 3}
   - CorridorType: 3
-    CorridorPrefab: {fileID: 6488183903742532064, guid: c88836c4556ad5a41899e6aabd5d13b9, type: 3}
+    CorridorPrefab: {fileID: 6488183903742532064, guid: 54b71a42949ffe746b0fddbddd60e854, type: 3}
   - CorridorType: 4
-    CorridorPrefab: {fileID: 6488183903742532064, guid: 6828cfc41bdc4cf4e94c11dc2b9d6fb6, type: 3}
+    CorridorPrefab: {fileID: 6488183903742532064, guid: c4a6f0018c6ff2f42a13bd4e000382fd, type: 3}

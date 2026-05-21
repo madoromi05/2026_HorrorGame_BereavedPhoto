@@ -1,19 +1,20 @@
-/// <summary>
-/// FieldBluePrint �����ƂɃZ�N�V�����𐶐�����N���X�B
-/// �}�b�v�����E�������蓖�āERoomGridData �̃A�T�C���݂̂�S�����A
-/// �O���b�h�ւ̏������݂͍s��Ȃ��B
+﻿/// <summary>
+/// FieldBluePrint をもとにセクションを生成するクラス。
+/// マップ分割・役割割り当て・RoomGridData のアサインのみを担当し、
+/// グリッドへの書き込みは行わない。
 /// </summary>
 using DungeonSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SectionGenerator
 {
-    // �}�b�v�O���Ƃ̋��E�}�[�W���i�O���b�h�P�ʁj
+    // マップ外周との境界マージン（グリッド単位）
     private const int kMargin = 1;
 
     /// <summary>
-    /// bluePrint �̕����ݒ�ɏ]�� SectionData �z��𐶐����ĕԂ��B
-    /// Start �Z�N�V�����̓����_���� 1 �I�΂�A�c��� Normal �ɂȂ�B
+    /// bluePrint の分割設定に従い SectionData 配列を生成して返す。
+    /// Start セクションはランダムに 1 つ選ばれ、残りは Normal になる。
     /// </summary>
     public SectionData[] Generate(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {
@@ -22,14 +23,20 @@ public class SectionGenerator
 
         int totalCount = divide.x * divide.y;
         var sections = new SectionData[totalCount];
-        int startIndex = Random.Range(0, totalCount);
+
+        // セクションのグリッド座標を先に確定し、シャッフルして割り当て順を決める
+        var shuffledIndices = CreateShuffledIndices(totalCount);
+
+        // RoomDataBase の定義順に MaxCount 分のロールを割り当てる。
+        // セクション数が合計 MaxCount に満たない場合は先着優先で打ち切る。
+        var roleAssignments = BuildRoleAssignments(roomDataBase, shuffledIndices);
 
         for (int x = 0; x < divide.x; x++)
         {
             for (int y = 0; y < divide.y; y++)
             {
                 int index = x + y * divide.x;
-                var role = (index == startIndex) ? RoomType.Start : RoomType.Normal;
+                roleAssignments.TryGetValue(index, out var role);
 
                 sections[index] = new SectionData
                 {
@@ -39,8 +46,8 @@ public class SectionGenerator
                     ),
                     GridSize = sectionSize,
                     Role = role,
-                    // Start �͕K����������BNormal �� 50% �Ń����_���z�u
-                    RoomGridData = (role == RoomType.Start || Random.value < 0.5f)
+                    // roleAssignments に含まれないセクションは通路点扱い（RoomGridData = null）
+                    RoomGridData = roleAssignments.ContainsKey(index)
                         ? roomDataBase.GetRandomRoomGridData(role)
                         : null,
                 };
@@ -48,6 +55,51 @@ public class SectionGenerator
         }
 
         return sections;
+    }
+
+    /// <summary>
+    /// 0 〜 totalCount-1 のインデックスをランダムな順番に並べたリストを返す。
+    /// セクションへのロール割り当て順序をランダム化するために使用する。
+    /// </summary>
+    private List<int> CreateShuffledIndices(int totalCount)
+    {
+        var indices = new List<int>(totalCount);
+        for (int i = 0; i < totalCount; i++)
+            indices.Add(i);
+
+        for (int i = indices.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (indices[i], indices[j]) = (indices[j], indices[i]);
+        }
+        return indices;
+    }
+
+    /// <summary>
+    /// RoomDataBase の定義順に MaxCount 分のロールをセクションインデックスへ割り当てる。
+    /// セクション総数を超えた分は無視し、余ったセクションは通路点になる。
+    /// </summary>
+    private Dictionary<int, RoomType> BuildRoleAssignments(RoomDataBase roomDataBase, List<int> shuffledIndices)
+    {
+        var assignments = new Dictionary<int, RoomType>();
+        int cursor = 0;
+
+        foreach (var roomType in System.Enum.GetValues(typeof(RoomType)) as RoomType[])
+        {
+            int maxCount = roomDataBase.GetMaxCount(roomType);
+            for (int i = 0; i < maxCount; i++)
+            {
+                if (cursor >= shuffledIndices.Count)
+                {
+                    DebugCustom.LogWarning($"[SectionGenerator] セクション数が不足しています。{roomType} の割り当てを打ち切ります。");
+                    return assignments;
+                }
+                assignments[shuffledIndices[cursor]] = roomType;
+                cursor++;
+            }
+        }
+
+        return assignments;
     }
 
     private Vector2Int CalcSectionSize(FieldBluePrint bluePrint)

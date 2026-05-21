@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 271287aa15266e44ea96add7647b4c99, type: 3}
-  m_Name: RoomDataBase
+  m_Name: Sprite_RoomDataBase
   m_EditorClassIdentifier: 
   _entries:
   - RoomType: 1
@@ -25,9 +25,9 @@ MonoBehaviour:
     RoomGridDatas:
     - {fileID: 11400000, guid: f3df7261c998cf04aa747d31d9817016, type: 2}
     EnemyEntries:
-    - EnemyPrefab: {fileID: 4642278563404172912, guid: 5e5b3d1bab3555f4b8ee6da783f8ff03, type: 3}
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
       SpawnCount: 1
-    - EnemyPrefab: {fileID: 4642278563404172912, guid: e8e46ead3d9c3db4baa649a98b6c5b92, type: 3}
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: d61f0584989e1cf4f899847320c27074, type: 3}
       SpawnCount: 1
   - RoomType: 0
     MaxCount: 1
@@ -35,5 +35,5 @@ MonoBehaviour:
     RoomGridDatas:
     - {fileID: 11400000, guid: f3df7261c998cf04aa747d31d9817016, type: 2}
     EnemyEntries:
-    - EnemyPrefab: {fileID: 4642278563404172912, guid: 5e5b3d1bab3555f4b8ee6da783f8ff03, type: 3}
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
       SpawnCount: 1
