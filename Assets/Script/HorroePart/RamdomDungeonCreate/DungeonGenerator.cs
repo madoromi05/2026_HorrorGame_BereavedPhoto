@@ -15,8 +15,8 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private Transform _roomParent;
     [SerializeField] private Transform _corridorParent;
     [SerializeField] private Transform _enemyParent;
+    [SerializeField] private Transform _playerTransform;
 
-    [SerializeField] private GameObject _playerPrefab;
     [SerializeField] private float _playerSpawnOffsetY = 0f;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
 
@@ -61,7 +61,7 @@ public class DungeonGenerator : MonoBehaviour
         _sectionPlacer = new SectionPlacer(
             _roomDataBase,
             _bluePrint.OneGridSize,
-            _playerPrefab,
+            _playerTransform,
             _playerSpawnOffsetY,
             enemySpawner);
 

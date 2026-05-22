@@ -9,20 +9,20 @@ public class SectionPlacer
 {
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
-    private readonly GameObject _playerPrefab;
+    private readonly Transform _player;
     private readonly float _playerSpawnOffsetY;
     private readonly EnemySpawner _enemySpawner;
 
     public SectionPlacer(
         RoomDataBase roomDataBase,
         float gridSize,
-        GameObject playerPrefab,
+        Transform player,
         float playerSpawnOffsetY,
         EnemySpawner enemySpawner)
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
-        _playerPrefab = playerPrefab;
+        _player = player;
         _playerSpawnOffsetY = playerSpawnOffsetY;
         _enemySpawner = enemySpawner;
     }
@@ -43,7 +43,7 @@ public class SectionPlacer
             PlaceRoom(section, roomParent);
 
             if (section.Role == RoomType.Start)
-                playerTransform = PlacePlayer(section, roomParent);
+                playerTransform = PlayerTransform(section);
         }
 
         _enemySpawner.Place(sections, enemyParent, playerTransform, grid, enemyLookDebug);
@@ -65,17 +65,28 @@ public class SectionPlacer
     }
 
     /// <summary>
-    /// StartセクションのRoomGridDataに登録されたPlayerPositionsの先頭セルにプレイヤーを配置する。
+    /// StartセクションのRoomGridDataに登録されたPlayerPositionsの先頭セルにプレイヤーを移動させる。
     /// PlayerPositionsが未設定の場合は部屋中央にフォールバックする。
     /// </summary>
-    private Transform PlacePlayer(SectionData section, Transform roomParent)
+    private Transform PlayerTransform(SectionData section)
     {
-        if (_playerPrefab == null) return null;
+        if (_player == null)
+        {
+            DebugCustom.LogWarning("[SectionPlacer] _player が null です。DungeonGeneratorの_playerTransformを確認してください。");
+            return null;
+        }
+        var pos = ResolvePlayerWorldPosition(section);
+        DebugCustom.Log($"[SectionPlacer] Player移動 → {pos}");
 
-        var worldPos = ResolvePlayerWorldPosition(section);
-        var instance = Object.Instantiate(_playerPrefab, worldPos, Quaternion.identity, roomParent);
-        instance.name = "Player";
-        return instance.transform;
+        if (_player.TryGetComponent<CharacterController>(out var cc))
+            cc.enabled = false;
+
+        _player.position = pos;
+
+        if (cc != null)
+            cc.enabled = true;
+
+        return _player;
     }
 
     private Vector3 ResolvePlayerWorldPosition(SectionData section)
