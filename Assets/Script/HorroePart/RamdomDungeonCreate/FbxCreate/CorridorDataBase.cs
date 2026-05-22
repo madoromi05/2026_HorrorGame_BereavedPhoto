@@ -2,6 +2,7 @@
 /// CorridorType‚É‘Î‰‚·‚é’Ê˜HPrefab‚ÌDB
 /// </summary>
 using DungeonSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CorridorDataBase", menuName = "Dungeon/CorridorDataBase")]
@@ -16,15 +17,23 @@ public class CorridorDataBase : ScriptableObject
 
     // ’Ê˜HŒ`ó‚ÆPrefab‚Ì‘Î‰ƒŠƒXƒg
     [SerializeField] private CorridorEntry[] _entries;
-    public GameObject GetPrefab(CorridorType corridorType)
+    private Dictionary<CorridorType, GameObject> _prefabMap;
+
+    private void OnEnable()
     {
+        _prefabMap = new Dictionary<CorridorType, GameObject>(_entries.Length);
         foreach (var entry in _entries)
         {
-            if (entry.CorridorType == corridorType)
-                return entry.CorridorPrefab;
+            _prefabMap[entry.CorridorType] = entry.CorridorPrefab;
         }
+    }
 
-        DebugCustom.LogWarning($"CorridorDataBase: {corridorType}‚É‘Î‰‚·‚éPrefab‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+    public GameObject GetPrefab(CorridorType corridorType)
+    {
+        if (_prefabMap.TryGetValue(corridorType, out var prefab))
+            return prefab;
+
+        DebugCustom.LogWarning($"CorridorDataBase: {corridorType} ‚É‘Î‰‚·‚é Prefab ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
         return null;
     }
 }

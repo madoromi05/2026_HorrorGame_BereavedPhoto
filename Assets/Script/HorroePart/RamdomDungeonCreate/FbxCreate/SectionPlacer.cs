@@ -97,7 +97,7 @@ public class SectionPlacer
         }
 
         // PlayerPositions未設定時は部屋中央にフォールバック
-        var gridSize = section.RoomGridData.GridSize;
+        var gridSize = section.GridSize;
         return new Vector3(
             (section.RoomGridPosition.x + (gridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
             _playerSpawnOffsetY,

@@ -25,8 +25,6 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private Transform _debugParent;
     [SerializeField] private bool _isEnemyLookDebug;
 
-    private DungeonGridBuilder _gridBuilder;
-    private DungeonDebugVisualizer _debugVisualizer;
     private SectionPlacer _sectionPlacer;
     private CorridorPlacer _corridorPlacer;
 
@@ -41,6 +39,9 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     public void Generate()
     {
+        var gridBuilder = new DungeonGridBuilder();
+        var debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
+
         Initialize();
 
         var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);

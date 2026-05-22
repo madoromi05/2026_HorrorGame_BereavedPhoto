@@ -2,6 +2,7 @@
 /// RoomTypeに対応する部屋PrefabのDB
 /// </summary>
 using DungeonSystem;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RoomDataBase", menuName = "Dungeon/RoomDataBase")]
@@ -26,16 +27,21 @@ public class RoomDataBase : ScriptableObject
         public EnemyEntry[] EnemyEntries;
     }
 
-    //RoomTypeごとに「Prefab」と「RoomGridDataの候補リスト」をセットで登録する
     [SerializeField] private RoomEntry[] _entries;
+    private Dictionary<RoomType, RoomEntry> _entryMap;
+
+    private void OnEnable()
+    {
+        // キャッシュの構築
+        _entryMap = new Dictionary<RoomType, RoomEntry>(_entries.Length);
+        foreach (var entry in _entries)
+            _entryMap[entry.RoomType] = entry;
+    }
 
     public GameObject GetPrefab(RoomType roomType)
     {
-        foreach (var entry in _entries)
-        {
-            if (entry.RoomType == roomType)
-                return entry.Prefab;
-        }
+        if (_entryMap.TryGetValue(roomType, out var entry))
+            return entry.Prefab;
 
         DebugCustom.LogWarning($"RoomDataBase: {roomType}に対応するPrefabが見つかりません");
         return null;
@@ -47,11 +53,10 @@ public class RoomDataBase : ScriptableObject
     /// </summary>
     public RoomGridData GetRandomRoomGridData(RoomType roomType)
     {
-        foreach (var entry in _entries)
+        if (!_entryMap.TryGetValue(roomType, out var entry))
         {
-            if (entry.RoomType != roomType) continue;
-            if (entry.RoomGridDatas.Length == 0) return null;
-            return entry.RoomGridDatas[Random.Range(0, entry.RoomGridDatas.Length)];
+            DebugCustom.LogWarning($"RoomDataBase: {roomType} に対応する RoomGridData が見つかりません");
+            return null;
         }
 
         DebugCustom.LogWarning($"RoomDataBase: {roomType}に対応するRoomGridDataが見つかりません");
@@ -63,12 +68,7 @@ public class RoomDataBase : ScriptableObject
     /// </summary>
     public int GetMaxCount(RoomType roomType)
     {
-        foreach (var entry in _entries)
-        {
-            if (entry.RoomType == roomType)
-                return entry.RoomCount;
-        }
-        return 0;
+        return _entryMap.TryGetValue(roomType, out var entry) ? entry.RoomCount : 0;
     }
 
     /// <summary>
@@ -76,11 +76,9 @@ public class RoomDataBase : ScriptableObject
     /// </summary>
     public EnemyEntry[] GetEnemyEntries(RoomType roomType)
     {
-        foreach (var entry in _entries)
-        {
-            if (entry.RoomType == roomType)
-                return entry.EnemyEntries ?? System.Array.Empty<EnemyEntry>();
-        }
+        if (_entryMap.TryGetValue(roomType, out var entry))
+            return entry.EnemyEntries ?? System.Array.Empty<EnemyEntry>();
+
         return System.Array.Empty<EnemyEntry>();
     }
 }
