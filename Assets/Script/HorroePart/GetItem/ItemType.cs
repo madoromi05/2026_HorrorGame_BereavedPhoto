@@ -9,9 +9,8 @@ namespace HorrorGame.Item
     public enum ItemType
     {
         // --- 鍵・解錠系 ---
-        KeyRed,
-        KeyBlue,
-        KeyMaster,
+        KeyFather,
+        KeyMother,
 
         // --- メモ・ドキュメント系 ---
         NoteEntrance,

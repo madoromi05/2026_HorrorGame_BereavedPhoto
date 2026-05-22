@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/TestScene/RamdomMapScene.unity
     guid: 614379e29024858499ba92c3de18f90d
   - enabled: 1
+    path: Assets/Scenes/ScenarioPart.unity
+    guid: e91892a8c3ca8d941aa4b7086a999bc4
+  - enabled: 1
     path: Assets/Scenes/GameOverScene.unity
     guid: 97ff13da02d94f741827207e004f4382
   m_configObjects:

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6832be63cdd1d894dad2b0e040a87cd8, type: 3}
-  m_Name: ItemData
+  m_Name: FatherPartKey
   m_EditorClassIdentifier: 
-  itemType: 3
-  displayName: TestItem1
-  description: TestItem1
+  itemType: 0
+  displayName: "\u304F\u305F\u3073\u308C\u305F\u9375"
+  description: 

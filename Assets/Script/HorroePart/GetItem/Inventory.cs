@@ -32,16 +32,5 @@ namespace HorrorGame.Item
 
         /// <summary>指定種別のアイテムを所持しているか。ドア解錠などの判定に使う。</summary>
         public bool HasItem(ItemType type) => acquiredItems.Contains(type);
-
-        /// <summary>デバッグ用：所持中のアイテム一覧をログ出力する。</summary>
-        [ContextMenu("Log Inventory")]
-        private void LogInventory()
-        {
-            DebugCustom.Log($"[Inventory] 所持アイテム数: {acquiredItems.Count}");
-            foreach (var item in acquiredItems)
-            {
-                Debug.Log($"  - {item}");
-            }
-        }
     }
 }

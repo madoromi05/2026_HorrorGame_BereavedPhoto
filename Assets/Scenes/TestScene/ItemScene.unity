@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f5acc727f4afe44a957dde707685c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInteractor: {fileID: 0}
+  playerInteractor: {fileID: 1609871820}
   hintText: {fileID: 1575255984}
 --- !u!4 &134760469
 Transform:
@@ -666,8 +666,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.6296296}
-  m_AnchoredPosition: {x: 0, y: -186}
-  m_SizeDelta: {x: 400, y: -90}
+  m_AnchoredPosition: {x: 0, y: -200}
+  m_SizeDelta: {x: 400, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1575255984
 MonoBehaviour:
@@ -769,6 +769,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575255982}
   m_CullTransparentMesh: 1
+--- !u!114 &1609871820 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5627977510504621408, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
+  m_PrefabInstance: {fileID: 787831750}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbbec75d5be3549439367abc9d146ff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1841035945
 GameObject:
   m_ObjectHideFlags: 0

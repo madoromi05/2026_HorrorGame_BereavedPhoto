@@ -28,7 +28,6 @@ namespace HorrorGame.UI
                 DebugCustom.LogError("[HintUI] PlayerInteractorがアサインされていません。");
                 return;
             }
-
             playerInteractor.OnFocusChanged += HandleFocusChanged;
         }
 
@@ -49,7 +48,7 @@ namespace HorrorGame.UI
                 SetHintVisible(false);
                 return;
             }
-
+            DebugCustom.Log($"[HintUI] フォーカスが変わりました。ヒント: {hint}");
             hintText.text = hint;
             SetHintVisible(true);
         }

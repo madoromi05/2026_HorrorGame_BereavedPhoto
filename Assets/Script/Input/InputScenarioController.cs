@@ -41,12 +41,7 @@ public class InputScenarioController : MonoBehaviour, InputSystem_Actions.IScene
 
     public void OnMiddleClick(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnNavigate(InputAction.CallbackContext context)
-    {
-        throw new System.NotImplementedException();
+        // throw new System.NotImplementedException();
     }
 
     public void OnPoint(InputAction.CallbackContext context)
@@ -56,11 +51,11 @@ public class InputScenarioController : MonoBehaviour, InputSystem_Actions.IScene
 
     public void OnRightClick(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        //  throw new System.NotImplementedException();
     }
 
     public void OnScrollWheel(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        // throw new System.NotImplementedException();
     }
 }

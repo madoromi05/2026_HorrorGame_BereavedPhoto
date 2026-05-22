@@ -150,12 +150,12 @@ GameObject:
   - component: {fileID: 1760568190565791448}
   - component: {fileID: 42055295927758392}
   - component: {fileID: 4617609571765535354}
-  - component: {fileID: 7904688484725510929}
   - component: {fileID: 8100229551703819135}
   - component: {fileID: 8006193985638041527}
   - component: {fileID: 6546553645289443717}
   - component: {fileID: 8812540055380501818}
   - component: {fileID: 5627977510504621408}
+  - component: {fileID: 9046648932150102472}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -280,33 +280,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &7904688484725510929
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4642278563404172912}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &8100229551703819135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -379,3 +352,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   inputController: {fileID: 8100229551703819135}
+--- !u!114 &9046648932150102472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642278563404172912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 719c146a30d92d04bb6ebe719d86435a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
