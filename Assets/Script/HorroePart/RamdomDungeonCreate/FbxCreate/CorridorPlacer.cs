@@ -3,7 +3,6 @@
 /// 部屋内部のセルはスキップして廊下のみに配置する
 /// </summary>
 using DungeonSystem;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CorridorPlacer

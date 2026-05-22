@@ -70,13 +70,7 @@ public class SectionPlacer
     /// </summary>
     private Transform PlayerTransform(SectionData section)
     {
-        if (_player == null)
-        {
-            DebugCustom.LogWarning("[SectionPlacer] _player が null です。DungeonGeneratorの_playerTransformを確認してください。");
-            return null;
-        }
         var pos = ResolvePlayerWorldPosition(section);
-        DebugCustom.Log($"[SectionPlacer] Player移動 → {pos}");
 
         if (_player.TryGetComponent<CharacterController>(out var cc))
             cc.enabled = false;

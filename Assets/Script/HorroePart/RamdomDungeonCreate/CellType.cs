@@ -21,14 +21,6 @@ namespace DungeonSystem
         DeadEnd,
     }
 
-    public enum Direction
-    {
-        North,
-        East,
-        South,
-        West,
-    }
-
     //•”‰®‚ÌŽí—Þ
     public enum RoomType
     {
