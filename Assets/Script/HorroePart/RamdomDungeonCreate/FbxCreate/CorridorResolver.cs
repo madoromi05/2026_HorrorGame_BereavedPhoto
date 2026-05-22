@@ -68,8 +68,8 @@ public class CorridorResolver
         // 2方向接続：直線またはコーナー
         if (connectionCount == 2)
         {
-            if (north && south) return (CorridorType.Straight, 0f);
-            if (east && west)  return (CorridorType.Straight, 90f);
+            if (north && south) return (CorridorType.Straight, 90f);
+            if (east && west)  return (CorridorType.Straight, 0f);
 
             if (north && east) return (CorridorType.Corner, 0f);
             if (east  && south) return (CorridorType.Corner, 90f);

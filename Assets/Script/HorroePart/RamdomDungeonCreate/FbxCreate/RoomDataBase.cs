@@ -58,9 +58,8 @@ public class RoomDataBase : ScriptableObject
             DebugCustom.LogWarning($"RoomDataBase: {roomType} ‚É‘Î‰ž‚·‚é RoomGridData ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
             return null;
         }
-
-        DebugCustom.LogWarning($"RoomDataBase: {roomType}‚É‘Î‰ž‚·‚éRoomGridData‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
-        return null;
+        if (entry.RoomGridDatas.Length == 0) return null;
+        return entry.RoomGridDatas[Random.Range(0, entry.RoomGridDatas.Length)];
     }
 
     /// <summary>

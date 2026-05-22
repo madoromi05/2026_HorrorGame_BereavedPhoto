@@ -40,33 +40,19 @@ public class DungeonGenerator : MonoBehaviour
     public void Generate()
     {
         var gridBuilder = new DungeonGridBuilder();
-        var debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
+        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
+        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
+        var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 
-        Initialize();
+        var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
 
-        var (grid, sections) = _gridBuilder.Build(_bluePrint, _roomDataBase);
-
-        _sectionPlacer.Place(sections, _roomParent, _enemyParent, grid, _isDebugMode && _isEnemyLookDebug);
-        _corridorPlacer.Place(grid, _corridorParent);
+        sectionPlacer.Place(sections, _roomParent, _enemyParent, grid, _isDebugMode && _isEnemyLookDebug);
+        corridorPlacer.Place(grid, _corridorParent);
 
         if (_isDebugMode && _debugParent != null)
-            _debugVisualizer.Visualize(grid, sections, _debugParent);
-    }
-
-    private void Initialize()
-    {
-        _gridBuilder = new DungeonGridBuilder();
-
-        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
-
-        _sectionPlacer = new SectionPlacer(
-            _roomDataBase,
-            _bluePrint.OneGridSize,
-            _playerTransform,
-            _playerSpawnOffsetY,
-            enemySpawner);
-
-        _corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
-        _debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
+        {
+            var debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
+            debugVisualizer.Visualize(grid, sections, _debugParent);
+        }
     }
 }

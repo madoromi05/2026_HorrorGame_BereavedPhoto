@@ -17,7 +17,6 @@ namespace HorrorGame.UI
 
         private void Awake()
         {
-            // ‰Šúó‘Ô‚Í”ñ•\¦
             SetHintVisible(false);
         }
 

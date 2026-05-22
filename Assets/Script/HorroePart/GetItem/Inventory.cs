@@ -10,12 +10,12 @@ namespace HorrorGame.Item
     /// </summary>
     public class Inventory : MonoBehaviour
     {
-        /// <summary>アイテム取得時に発火。UIやドア解錠チェックで購読する。</summary>
+        /// アイテム取得時に発火。UIやドア解錠チェックで購読する。
         public event Action<ItemData> OnItemAdded;
 
         private readonly HashSet<ItemType> acquiredItems = new();
 
-        /// <summary>アイテムを所持リストに追加し、OnItemAddedを発火する。</summary>
+        /// アイテムを所持リストに追加し、OnItemAddedを発火する。
         public void AddItem(ItemData itemData)
         {
             if (itemData == null)
@@ -30,7 +30,7 @@ namespace HorrorGame.Item
             DebugCustom.Log($"[Inventory] 取得: {itemData.DisplayName}");
         }
 
-        /// <summary>指定種別のアイテムを所持しているか。ドア解錠などの判定に使う。</summary>
+        /// 指定種別のアイテムを所持しているか。ドア解錠などの判定に使う。
         public bool HasItem(ItemType type) => acquiredItems.Contains(type);
     }
 }

@@ -4,17 +4,17 @@ namespace HorrorGame.Interaction
     /// プレイヤーがインタラクトキーで操作できるオブジェクトの契約。
     /// ドア・スイッチ・アイテムなど、インタラクト可能なあらゆる
     /// オブジェクトに実装する。
-    /// PlayerInteractorはこの型だけを知っていれば良く、
-    /// 具体的なオブジェクトの種類を知る必要はない。
+    /// PlayerInteractorはこの型だけを知っていれば良く
     /// </summary>
     public interface IInteractable
     {
-        /// <summary>インタラクト可能な状態かどうか。</summary>
+        // インタラクト可能な状態かどうか。
         bool CanInteract { get; }
 
+        // インタラクトUIに表示するヒントテキスト。
         string HintText { get; }
 
-        /// <summary>インタラクトキーが押されたときに呼ばれる。</summary>
+        // インタラクトキーが押されたときに呼ばれる。
         void OnInteract();
     }
 }
