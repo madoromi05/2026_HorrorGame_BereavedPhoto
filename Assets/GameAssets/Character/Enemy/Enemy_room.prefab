@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -2300082283393957555}
   - component: {fileID: 688066171168184635}
   - component: {fileID: -952072270238074727}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Enemy_room
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -9,6 +9,7 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
     public event Action<Vector2> OnMovePerformed;
     public event Action<Vector2> OnLookPerformed;
     public event Action OnInteractPerformed;
+    public event Action<bool> OnCameraPerformed;
 
     //---------- óLå¯âª ----------
     private void OnEnable()
@@ -59,5 +60,13 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
     public void OnSprint(InputAction.CallbackContext context)
     {
         throw new NotImplementedException();
+    }
+
+    public void OnCamera(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            OnCameraPerformed?.Invoke(true);
+        else if (context.canceled)
+            OnCameraPerformed?.Invoke(false);
     }
 }

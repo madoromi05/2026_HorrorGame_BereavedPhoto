@@ -48,8 +48,6 @@ public class RoomGridPlacer
         int offsetY = spaceY >= 2 ? Random.Range(1, spaceY) : 0;
         section.RoomGridPosition = section.GridPosition + new Vector2Int(offsetX, offsetY);
 
-        Debug.Log($"[RoomGridPlacer] RoomGridPosition={section.RoomGridPosition} GridSize={roomData.GridSize}");
-
         for (int x = 0; x < roomData.GridSize.x; x++)
         {
             for (int y = 0; y < roomData.GridSize.y; y++)
