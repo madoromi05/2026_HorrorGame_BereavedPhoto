@@ -20,7 +20,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 33c7dbdf8de43f646a3729e36fc101b7, type: 2}
     EnemyEntries: []
   - RoomType: 4
-    RoomCount: 3
+    RoomCount: 5
     Prefab: {fileID: 4544807805352437314, guid: 0425adad1dbb306449151c378ff49c9d, type: 3}
     RoomGridDatas:
     - {fileID: 11400000, guid: 4ed1c1c4580fe5b43b0b03961ba3e6ad, type: 2}

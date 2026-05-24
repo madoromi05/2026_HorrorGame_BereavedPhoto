@@ -65,13 +65,6 @@ public class EnemySpawner
 
             if (instance.TryGetComponent<MapWanderer>(out var mapWanderer))
                 mapWanderer.SetGrid(grid, _gridSize);
-
-            // DebugMode かつ EnemyLook が有効なとき発光ビジュアライズを適用する
-            if (enemyLookDebug)
-            {
-                var visualizer = instance.AddComponent<EnemyDebugVisualizer>();
-                visualizer.Apply();
-            }
         }
     }
 

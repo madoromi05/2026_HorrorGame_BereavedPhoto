@@ -69,4 +69,9 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
         else if (context.canceled)
             OnCameraPerformed?.Invoke(false);
     }
+
+    public void OnHandLight(InputAction.CallbackContext context)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,37 +1,42 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 /// <summary>
-/// EnemyAnalyzer ‚©‚çó‚¯æ‚Á‚½‰ğÍ—¦‚ğ‚à‚Æ‚ÉŠeUIƒp[ƒc‚ğXV‚·‚éB
-/// ƒtƒF[ƒh‚â€–ÚŠJ¦‚Ìƒ^ƒCƒ~ƒ“ƒO‚Í Inspector ‚©‚ç•ÏX‰Â”\B
+/// EnemyAnalyzer ã‹ã‚‰å—ã‘å–ã£ãŸè§£æç‡ã‚’ã‚‚ã¨ã«å„UIãƒ‘ãƒ¼ãƒ„ã‚’æ›´æ–°ã™ã‚‹ã€‚
+/// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚„é …ç›®é–‹ç¤ºã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã¯ Inspector ã‹ã‚‰å¤‰æ›´å¯èƒ½ã€‚
 /// </summary>
 public class AnalyzerUI : MonoBehaviour
 {
-    // ---- ƒo[ ----
+    // ---- ãƒãƒ¼ ----
     [SerializeField] private Image barFill;
     [SerializeField] private TMP_Text barPercentText;
 
-    // ---- ƒmƒCƒYƒpƒlƒ‹i¶j ----
+    // ---- ãƒã‚¤ã‚ºãƒ‘ãƒãƒ«ï¼ˆå·¦ï¼‰ ----
     [SerializeField] private CanvasGroup noisePanelGroup;
     [SerializeField] private float noiseRevealAt = 10f;  // %
-    [SerializeField] private float noiseFadeRange = 10f;  // ƒtƒF[ƒh•
+    [SerializeField] private float noiseFadeRange = 10f;  // ãƒ•ã‚§ãƒ¼ãƒ‰å¹…
 
-    // ---- “Gî•ñƒEƒBƒ“ƒhƒEi‰Ej ----
+    // ---- æ•µæƒ…å ±ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆå³ï¼‰ ----
     [SerializeField] private CanvasGroup infoWindowGroup;
     [SerializeField] private float infoRevealAt = 25f;
     [SerializeField] private float infoFadeRange = 15f;
 
-    // ---- ƒtƒB[ƒ‹ƒhŠJ¦ ----
+    // ---- ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰é–‹ç¤º ----
+    [SerializeField] private float typewriterInterval = 10f;
     [Serializable]
-    private struct FieldRevealEntry
+    private class FieldRevealEntry
     {
         public TMP_Text label;
         public string value;
-        public float revealAt;   // ‚±‚Ì%‚ğ’´‚¦‚½‚ç•\¦
+        public float revealAt;
     }
     [SerializeField] private FieldRevealEntry[] fieldEntries;
+
+    private int currentRevealIndex = 0;
+    private bool isRevealing = false;
 
     public void OnAnalyzeUpdate(float pct)
     {
@@ -47,6 +52,7 @@ public class AnalyzerUI : MonoBehaviour
         barPercentText.text = $"{Mathf.RoundToInt(pct)}%";
     }
 
+    // ãƒã‚¤ã‚ºãƒ‘ãƒãƒ«ãƒ»æƒ…å ±ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ã•ã›ã‚‹å…±é€šå‡¦ç†
     private void UpdateFade(CanvasGroup group, float pct, float revealAt, float fadeRange)
     {
         if (group == null) return;
@@ -55,23 +61,43 @@ public class AnalyzerUI : MonoBehaviour
         group.blocksRaycasts = alpha > 0f;
     }
 
+    // ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®ã‚¿ã‚¤ãƒ—ãƒ©ã‚¤ã‚¿ãƒ¼ã‚’ç®¡ç†
     private void UpdateFields(float pct)
     {
-        foreach (var entry in fieldEntries)
-        {
-            if (entry.label == null) continue;
-            entry.label.text = pct >= entry.revealAt ? entry.value : "?";
-        }
+        if (isRevealing || currentRevealIndex >= fieldEntries.Length) return;
+
+        var entry = fieldEntries[currentRevealIndex];
+        if (entry.label == null || pct < entry.revealAt) return;
+
+        isRevealing = true;
+        StartCoroutine(TypewriterReveal(entry.label, entry.value));
     }
 
     /// <summary>
-    /// ŒŸ’m‚µ‚½“G‚Ìƒf[ƒ^‚ğƒtƒB[ƒ‹ƒhŠJ¦—p‚ÉƒLƒƒƒbƒVƒ…‚·‚éB
-    /// ‰ğÍ‚ªi‚Ş‚É‚Â‚ê‚Ä OnAnalyzeUpdate “à‚Å’iŠK“I‚É•\¦‚³‚ê‚éB
+    /// ãƒ†ã‚­ã‚¹ãƒˆã‚’1æ–‡å­—ãšã¤è¡¨ç¤ºã™ã‚‹ã‚¿ã‚¤ãƒ—ãƒ©ã‚¤ã‚¿ãƒ¼æ¼”å‡ºã€‚
+    /// charInterval ã§1æ–‡å­—ã‚ãŸã‚Šã®è¡¨ç¤ºé–“éš”ã‚’èª¿æ•´ã§ãã‚‹ã€‚
+    /// </summary>
+    private IEnumerator TypewriterReveal(TMP_Text label, string fullText)
+    {
+        label.text = "";
+        foreach (char c in fullText)
+        {
+            label.text += c;
+            yield return new WaitForSeconds(typewriterInterval);
+        }
+
+        currentRevealIndex++;
+        isRevealing = false;
+    }
+
+    /// <summary>
+    /// æ¤œçŸ¥ã—ãŸæ•µã®ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰é–‹ç¤ºç”¨ã«ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹ã€‚
+    /// è§£æãŒé€²ã‚€ã«ã¤ã‚Œã¦ OnAnalyzeUpdate å†…ã§æ®µéšçš„ã«è¡¨ç¤ºã•ã‚Œã‚‹ã€‚
     /// </summary>
     public void SetEnemyData(IAnalyzable data)
     {
-        // fieldEntries ‚Ì value ‚ğ“®“I‚Éã‘‚«‚·‚é
-        // ”z—ñƒCƒ“ƒfƒbƒNƒX‚Í Inspector ‚Ì•À‚Ñ‡‚Æ‘Î‰‚³‚¹‚é
+        // fieldEntries ã® value ã‚’å‹•çš„ã«ä¸Šæ›¸ãã™ã‚‹
+        // é…åˆ—ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯ Inspector ã®ä¸¦ã³é †ã¨å¯¾å¿œã•ã›ã‚‹
         if (fieldEntries.Length < 5) return;
 
         fieldEntries[0].value = data.Age.ToString();
@@ -79,5 +105,17 @@ public class AnalyzerUI : MonoBehaviour
         fieldEntries[2].value = $"{data.Height} cm";
         fieldEntries[3].value = $"{data.BodyWeight} kg";
         fieldEntries[4].value = data.Condition;
+    }
+
+    public void ResetFields()
+    {
+        StopAllCoroutines();
+        currentRevealIndex = 0;
+        isRevealing = false;
+        foreach (var entry in fieldEntries)
+        {
+            if (entry.label != null)
+                entry.label.text = "?";
+        }
     }
 }

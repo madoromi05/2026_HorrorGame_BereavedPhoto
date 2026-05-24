@@ -8,8 +8,8 @@ using UnityEngine;
 public class EnemyAnalyzer : MonoBehaviour
 {
     // ---- 調整パラメータ ----
-    [SerializeField] private float analyzeSpeed = 1000f;  // %/秒
-    [SerializeField] private float decaySpeed = 100f;     // 範囲外で減衰させたい場合は正値に
+    [SerializeField] private float analyzeSpeed = 0.1f;  // %/秒
+    [SerializeField] private float decaySpeed = 0f;     // 範囲外で減衰させたい場合は正値に
     [SerializeField] private AnalyzerUI analyzerUI;
 
     public float AnalyzePercent { get; private set; } = 0f;
@@ -45,6 +45,6 @@ public class EnemyAnalyzer : MonoBehaviour
         AnalyzePercent = 0f;
         _enemyInRange = false;
         _isAiming = false;
-        analyzerUI.OnAnalyzeUpdate(0f);
+        analyzerUI.ResetFields();
     }
 }
