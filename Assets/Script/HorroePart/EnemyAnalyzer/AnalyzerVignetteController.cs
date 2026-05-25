@@ -9,27 +9,31 @@ using UnityEngine.Rendering.Universal;
 public class AnalyzerVignetteController : MonoBehaviour
 {
     [SerializeField] private Volume volume;
-    [SerializeField] private float maxVignetteIntensity = 0.6f;
+    [SerializeField] private float maxVignetteIntensity = 0.8f; // 解析率100%のときの Vignette 強度
     [SerializeField] private float resetFadeSpeed = 2f; // リセット時に元に戻る速さ
 
     private Vignette vignette;
+    private float baseIntensity;
     private bool isResetting = false;
 
     private void Awake()
     {
-        // VolumeProfile に Vignette が存在しない場合は機能しない
         if (!volume.profile.TryGet(out vignette))
+        {
             Debug.LogWarning("[AnalyzerVignetteController] VolumeProfile に Vignette が見つかりません。");
+            return;
+        }
+        baseIntensity = vignette.intensity.value;
     }
 
     private void Update()
     {
-        if (!isResetting || vignette == null) return;
+        if (vignette == null || !isResetting) return;
 
         float current = vignette.intensity.value;
-        vignette.intensity.value = Mathf.MoveTowards(current, 0f, resetFadeSpeed * Time.deltaTime);
+        vignette.intensity.value = Mathf.MoveTowards(current, baseIntensity, resetFadeSpeed * Time.deltaTime);
 
-        if (Mathf.Approximately(vignette.intensity.value, 0f))
+        if (Mathf.Approximately(vignette.intensity.value, baseIntensity))
             isResetting = false;
     }
 
@@ -42,7 +46,8 @@ public class AnalyzerVignetteController : MonoBehaviour
         if (vignette == null) return;
 
         isResetting = false;
-        vignette.intensity.value = Mathf.Lerp(0f, maxVignetteIntensity, pct / 100f);
+        float analyzeAdd = Mathf.Lerp(0f, maxVignetteIntensity, pct / 100f);
+        vignette.intensity.value = Mathf.Min(baseIntensity + analyzeAdd, 1f);
     }
 
     /// <summary>

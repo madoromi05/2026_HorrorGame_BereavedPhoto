@@ -15,8 +15,10 @@ public class HandLightController : MonoBehaviour
     [SerializeField] private float flickerStartTime = 5f;    // 消灯の何秒前から点滅を開始するか
     [SerializeField] private float flickerInterval = 0.2f;   // 点滅間隔（秒）
 
-    private InputPlayerController _inputController;
+    // カメラを構えた時の強制解除
+    public void ForceOff() => TurnOff();
 
+    private InputPlayerController _inputController;
     private bool isLightOn = false;
     private float lightOnTimer = 0f;
 

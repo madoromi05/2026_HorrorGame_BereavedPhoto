@@ -10,6 +10,7 @@ public class EnemyAnalyzerController : MonoBehaviour
     [SerializeField] private EnemyAnalyzer analyzer;
     [SerializeField] private CanvasGroup analyzerUIGroup;
     [SerializeField] private EnemyDetector detector;
+    [SerializeField] private HandLightController handLightController;
     // カメラUIのフェード速度
     [SerializeField] private float uiFadeSpeed = 8f;
 
@@ -48,7 +49,9 @@ public class EnemyAnalyzerController : MonoBehaviour
         analyzer.SetAiming(isAiming);
 
         // 構えを解除したらリセット
-        if (!isAiming)
+        if (isAiming)
+            handLightController.ForceOff();
+        else
             analyzer.Reset();
     }
 }

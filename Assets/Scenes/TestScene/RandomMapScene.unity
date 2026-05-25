@@ -183,6 +183,7 @@ MonoBehaviour:
   analyzer: {fileID: 1672135677}
   analyzerUIGroup: {fileID: 5220230801884752741}
   detector: {fileID: 55895296}
+  handLightController: {fileID: 0}
   uiFadeSpeed: 8
 --- !u!1 &178392653
 GameObject:
@@ -472,7 +473,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &746212093
 Transform:
   m_ObjectHideFlags: 0
@@ -844,7 +845,7 @@ GameObject:
   - component: {fileID: 918577888}
   - component: {fileID: 918577887}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: VignetteObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1105,6 +1106,7 @@ MonoBehaviour:
   analyzeSpeed: 5
   decaySpeed: 0
   analyzerUI: {fileID: 3078745226012300514}
+  vignetteController: {fileID: 0}
 --- !u!4 &1672135678
 Transform:
   m_ObjectHideFlags: 0
@@ -2486,6 +2488,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6224629343830748976}
   - component: {fileID: 3078745226012300514}
+  - component: {fileID: 8956264521362112321}
   m_Layer: 0
   m_Name: CameraFreme
   m_TagString: Untagged
@@ -2493,6 +2496,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8956264521362112321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8956264521362112320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d90dd7e00d4be444bbd5700cfc278402, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: {fileID: 918577887}
+  maxVignetteIntensity: 0.8
+  resetFadeSpeed: 2
 --- !u!114 &8958346487041249861
 MonoBehaviour:
   m_ObjectHideFlags: 0
