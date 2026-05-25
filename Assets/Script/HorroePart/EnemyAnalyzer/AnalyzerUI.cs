@@ -12,17 +12,6 @@ public class AnalyzerUI : MonoBehaviour
 {
     // ---- バー ----
     [SerializeField] private Image barFill;
-    [SerializeField] private TMP_Text barPercentText;
-
-    // ---- ノイズパネル（左） ----
-    [SerializeField] private CanvasGroup noisePanelGroup;
-    [SerializeField] private float noiseRevealAt = 10f;  // %
-    [SerializeField] private float noiseFadeRange = 10f;  // フェード幅
-
-    // ---- 敵情報ウィンドウ（右） ----
-    [SerializeField] private CanvasGroup infoWindowGroup;
-    [SerializeField] private float infoRevealAt = 25f;
-    [SerializeField] private float infoFadeRange = 15f;
 
     // ---- フィールド開示 ----
     [SerializeField] private float typewriterInterval = 10f;
@@ -41,24 +30,12 @@ public class AnalyzerUI : MonoBehaviour
     public void OnAnalyzeUpdate(float pct)
     {
         UpdateBar(pct);
-        UpdateFade(noisePanelGroup, pct, noiseRevealAt, noiseFadeRange);
-        UpdateFade(infoWindowGroup, pct, infoRevealAt, infoFadeRange);
         UpdateFields(pct);
     }
 
     private void UpdateBar(float pct)
     {
         barFill.fillAmount = pct / 100f;
-        barPercentText.text = $"{Mathf.RoundToInt(pct)}%";
-    }
-
-    // ノイズパネル・情報ウィンドウをフェードインさせる共通処理
-    private void UpdateFade(CanvasGroup group, float pct, float revealAt, float fadeRange)
-    {
-        if (group == null) return;
-        float alpha = Mathf.Clamp01((pct - revealAt) / fadeRange);
-        group.alpha = alpha;
-        group.blocksRaycasts = alpha > 0f;
     }
 
     // フィールドのタイプライターを管理

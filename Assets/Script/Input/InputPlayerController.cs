@@ -10,6 +10,7 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
     public event Action<Vector2> OnLookPerformed;
     public event Action OnInteractPerformed;
     public event Action<bool> OnCameraPerformed;
+    public event Action OnHandLightPerformed;
 
     //---------- óLå¯âª ----------
     private void OnEnable()
@@ -72,6 +73,9 @@ public class InputPlayerController : MonoBehaviourÅ@, InputSystem_Actions.IPlaye
 
     public void OnHandLight(InputAction.CallbackContext context)
     {
-        throw new NotImplementedException();
+        if (context.performed)
+        {
+            OnHandLightPerformed?.Invoke();
+        }
     }
 }
