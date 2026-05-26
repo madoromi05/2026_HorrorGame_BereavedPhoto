@@ -14,9 +14,19 @@ namespace HorrorGame.UI
         [SerializeField] private GameObject overlayPanel;
         [SerializeField] private TextMeshProUGUI memoText;
         [SerializeField] private Button closeButton;
-        [SerializeField] private KeyCode closeKey = KeyCode.E;
+        [SerializeField] private InputPlayerController inputController;
 
         private bool isShowing = false;
+
+        private void OnEnable()
+        {
+            inputController.OnInteractPerformed += OnInteractClose;
+        }
+
+        private void OnDisable()
+        {
+            inputController.OnInteractPerformed -= OnInteractClose;
+        }
 
         private void Start()
         {
@@ -24,10 +34,9 @@ namespace HorrorGame.UI
             closeButton.onClick.AddListener(Hide);
         }
 
-        private void Update()
+        private void OnInteractClose()
         {
-            if (isShowing && Input.GetKeyDown(closeKey))
-                Hide();
+            if (isShowing) Hide();
         }
 
         /// <summary>

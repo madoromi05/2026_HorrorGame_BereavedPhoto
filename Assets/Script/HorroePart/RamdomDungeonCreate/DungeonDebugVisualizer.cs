@@ -92,8 +92,7 @@ public class DungeonDebugVisualizer
         CreateBox(new Vector3(ox + w - t * 0.5f, y, oz + h * 0.5f),      new Vector3(t, 0.04f, h), borderColor, $"Border_R_{index}", parent);
     }
 
-    // Grid 
-
+    // Grid
     private void VisualizeGrid(GridType[,] grid, Transform parent)
     {
         var gridRoot = new GameObject("Debug_Grid").transform;

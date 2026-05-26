@@ -4,6 +4,7 @@
 /// グリッド構築 → 部屋配置 → 通路配置の流れを制御する。
 /// </summary>
 using DungeonSystem;
+using HorrorGame.UI;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -16,6 +17,7 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private Transform _corridorParent;
     [SerializeField] private Transform _enemyParent;
     [SerializeField] private Transform _playerTransform;
+    [SerializeField] private MemoUIPresenter _memoUIPresenter;
 
     [SerializeField] private float _playerSpawnOffsetY = 0f;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
@@ -41,7 +43,7 @@ public class DungeonGenerator : MonoBehaviour
     {
         var gridBuilder = new DungeonGridBuilder();
         var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
-        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
+        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner, _memoUIPresenter);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);

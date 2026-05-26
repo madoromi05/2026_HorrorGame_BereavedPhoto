@@ -1,6 +1,7 @@
-using UnityEngine;
 using HorrorGame.Interaction;
+using HorrorGame.Item;
 using HorrorGame.UI;
+using UnityEngine;
 
 namespace HorrorGame.Interaction
 {
@@ -13,10 +14,18 @@ namespace HorrorGame.Interaction
     public class MemoItem : MonoBehaviour, IInteractable
     {
         [SerializeField][TextArea(3, 10)] private string memoContent;
-        [SerializeField] private MemoUIPresenter uiPresenter;
-
+        [SerializeField] private ItemData itemData;
         public bool CanInteract => true;
         public string HintText => "ƒƒ‚‚ğ“Ç‚Ş";
+
+        private MemoUIPresenter uiPresenter;    // memoUI‚ÍDI’“ü
+        private Inventory inventory;
+
+        public void Init(MemoUIPresenter presenter, Inventory inventory)
+        {
+            uiPresenter = presenter;
+            this.inventory = inventory;
+        }
 
         public void OnInteract()
         {
@@ -27,6 +36,7 @@ namespace HorrorGame.Interaction
             }
 
             uiPresenter.Show(memoContent);
+            inventory.AddItem(itemData);
         }
     }
 }

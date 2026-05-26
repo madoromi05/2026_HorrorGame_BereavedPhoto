@@ -183,7 +183,7 @@ MonoBehaviour:
   analyzer: {fileID: 1672135677}
   analyzerUIGroup: {fileID: 5220230801884752741}
   detector: {fileID: 55895296}
-  handLightController: {fileID: 0}
+  handLightController: {fileID: 6618564860051413629}
   uiFadeSpeed: 8
 --- !u!1 &178392653
 GameObject:
@@ -221,6 +221,7 @@ MonoBehaviour:
   _corridorParent: {fileID: 1388207182}
   _enemyParent: {fileID: 2096864451}
   _playerTransform: {fileID: 6618564860051413623}
+  _memoUIPresenter: {fileID: 751302287}
   _playerSpawnOffsetY: 3
   _enemySpawnOffsetY: 3
   _isDebugMode: 1
@@ -544,7 +545,7 @@ MonoBehaviour:
   overlayPanel: {fileID: 455925699}
   memoText: {fileID: 313051854}
   closeButton: {fileID: 812571235}
-  closeKey: 101
+  inputController: {fileID: 6618564860051413628}
 --- !u!1 &793346929
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,7 +1107,7 @@ MonoBehaviour:
   analyzeSpeed: 5
   decaySpeed: 0
   analyzerUI: {fileID: 3078745226012300514}
-  vignetteController: {fileID: 0}
+  vignetteController: {fileID: 8956264521362112321}
 --- !u!4 &1672135678
 Transform:
   m_ObjectHideFlags: 0
@@ -2198,6 +2199,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81e3948477a57ab44ac0f05f5e87ef9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6618564860051413629 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5034455867672771291, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
+  m_PrefabInstance: {fileID: 7774745881620652028}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0719c32d6e454a548a1cfa4be050a766, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6669542086397603496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2409,7 +2421,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2818535732887246190, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: _moveSpeed
-      value: 20
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4962837762727493058, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_Constraints

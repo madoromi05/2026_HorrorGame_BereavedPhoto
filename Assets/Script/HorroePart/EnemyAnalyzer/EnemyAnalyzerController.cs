@@ -53,5 +53,6 @@ public class EnemyAnalyzerController : MonoBehaviour
             handLightController.ForceOff();
         else
             analyzer.Reset();
+
     }
 }

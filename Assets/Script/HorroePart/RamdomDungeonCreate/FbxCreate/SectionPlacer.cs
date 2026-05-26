@@ -3,6 +3,9 @@
 /// 敵の生成はEnemySpawnerに委譲しており、このクラスは部屋配置のみを担う。
 /// </summary>
 using DungeonSystem;
+using HorrorGame.Interaction;
+using HorrorGame.Item;
+using HorrorGame.UI;
 using UnityEngine;
 
 public class SectionPlacer
@@ -12,18 +15,22 @@ public class SectionPlacer
     private readonly Transform _player;
     private readonly float _playerSpawnOffsetY;
     private readonly EnemySpawner _enemySpawner;
+    private readonly MemoUIPresenter _memoUIPresenter;
+    private Inventory _inventory;
 
     public SectionPlacer(
         RoomDataBase roomDataBase,
         float gridSize,
         Transform player,
         float playerSpawnOffsetY,
-        EnemySpawner enemySpawner)
+        EnemySpawner enemySpawner,
+        MemoUIPresenter memoUIPresenter)
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
         _player = player;
         _playerSpawnOffsetY = playerSpawnOffsetY;
+        _memoUIPresenter = memoUIPresenter;
         _enemySpawner = enemySpawner;
     }
 
@@ -35,6 +42,7 @@ public class SectionPlacer
     public void Place(SectionData[] sections, Transform roomParent, Transform enemyParent, GridType[,] grid, bool enemyLookDebug = false)
     {
         Transform playerTransform = null;
+        _inventory = _player.GetComponent<Inventory>();
 
         foreach (var section in sections)
         {
@@ -62,6 +70,12 @@ public class SectionPlacer
         );
         var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
+
+        foreach (var memo in instance.GetComponentsInChildren<MemoItem>())
+        {
+            memo.Init(_memoUIPresenter, _inventory);
+
+        }
     }
 
     /// <summary>
