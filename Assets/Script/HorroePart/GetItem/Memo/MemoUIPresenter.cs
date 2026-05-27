@@ -13,26 +13,61 @@ namespace HorrorGame.UI
     {
         [SerializeField] private GameObject overlayPanel;
         [SerializeField] private TextMeshProUGUI memoText;
-        [SerializeField] private Button closeButton;
         [SerializeField] private InputPlayerController inputController;
+        [SerializeField] private Image holdProgressImage;
 
         private bool isShowing = false;
-
-        private void OnEnable()
-        {
-            inputController.OnInteractPerformed += OnInteractClose;
-        }
-
-        private void OnDisable()
-        {
-            inputController.OnInteractPerformed -= OnInteractClose;
-        }
+        private float holdElapsed = 0f;
+        private bool isHolding = false;
+        private const float kHoldDuration = 1f;
 
         private void Start()
         {
             overlayPanel.SetActive(false);
-            closeButton.onClick.AddListener(Hide);
+            holdProgressImage.fillAmount = 0f;
+            holdProgressImage.gameObject.SetActive(false);
         }
+
+        private void OnEnable()
+        {
+            inputController.OnInteractHeld += OnInteractHeld;
+            inputController.OnInteractReleased += OnInteractReleased;
+        }
+
+        private void OnDisable()
+        {
+            inputController.OnInteractHeld -= OnInteractHeld;
+            inputController.OnInteractReleased -= OnInteractReleased;
+        }
+
+        private void Update()
+        {
+            if (!isShowing || !isHolding) return;
+
+            holdElapsed += Time.deltaTime;
+            holdProgressImage.fillAmount = holdElapsed / kHoldDuration;
+
+            if (holdElapsed >= kHoldDuration)
+                Hide();
+        }
+
+        private void OnInteractHeld()
+        {
+            if (!isShowing) return;
+            isHolding = true;
+            holdElapsed = 0f;
+            holdProgressImage.gameObject.SetActive(true);
+        }
+
+        private void OnInteractReleased()
+        {
+            if (!isShowing) return;
+            isHolding = false;
+            holdElapsed = 0f;
+            holdProgressImage.fillAmount = 0f;
+            holdProgressImage.gameObject.SetActive(false);
+        }
+
 
         private void OnInteractClose()
         {
@@ -47,12 +82,19 @@ namespace HorrorGame.UI
             memoText.text = content;
             overlayPanel.SetActive(true);
             isShowing = true;
+            inputController.SetPlayerInputEnabled(false);
         }
 
         public void Hide()
         {
             overlayPanel.SetActive(false);
             isShowing = false;
+            isHolding = false;
+            holdElapsed = 0f;
+            holdProgressImage.fillAmount = 0f;
+            holdProgressImage.gameObject.SetActive(false);
+            inputController.SetPlayerInputEnabled(true);
         }
+
     }
 }

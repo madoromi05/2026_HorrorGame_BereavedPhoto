@@ -11,7 +11,10 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
     public event Action OnInteractPerformed;
     public event Action<bool> OnCameraPerformed;
     public event Action OnHandLightPerformed;
+    public event Action OnInteractHeld;
+    public event Action OnInteractReleased;
 
+    private bool _isPlayerInputEnabled = true;
     //---------- 有効化 ----------
     private void OnEnable()
     {
@@ -29,28 +32,40 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
         _inputActions?.Player.Disable();
     }
 
+    // メモ表示中など、プレイヤー操作を封じる関数
+    public void SetPlayerInputEnabled(bool enabled)
+    {
+        _isPlayerInputEnabled = enabled;
+    }
+
+    // --------- コールバック実装 ----------
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (!_isPlayerInputEnabled) return;
         if (context.performed || context.canceled)
-        {
             OnMovePerformed?.Invoke(context.ReadValue<Vector2>());
-        }
     }
 
     public void OnLook(InputAction.CallbackContext context)
     {
+        if (!_isPlayerInputEnabled) return;
         if (context.performed || context.canceled)
-        {
             OnLookPerformed?.Invoke(context.ReadValue<Vector2>());
-        }
     }
 
     public void OnInteract(InputAction.CallbackContext context)
     {
+        // メモ表示中は長押しイベントのみ通す
         if (context.performed)
         {
-            OnInteractPerformed?.Invoke();
+            if (_isPlayerInputEnabled)
+                OnInteractPerformed?.Invoke();
+            else
+                OnInteractHeld?.Invoke();
         }
+
+        if (context.canceled)
+            OnInteractReleased?.Invoke();
     }
 
     public void OnCrouch(InputAction.CallbackContext context)
