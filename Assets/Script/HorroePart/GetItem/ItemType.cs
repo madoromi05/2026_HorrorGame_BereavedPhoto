@@ -14,7 +14,5 @@ namespace HorrorGame.Item
 
         // --- メモ・ドキュメント系 ---
         NoteEntrance,
-        NoteBasement,
-        DocumentResearch,
     }
 }

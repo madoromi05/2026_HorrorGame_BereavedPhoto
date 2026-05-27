@@ -5,6 +5,7 @@
 /// </summary>
 using DungeonSystem;
 using HorrorGame.UI;
+using System;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -17,7 +18,6 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private Transform _corridorParent;
     [SerializeField] private Transform _enemyParent;
     [SerializeField] private Transform _playerTransform;
-    [SerializeField] private MemoUIPresenter _memoUIPresenter;
 
     [SerializeField] private float _playerSpawnOffsetY = 0f;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
@@ -26,6 +26,9 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private bool _isDebugMode;
     [SerializeField] private Transform _debugParent;
     [SerializeField] private bool _isEnemyLookDebug;
+
+    // Plasyerの位置をItemInitializerが知る必要があるため必要
+    public event Action<Transform> OnRoomPlaced;
 
     private SectionPlacer _sectionPlacer;
     private CorridorPlacer _corridorPlacer;
@@ -43,13 +46,14 @@ public class DungeonGenerator : MonoBehaviour
     {
         var gridBuilder = new DungeonGridBuilder();
         var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
-        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner, _memoUIPresenter);
+        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
 
         sectionPlacer.Place(sections, _roomParent, _enemyParent, grid, _isDebugMode && _isEnemyLookDebug);
         corridorPlacer.Place(grid, _corridorParent);
+        OnRoomPlaced?.Invoke(_roomParent);
 
         if (_isDebugMode && _debugParent != null)
         {

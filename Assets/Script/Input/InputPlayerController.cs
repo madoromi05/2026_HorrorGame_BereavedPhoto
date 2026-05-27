@@ -15,6 +15,7 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
     public event Action OnInteractReleased;
 
     private bool _isPlayerInputEnabled = true;
+
     //---------- 有効化 ----------
     private void OnEnable()
     {
@@ -32,13 +33,15 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
         _inputActions?.Player.Disable();
     }
 
-    // メモ表示中など、プレイヤー操作を封じる関数
+    /// <summary>
+    /// メモ表示中など、プレイヤー操作を封じる必要があるときに呼ぶ。
+    /// Move・Look・Interactのイベント発火を抑制する。
+    /// </summary>
     public void SetPlayerInputEnabled(bool enabled)
     {
         _isPlayerInputEnabled = enabled;
     }
-
-    // --------- コールバック実装 ----------
+    //-------------------- コールバック実装 --------------------
     public void OnMove(InputAction.CallbackContext context)
     {
         if (!_isPlayerInputEnabled) return;
@@ -55,7 +58,6 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
 
     public void OnInteract(InputAction.CallbackContext context)
     {
-        // メモ表示中は長押しイベントのみ通す
         if (context.performed)
         {
             if (_isPlayerInputEnabled)
@@ -80,6 +82,7 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
 
     public void OnCamera(InputAction.CallbackContext context)
     {
+        if (!_isPlayerInputEnabled) return;
         if (context.performed)
             OnCameraPerformed?.Invoke(true);
         else if (context.canceled)
@@ -88,6 +91,7 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlaye
 
     public void OnHandLight(InputAction.CallbackContext context)
     {
+        if (!_isPlayerInputEnabled) return;
         if (context.performed)
         {
             OnHandLightPerformed?.Invoke();

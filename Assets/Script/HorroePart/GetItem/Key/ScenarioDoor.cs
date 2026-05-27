@@ -6,6 +6,7 @@ using HorrorGame.Item;
 namespace HorrorGame.Interaction
 {
     /// <summary>
+    /// Doorオブジェクトにアタッチするコンポーネント。
     /// 対応する ItemType の鍵を Inventory に所持している場合のみ
     /// ScenarioScene へ遷移するドア。
     /// requiredKey は Inspector で対応する KeyItem の ItemType と一致させること。

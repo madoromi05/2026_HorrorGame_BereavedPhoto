@@ -1,5 +1,6 @@
-using UnityEngine;
 using HorrorGame.Interaction;
+using HorrorGame.UI;
+using UnityEngine;
 
 namespace HorrorGame.Item
 {
@@ -18,6 +19,12 @@ namespace HorrorGame.Item
         public bool CanInteract => item != null;
         public string HintText => item != null ? $"[E] {item.DisplayName}を取得" : string.Empty;
 
+        private ItemAcquiredUIPresenter uiPresenter;
+
+        public void Init(ItemAcquiredUIPresenter presenter)
+        {
+            uiPresenter = presenter;
+        }
         /// <summary>
         /// プレイヤーのInventoryにアイテムを追加し、このGameObjectを非活性化する。
         /// Inventoryの取得にGetComponentInParentは使わず、PlayerInteractor経由で
@@ -37,6 +44,7 @@ namespace HorrorGame.Item
             }
 
             inventory.AddItem(item);
+            uiPresenter?.Show(item);
             gameObject.SetActive(false);
         }
     }
