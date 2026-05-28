@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 5006301356462021579}
   - component: {fileID: 7652437823002707370}
   - component: {fileID: 6016896598062997995}
+  - component: {fileID: 2883022827319613757}
   - component: {fileID: 5034455867672771291}
   m_Layer: 0
   m_Name: Player
@@ -168,10 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 711f7b13df25027459d9c68987acb192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraTransform: {fileID: 2038322632912738244}
-  _pitchSensitivity: 0.1
-  _minPitch: -90
-  _maxPitch: 90
+  cameraTransform: {fileID: 2038322632912738244}
+  pitchSensitivity: 0.1
+  minPitch: -90
+  maxPitch: 90
 --- !u!114 &2818535732887246190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,8 +185,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c65fb62c12cc41a4dbce7cfbc58b0118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 5
-  _yawSensitivity: 0.1
+  moveSpeed: 5
+  yawSensitivity: 0.1
+  crouchHeightOffset: 0.7
 --- !u!114 &5006301356462021579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +230,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 719c146a30d92d04bb6ebe719d86435a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2883022827319613757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489616435220394876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43142942db92128438f132df3557494b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkNoiseRadius: 5
+  crouchNoiseRadius: 1.5
 --- !u!114 &5034455867672771291
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -17,8 +17,10 @@ public class HandLightController : MonoBehaviour
 
     // カメラを構えた時の強制解除
     public void ForceOff() => TurnOff();
+    // 外部から点灯状態を参照
+    public bool IsLightOn => isLightOn;
 
-    private InputPlayerController _inputController;
+    private InputPlayerController inputController;
     private bool isLightOn = false;
     private float lightOnTimer = 0f;
 
@@ -27,17 +29,17 @@ public class HandLightController : MonoBehaviour
 
     private void Awake()
     {
-        _inputController = GetComponent<InputPlayerController>();
+        inputController = GetComponent<InputPlayerController>();
     }
 
     private void OnEnable()
     {
-        _inputController.OnHandLightPerformed += HandleHandLightToggle;
+        inputController.OnHandLightPerformed += HandleHandLightToggle;
     }
 
     private void OnDisable()
     {
-        _inputController.OnHandLightPerformed -= HandleHandLightToggle;
+        inputController.OnHandLightPerformed -= HandleHandLightToggle;
     }
 
     private void Update()
@@ -47,8 +49,8 @@ public class HandLightController : MonoBehaviour
         lightOnTimer += Time.deltaTime;
 
         // 点滅開始タイミングに達したらコルーチンを起動（二重起動を防ぐ）
-        bool shouldFlicker = lightOnTimer >= maxLightDuration - flickerStartTime;
-        if (shouldFlicker && flickerCoroutine == null)
+        bool _shouldFlicker = lightOnTimer >= maxLightDuration - flickerStartTime;
+        if (_shouldFlicker && flickerCoroutine == null)
         {
             flickerCoroutine = StartCoroutine(FlickerThenTurnOff());
         }
@@ -100,13 +102,13 @@ public class HandLightController : MonoBehaviour
     /// </summary>
     private IEnumerator FlickerThenTurnOff()
     {
-        float remainingTime = maxLightDuration - lightOnTimer;
+        float _remainingTime = maxLightDuration - lightOnTimer;
 
-        while (remainingTime > 0f)
+        while (_remainingTime > 0f)
         {
             handLight.SetActive(!handLight.activeSelf);
             yield return new WaitForSeconds(flickerInterval);
-            remainingTime -= flickerInterval;
+            _remainingTime -= flickerInterval;
         }
 
         TurnOff();

@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class DungeonDebugVisualizer
 {
-    private float _gridSize;
+    private float gridSize;
     private const float kSectionOffsetY = -5f;
 
     // Grid セルの色
@@ -35,7 +35,7 @@ public class DungeonDebugVisualizer
 
     public DungeonDebugVisualizer(float gridSize)
     {
-        _gridSize = gridSize;
+        gridSize = gridSize;
     }
 
     public void Visualize(GridType[,] grid, SectionData[] sections, Transform parent)
@@ -57,14 +57,14 @@ public class DungeonDebugVisualizer
 
             // 半透明の床面
             var center = new Vector3(
-                (section.GridPosition.x + section.GridSize.x * 0.5f) * _gridSize,
+                (section.GridPosition.x + section.GridSize.x * 0.5f) * gridSize,
                 kSectionOffsetY,
-                (section.GridPosition.y + section.GridSize.y * 0.5f) * _gridSize
+                (section.GridPosition.y + section.GridSize.y * 0.5f) * gridSize
             );
             var size = new Vector3(
-                section.GridSize.x * _gridSize - 0.1f,
+                section.GridSize.x * gridSize - 0.1f,
                 kSectionOffsetY,
-                section.GridSize.y * _gridSize - 0.1f
+                section.GridSize.y * gridSize - 0.1f
             );
             var label = $"Section[{i}]_{section.Role}";
             CreateBox(center, size, color, label, sectionRoot);
@@ -79,10 +79,10 @@ public class DungeonDebugVisualizer
     {
         var borderColor = new Color(1f, 1f, 1f, 0.8f);
         float t = 0.06f; // 枠の太さ（グリッド単位）
-        float w = section.GridSize.x * _gridSize;
-        float h = section.GridSize.y * _gridSize;
-        float ox = section.GridPosition.x * _gridSize;
-        float oz = section.GridPosition.y * _gridSize;
+        float w = section.GridSize.x * gridSize;
+        float h = section.GridSize.y * gridSize;
+        float ox = section.GridPosition.x * gridSize;
+        float oz = section.GridPosition.y * gridSize;
         float y = kSectionOffsetY;
 
         // 上下左右の細い棒 4 本で枠を構成
@@ -99,7 +99,7 @@ public class DungeonDebugVisualizer
         gridRoot.SetParent(parent);
 
         var black = new Color(0f, 0f, 0f, 1f);
-        float inner = _gridSize * 0.88f;  // 色付き部分のサイズ（黒枠の幅 = 6%ずつ）
+        float inner = gridSize * 0.88f;  // 色付き部分のサイズ（黒枠の幅 = 6%ずつ）
 
         for (int x = 0; x < grid.GetLength(0); x++)
         {
@@ -108,9 +108,9 @@ public class DungeonDebugVisualizer
                 var cellType = grid[x, y];
                 var color = GetCellColor(cellType);
                 var worldPos = new Vector3(
-                            (x + 0.5f) * _gridSize,
+                            (x + 0.5f) * gridSize,
                             0f,
-                            (y + 0.5f) * _gridSize
+                            (y + 0.5f) * gridSize
                 );
                 // 色付き（少し小さく、上層）
                 CreateBox(worldPos + Vector3.up * -0.5f, new Vector3(inner, -0.05f, inner), color, $"Cell_{cellType}_{x}_{y}", gridRoot);

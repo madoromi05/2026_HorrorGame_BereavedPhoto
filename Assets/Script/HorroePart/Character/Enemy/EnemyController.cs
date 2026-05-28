@@ -11,6 +11,10 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
+    [Header("ステルス検知")]
+    [SerializeField] private float lightDetectRange = 20f;
+    [SerializeField] private float lightDetectAngle = 60f;
+
     [Header("追跡")]
     [SerializeField] private float detectRange = 10f;
     [SerializeField] private float chaseSpeed = 4f;
@@ -19,28 +23,29 @@ public class EnemyController : MonoBehaviour
     [Header("回転")]
     [SerializeField] private float rotateSpeed = 10f;
 
-    private Rigidbody _rb;
-    private WallSlider _wallSlider;
-    private Transform _player;
-    private IEnemyBehavior _wanderBehavior;
-    private GameOverHandler _gameOverHandler;
-    private bool _wasChasingLastFrame;
+    private Rigidbody rb;
+    private WallSlider wallSlider;
+    private Transform player;
+    private IEnemyBehavior wanderBehavior;
+    private GameOverHandler gameOverHandler;
+    private bool wasChasingLastFrame;
+    private PlayerStealthStatus playerStealth;
 
     private void Awake()
     {
-        _rb = GetComponent<Rigidbody>();
-        _wallSlider = GetComponent<WallSlider>();
+        rb = GetComponent<Rigidbody>();
+        wallSlider = GetComponent<WallSlider>();
 
-        if (_wallSlider == null)
+        if (wallSlider == null)
             DebugCustom.LogWarning($"[EnemyController] WallSlider が見つかりません: {gameObject.name} → 壁スライド無効");
 
-        _rb.constraints = RigidbodyConstraints.FreezeRotation
+        rb.constraints = RigidbodyConstraints.FreezeRotation
                         | RigidbodyConstraints.FreezePositionY;
 
-        _wanderBehavior = (IEnemyBehavior)GetComponent<RoomWanderer>()
+        wanderBehavior = (IEnemyBehavior)GetComponent<RoomWanderer>()
                        ?? (IEnemyBehavior)GetComponent<MapWanderer>();
 
-        if (_wanderBehavior == null)
+        if (wanderBehavior == null)
             DebugCustom.LogWarning($"[EnemyController] IEnemyBehavior が見つかりません: {gameObject.name} → 徘徊なし");
     }
 
@@ -48,12 +53,12 @@ public class EnemyController : MonoBehaviour
     /// 外部から Player の Transform を注入する。
     /// EnemySpawner が Instantiate 後に呼び出すこと。
     /// </summary>
-    public void SetPlayer(Transform player)
+    public void SetPlayer(Transform _player)
     {
-        _player = player;
-        _gameOverHandler = player.GetComponent<GameOverHandler>();
+        player = _player;
+        gameOverHandler = player.GetComponent<GameOverHandler>();
 
-        if (_gameOverHandler == null)
+        if (gameOverHandler == null)
         {
             DebugCustom.LogWarning($"[EnemyController] GameOverHandler が見つかりません: {player.name}");
 
@@ -62,34 +67,53 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_player == null) return;
+        if (player == null) return;
 
-        var isChasing = IsPlayerInRange();
+        var _isChasing = IsPlayerDetected();
 
-        if (_wasChasingLastFrame && !isChasing)
-            _wanderBehavior?.OnChaseEnded();
+        if (wasChasingLastFrame && !_isChasing)
+            wanderBehavior?.OnChaseEnded();
 
-        _wasChasingLastFrame = isChasing;
+        wasChasingLastFrame = _isChasing;
 
-        if (isChasing)
+        if (_isChasing)
             Chase();
         else
-            _wanderBehavior?.Tick();
+            wanderBehavior?.Tick();
     }
 
-    private bool IsPlayerInRange()
+    private bool IsPlayerDetected()
     {
-        return (_player.position - transform.position).sqrMagnitude <= detectRange * detectRange;
+        float _sqDist = (player.position - transform.position).sqrMagnitude;
+
+        // 通常の近接検知（従来通り）
+        if (_sqDist <= detectRange * detectRange) return true;
+
+        if (playerStealth == null) return false;
+
+        // 足音検知（移動中のノイズ半径内に入ったら）
+        float noise = playerStealth.FootstepNoiseRadius;
+        if (noise > 0f && _sqDist <= noise * noise) return true;
+
+        // ライト検知（ライトがONかつ一定範囲内、かつ自分の方向を向いている）
+        if (playerStealth.IsLightOn && _sqDist <= lightDetectRange * lightDetectRange)
+        {
+            Vector3 _toEnemy = (transform.position - player.position).normalized;
+            float _angle = Vector3.Angle(player.forward, _toEnemy);
+            if (_angle <= lightDetectAngle) return true;
+        }
+
+        return false;
     }
 
     private void Chase()
     {
-        var direction = new Vector3(
-            _player.position.x - transform.position.x,
+        var _direction = new Vector3(
+            player.position.x - transform.position.x,
             0f,
-            _player.position.z - transform.position.z
+            player.position.z - transform.position.z
         ).normalized;
-        ApplyMovement(direction, chaseSpeed);
+        ApplyMovement(_direction, chaseSpeed);
     }
 
     /// <summary>
@@ -97,31 +121,31 @@ public class EnemyController : MonoBehaviour
     /// velocity の直接代入は AddForce の結果と壁の反発力が干渉するため一切行わない。
     /// 速度差に AddForce の量を掛けることで間接的に制御する。
     /// </summary>
-    private void ApplyMovement(Vector3 direction, float speed)
+    private void ApplyMovement(Vector3 _direction, float _speed)
     {
-        if (direction == Vector3.zero) return;
+        if (_direction == Vector3.zero) return;
 
-        var slideDir = _wallSlider != null
-            ? _wallSlider.SlideDirection(direction)
-            : direction;
+        var _slideDir = wallSlider != null
+            ? wallSlider.SlideDirection(_direction)
+            : _direction;
 
-        if (slideDir == Vector3.zero) return;
+        if (_slideDir == Vector3.zero) return;
 
-        var targetRot = Quaternion.LookRotation(slideDir);
-        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
+        var _targetRot = Quaternion.LookRotation(_slideDir);
+        rb.rotation = Quaternion.Slerp(rb.rotation, _targetRot, rotateSpeed * Time.fixedDeltaTime);
 
-        var targetVel = slideDir * speed;
-        var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
-        var diff = targetVel - currentVel;
+        var _targetVel = _slideDir * _speed;
+        var _currentVel = new Vector3(rb.rotation.x, 0f, rb.rotation.z);
+        var _diff = _targetVel - _currentVel;
 
         // 目標速度を超えている方向には Force をかけない（velocity を直接触らずに過剰加速を防ぐ）
-        if (Vector3.Dot(diff, slideDir) > 0f)
-            _rb.AddForce(diff * accelerationForce, ForceMode.Force);
+        if (Vector3.Dot(_diff, _slideDir) > 0f)
+            rb.AddForce(_diff * accelerationForce, ForceMode.Force);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision _collision)
     {
-        if (collision.gameObject != _player.gameObject) return;
-        _gameOverHandler?.TriggerGameOver();
+        if (_collision.gameObject != player.gameObject) return;
+        gameOverHandler?.TriggerGameOver();
     }
 }
