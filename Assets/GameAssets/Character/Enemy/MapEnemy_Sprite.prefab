@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7864443649624027618}
   - component: {fileID: 774548280682853366}
   - component: {fileID: 8573397869608896876}
+  - component: {fileID: -2791246849759307280}
   m_Layer: 6
   m_Name: MapEnemy_Sprite
   m_TagString: Untagged
@@ -125,15 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sightRange: 13
-  _sightHalfAngle: 35
-  _sightLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  _eyeHeightOffset: 1.5
-  _lightDetectRange: 20
-  _lightDetectAngle: 60
-  _detectRange: 10
   _chaseSpeed: 4
   _accelerationForce: 30
   _rotateSpeed: 10
@@ -221,3 +213,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &-2791246849759307280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 213bc119ce245b246abe2387555cf125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detectRange: 2
+  _sightRange: 8
+  _sightHalfAngle: 35
+  _eyeHeightOffset: 1.5
+  _lightDetectRange: 20
+  _lightDetectAngle: 60

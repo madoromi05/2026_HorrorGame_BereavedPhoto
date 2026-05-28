@@ -12,14 +12,14 @@ using UnityEngine;
 /// </summary>
 public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float _wanderSpeed = 2f;
-    [SerializeField] private float _wanderInterval = 3f;
-    [SerializeField] private float _accelerationForce = 20f;
-    [SerializeField] private float _rotateSpeed = 10f;
+    [SerializeField] private float _wanderSpeed = 2f;           // 徘徊中移動速度
+    [SerializeField] private float _wanderInterval = 3f;        // 新しい方向を選ぶ間隔
+    [SerializeField] private float _accelerationForce = 20f;    // 加速度
+    [SerializeField] private float _rotateSpeed = 10f;          // 目標方向への回転速度
 
     [Header("壁回避 Raycast")]
-    [SerializeField] private float _rayDistance = 1.5f;
-    [SerializeField] private float _rayOriginOffset = 0.4f;
+    [SerializeField] private float _rayDistance = 1.5f;         // 壁回避用のレイキャスト距離
+    [SerializeField] private float _rayOriginOffset = 0.4f;     // レイキャストの発射位置オフセット
     private Rigidbody _rb;
     private WallSlider _wallSlider;
     private Vector3 _wanderDirection;

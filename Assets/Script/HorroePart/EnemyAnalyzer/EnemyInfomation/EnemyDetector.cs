@@ -11,7 +11,7 @@ public class EnemyDetector : MonoBehaviour
     [SerializeField] private Camera _fpsCam;
 
     [Header("ŒŸ’mİ’è")]
-    [SerializeField] private float _detectRange = 2.0f;   // SphereCast‚Ì‹…”¼Œa
+    [SerializeField] private float _detectRange = 2.0f;      // SphereCast‚Ì‹…”¼Œa
     [SerializeField] private float _detectDistance = 30.0f;  // Å‘åŒŸ’m‹——£
     [SerializeField] private LayerMask _enemyLayer;          // “GƒŒƒCƒ„[‚Ì‚İ‘ÎÛ
 

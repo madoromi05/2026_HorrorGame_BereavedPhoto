@@ -16,10 +16,10 @@ using UnityEngine;
 /// </summary>
 public class MapWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float _wanderSpeed = 2f;
-    [SerializeField] private float _rotateSpeed = 10f;
-    [SerializeField] private float _accelerationForce = 20f;
-    [SerializeField] private float _arrivalRadius = 1.0f;
+    [SerializeField] private float _wanderSpeed = 4f;           // œpœj’†ˆÚ“®‘¬“x
+    [SerializeField] private float _rotateSpeed = 10f;          // –Ú•W•ûŒü‚Ö‚Ì‰ñ“]‘¬“x
+    [SerializeField] private float _accelerationForce = 20f;    // ‰Á‘¬“x
+    [SerializeField] private float _arrivalRadius = 1.0f;       // “ž’…”»’è”¼Œa
 
     private Rigidbody _rb;
     private WallSlider _wallSlider;
