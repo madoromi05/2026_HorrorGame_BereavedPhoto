@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5431366116240960951}
   - component: {fileID: 3915380834152205062}
   - component: {fileID: 1418062336848331198}
+  - component: {fileID: 8115544593466827457}
   m_Layer: 3
   m_Name: EscapeDoor
   m_TagString: Untagged
@@ -121,4 +122,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa124126e43808d4e8f712d5ec49ff61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredKey: 0
+  _requiredKey: 0
+--- !u!114 &8115544593466827457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025259468266418558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aeb32d38335ff342bbe960d94396681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyAnalyzer: {fileID: 0}
+  _requiredKey: 0
+  _inventory: {fileID: 0}
+  _feedbackUI: {fileID: 0}
+  _onExit:
+    m_PersistentCalls:
+      m_Calls: []

@@ -23,13 +23,13 @@ public class PlayerStealthStatus : MonoBehaviour
 
     private void Update()
     {
-        if (_mover.IsDashing)
-            FootstepNoiseRadius = _dashNoiseRadius;
-        else if (!_mover.IsMoving)
-            FootstepNoiseRadius = 0f;
-        else if (_mover.IsCrouching)
-            FootstepNoiseRadius = _crouchNoiseRadius;
-        else
-            FootstepNoiseRadius = _walkNoiseRadius;
+        // MoveState ごとに足音半径を切り替える（FPSMover.MoveState と対応）
+        FootstepNoiseRadius = _mover.CurrentMoveState switch
+        {
+            FPSMover.MoveState.Dash   => _dashNoiseRadius,
+            FPSMover.MoveState.Walk   => _walkNoiseRadius,
+            FPSMover.MoveState.Crouch => _crouchNoiseRadius,
+            _                         => 0f,  // Idle：静止中は無音
+        };
     }
 }
