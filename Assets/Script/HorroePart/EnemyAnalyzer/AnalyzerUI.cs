@@ -11,18 +11,10 @@ using System.Collections;
 public class AnalyzerUI : MonoBehaviour
 {
     // ---- バー ----
-    [SerializeField] private Image barFill;
+    [SerializeField] private Image _barFill;
 
     // ---- フィールド開示 ----
-    [SerializeField] private float typewriterInterval = 10f;
-    [Serializable]
-    private class FieldRevealEntry
-    {
-        public TMP_Text label;
-        public string value;
-        public float revealAt;
-    }
-    [SerializeField] private FieldRevealEntry[] fieldEntries;
+    [SerializeField] private float _typewriterInterval = 10f;
 
     private int currentRevealIndex = 0;
     private bool isRevealing = false;
@@ -35,19 +27,14 @@ public class AnalyzerUI : MonoBehaviour
 
     private void UpdateBar(float pct)
     {
-        barFill.fillAmount = pct / 100f;
+        _barFill.fillAmount = pct / 100f;
     }
 
     // フィールドのタイプライターを管理
     private void UpdateFields(float pct)
     {
-        if (isRevealing || currentRevealIndex >= fieldEntries.Length) return;
-
-        var entry = fieldEntries[currentRevealIndex];
-        if (entry.label == null || pct < entry.revealAt) return;
-
+        if (isRevealing) return;
         isRevealing = true;
-        StartCoroutine(TypewriterReveal(entry.label, entry.value));
     }
 
     /// <summary>
@@ -60,28 +47,11 @@ public class AnalyzerUI : MonoBehaviour
         foreach (char c in fullText)
         {
             label.text += c;
-            yield return new WaitForSeconds(typewriterInterval);
+            yield return new WaitForSeconds(_typewriterInterval);
         }
 
         currentRevealIndex++;
         isRevealing = false;
-    }
-
-    /// <summary>
-    /// 検知した敵のデータをフィールド開示用にキャッシュする。
-    /// 解析が進むにつれて OnAnalyzeUpdate 内で段階的に表示される。
-    /// </summary>
-    public void SetEnemyData(IAnalyzable data)
-    {
-        // fieldEntries の value を動的に上書きする
-        // 配列インデックスは Inspector の並び順と対応させる
-        if (fieldEntries.Length < 5) return;
-
-        fieldEntries[0].value = data.Age.ToString();
-        fieldEntries[1].value = data.Gender;
-        fieldEntries[2].value = $"{data.Height} cm";
-        fieldEntries[3].value = $"{data.BodyWeight} kg";
-        fieldEntries[4].value = data.Condition;
     }
 
     public void ResetFields()
@@ -89,10 +59,5 @@ public class AnalyzerUI : MonoBehaviour
         StopAllCoroutines();
         currentRevealIndex = 0;
         isRevealing = false;
-        foreach (var entry in fieldEntries)
-        {
-            if (entry.label != null)
-                entry.label.text = "?";
-        }
     }
 }

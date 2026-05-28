@@ -12,15 +12,14 @@ using UnityEngine;
 /// </summary>
 public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float wanderSpeed = 2f;
-    [SerializeField] private float wanderInterval = 3f;
-    [SerializeField] private float accelerationForce = 20f;
-    [SerializeField] private float rotateSpeed = 10f;
+    [SerializeField] private float _wanderSpeed = 2f;
+    [SerializeField] private float _wanderInterval = 3f;
+    [SerializeField] private float _accelerationForce = 20f;
+    [SerializeField] private float _rotateSpeed = 10f;
 
     [Header("•Ç‰ñ”ð Raycast")]
-    [SerializeField] private float rayDistance = 1.5f;
-    [SerializeField] private float rayOriginOffset = 0.4f;
-
+    [SerializeField] private float _rayDistance = 1.5f;
+    [SerializeField] private float _rayOriginOffset = 0.4f;
     private Rigidbody _rb;
     private WallSlider _wallSlider;
     private Vector3 _wanderDirection;
@@ -125,8 +124,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         if (_wanderTimer <= 0f)
             PickNewDirection();
 
-        var rayOrigin = transform.position + _wanderDirection * rayOriginOffset;
-        if (Physics.Raycast(rayOrigin, _wanderDirection, rayDistance))
+        var rayOrigin = transform.position + _wanderDirection * _rayOriginOffset;
+        if (Physics.Raycast(rayOrigin, _wanderDirection, _rayDistance))
         {
             PickNewDirection();
             ApplyMovement(_wanderDirection);
@@ -147,8 +146,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         if (_wanderTimer <= 0f)
             PickNewDirection();
 
-        var rayOrigin = transform.position + _wanderDirection * rayOriginOffset;
-        if (Physics.Raycast(rayOrigin, _wanderDirection, rayDistance))
+        var rayOrigin = transform.position + _wanderDirection * _rayOriginOffset;
+        if (Physics.Raycast(rayOrigin, _wanderDirection, _rayDistance))
             PickNewDirection();
 
         ApplyMovement(_wanderDirection);
@@ -156,7 +155,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 
     private void ClampDirectionToBounds()
     {
-        var nextPos = transform.position + _wanderDirection * wanderSpeed * Time.fixedDeltaTime;
+        var nextPos = transform.position + _wanderDirection * _wanderSpeed * Time.fixedDeltaTime;
 
         if (nextPos.x < _roomBounds.min.x || nextPos.x > _roomBounds.max.x)
             _wanderDirection.x = -_wanderDirection.x;
@@ -177,7 +176,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         var newAngle = (currentAngle + Random.Range(-kMaxDirectionChangeAngle, kMaxDirectionChangeAngle)) * Mathf.Deg2Rad;
 
         _wanderDirection = new Vector3(Mathf.Sin(newAngle), 0f, Mathf.Cos(newAngle));
-        _wanderTimer = wanderInterval;
+        _wanderTimer = _wanderInterval;
     }
 
     /// <summary>
@@ -191,7 +190,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         var newAngle = (baseAngle + Random.Range(-kEscapeAngleRange, kEscapeAngleRange)) * Mathf.Deg2Rad;
 
         _wanderDirection = new Vector3(Mathf.Sin(newAngle), 0f, Mathf.Cos(newAngle));
-        _wanderTimer = wanderInterval;
+        _wanderTimer = _wanderInterval;
     }
 
     /// <summary>
@@ -210,14 +209,14 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         if (slideDir == Vector3.zero) return;
 
         var targetRot = Quaternion.LookRotation(slideDir);
-        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
+        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, _rotateSpeed * Time.fixedDeltaTime);
 
-        var targetVel = slideDir * wanderSpeed;
+        var targetVel = slideDir * _wanderSpeed;
         var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
         var diff = targetVel - currentVel;
 
         // –Ú•W‘¬“x‚ð’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ð‚©‚¯‚È‚¢ivelocity ‚ð’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ð–h‚®j
         if (Vector3.Dot(diff, slideDir) > 0f)
-            _rb.AddForce(diff * accelerationForce, ForceMode.Force);
+            _rb.AddForce(diff * _accelerationForce, ForceMode.Force);
     }
 }

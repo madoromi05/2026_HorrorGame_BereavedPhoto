@@ -2,27 +2,28 @@ using UnityEngine;
 
 public class PlayerStealthStatus : MonoBehaviour
 {
-    [SerializeField] private float walkNoiseRadius = 5f;
-    [SerializeField] private float crouchNoiseRadius = 1.5f;
+    [SerializeField] private float _walkNoiseRadius = 5f;
+    [SerializeField] private float _crouchNoiseRadius = 1.5f;
 
-    private FPSMover mover;
-    private HandLightController lightController;
+    private FPSMover _mover;
+    private HandLightController _lightController;
 
     public float FootstepNoiseRadius { get; private set; }
-    public bool IsLightOn => lightController.IsLightOn;
+    public bool IsLightOn => _lightController.IsLightOn;
+
     private void Awake()
     {
-        mover = GetComponent<FPSMover>();
-        lightController = GetComponent<HandLightController>();
+        _mover = GetComponent<FPSMover>();
+        _lightController = GetComponent<HandLightController>();
     }
 
     private void Update()
     {
-        if (!mover.IsMoving)
+        if (!_mover.IsMoving)
             FootstepNoiseRadius = 0f;
-        else if (mover.IsCrouching)
-            FootstepNoiseRadius = crouchNoiseRadius;
+        else if (_mover.IsCrouching)
+            FootstepNoiseRadius = _crouchNoiseRadius;
         else
-            FootstepNoiseRadius = walkNoiseRadius;
+            FootstepNoiseRadius = _walkNoiseRadius;
     }
 }

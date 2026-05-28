@@ -16,10 +16,10 @@ using UnityEngine;
 /// </summary>
 public class MapWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float wanderSpeed = 2f;
-    [SerializeField] private float rotateSpeed = 10f;
-    [SerializeField] private float accelerationForce = 20f;
-    [SerializeField] private float arrivalRadius = 1.0f;
+    [SerializeField] private float _wanderSpeed = 2f;
+    [SerializeField] private float _rotateSpeed = 10f;
+    [SerializeField] private float _accelerationForce = 20f;
+    [SerializeField] private float _arrivalRadius = 1.0f;
 
     private Rigidbody _rb;
     private WallSlider _wallSlider;
@@ -115,7 +115,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     private bool IsArrived()
     {
         var diff = _currentTarget - transform.position;
-        return diff.x * diff.x + diff.z * diff.z <= arrivalRadius * arrivalRadius;
+        return diff.x * diff.x + diff.z * diff.z <= _arrivalRadius * _arrivalRadius;
     }
 
     /// <summary>
@@ -218,14 +218,14 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         if (slideDir == Vector3.zero) return;
 
         var targetRot = Quaternion.LookRotation(slideDir);
-        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, rotateSpeed * Time.fixedDeltaTime);
+        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, _rotateSpeed * Time.fixedDeltaTime);
 
-        var targetVel = slideDir * wanderSpeed;
+        var targetVel = slideDir * _wanderSpeed;
         var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
         var velDiff = targetVel - currentVel;
 
         // –Ú•W‘¬“x‚ð’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ð‚©‚¯‚È‚¢ivelocity ‚ð’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ð–h‚®j
         if (Vector3.Dot(velDiff, slideDir) > 0f)
-            _rb.AddForce(velDiff * accelerationForce, ForceMode.Force);
+            _rb.AddForce(velDiff * _accelerationForce, ForceMode.Force);
     }
 }

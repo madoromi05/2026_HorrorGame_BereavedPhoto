@@ -5,46 +5,45 @@ using UnityEngine;
 namespace HorrorGame.Item
 {
     /// <summary>
-    /// ƒ[ƒ‹ƒh‚É”z’u‚³‚ê‚éƒAƒCƒeƒ€ƒIƒuƒWƒFƒNƒgB
-    /// IInteractable‚ğÀ‘•‚µAƒCƒ“ƒ^ƒ‰ƒNƒg‚ÉInventory‚ÖƒAƒCƒeƒ€‚ğ’Ç‰Á‚·‚éB
-    /// æ“¾Œã‚Í©g‚ğ”ñŠˆ«‰»‚µ‚Äƒ[ƒ‹ƒh‚©‚çÁ‚·B
-    /// Inspector‚Åitem‚ğnull‚É‚·‚é‚Æ‰½‚à‹N‚«‚È‚¢‚½‚ß•K‚¸İ’è‚·‚é‚±‚ÆB
+    /// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã«é…ç½®ã•ã‚ŒãŸã‚¢ã‚¤ãƒ†ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
+    /// IInteractableã‚’å®Ÿè£…ã—ã€ã‚¤ãƒ³ã‚¿ãƒ©ã‚¯ãƒˆã™ã‚‹ã¨Inventoryã¸ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ ã™ã‚‹ã€‚
+    /// å–å¾—å¾Œã¯è‡ªåˆ†ã‚’éæ´»æ€§åŒ–ã—ã¦ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‹ã‚‰æ¶ˆãˆã‚‹ã€‚
+    /// Inspectorã§itemã‚’nullã«ã™ã‚‹ã¨ä½•ã‚‚èµ·ããªã„ãŸã‚å¿…ãšè¨­å®šã™ã‚‹ã“ã¨ã€‚
     /// </summary>
     [AddComponentMenu("HorrorGame/Item/ItemPickup")]
     [RequireComponent(typeof(Collider))]
     public class ItemPickup : MonoBehaviour, IInteractable
     {
-        [SerializeField] private ItemData item;
+        [SerializeField] private ItemData _item;
 
-        public bool CanInteract => item != null;
-        public string HintText => item != null ? $"[E] {item.DisplayName}‚ğæ“¾" : string.Empty;
+        public bool CanInteract => _item != null;
+        public string HintText => _item != null ? $"[E] {_item.DisplayName}ã‚’å–å¾—" : string.Empty;
 
-        private ItemAcquiredUIPresenter uiPresenter;
+        private ItemAcquiredUIPresenter _uiPresenter;
 
         public void Init(ItemAcquiredUIPresenter presenter)
         {
-            uiPresenter = presenter;
+            _uiPresenter = presenter;
         }
+
         /// <summary>
-        /// ƒvƒŒƒCƒ„[‚ÌInventory‚ÉƒAƒCƒeƒ€‚ğ’Ç‰Á‚µA‚±‚ÌGameObject‚ğ”ñŠˆ«‰»‚·‚éB
-        /// Inventory‚Ìæ“¾‚ÉGetComponentInParent‚Íg‚í‚¸APlayerInteractorŒo—R‚Å
-        /// “n‚³‚ê‚½QÆ‚ğg‚¤İŒv‚Ì‚½‚ßAŒÄ‚Ño‚µŒ³‚ªInventory‚ğ•Û‚µ‚Ä‚¢‚é‚±‚ÆB
+        /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Inventoryã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ ã—ã€ãã®GameObjectã‚’éæ´»æ€§åŒ–ã™ã‚‹ã€‚
+        /// Inventoryã¯GetComponentInParentã¯ä½¿ã‚ãšã€PlayerInteractorçµŒç”±ã§
+        /// æ¸¡ã•ã‚ŒãŸå‚ç…§ã‚’ä½¿ã†è¨­è¨ˆã®ãŸã‚ã€å‘¼ã³å‡ºã—å…ƒãŒInventoryã‚’ä¿æŒã—ã¦ã„ã‚‹ã“ã¨ã€‚
         /// </summary>
         public void OnInteract()
         {
             if (!CanInteract) return;
 
-            // Inventory‚ÍƒvƒŒƒCƒ„[‘¤‚ª‚Â‚½‚ßAŒÄ‚Ño‚µŒ³‚©‚ç“n‚µ‚Ä‚à‚ç‚¤İŒv‚¾‚ª
-            // ƒVƒ“ƒvƒ‹‚³—Dæ‚ÅFind‚Åæ“¾B‹K–Í‚ª‘å‚«‚­‚È‚ê‚ÎDI‚âƒCƒxƒ“ƒgƒoƒX‚ÉˆÚs‚·‚éB
             var inventory = FindFirstObjectByType<Inventory>();
             if (inventory == null)
             {
-                DebugCustom.LogWarning("[ItemPickup] Inventory‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                DebugCustom.LogWarning("[ItemPickup] InventoryãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
                 return;
             }
 
-            inventory.AddItem(item);
-            uiPresenter?.Show(item);
+            inventory.AddItem(_item);
+            _uiPresenter?.Show(_item);
             gameObject.SetActive(false);
         }
     }

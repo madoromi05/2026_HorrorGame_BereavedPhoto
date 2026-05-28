@@ -5,15 +5,15 @@ using HorrorGame.Player;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// PlayerInteractor.OnFocusChanged‚ğw“Ç‚µA
-    /// ƒCƒ“ƒ^ƒ‰ƒNƒg‰Â”\‚ÈƒIƒuƒWƒFƒNƒg‚É‹ß‚Ã‚¢‚½‚Æ‚«‚É
-    /// ‘€ìƒqƒ“ƒg‚ğƒeƒLƒXƒg‚Å•\¦‚·‚éUIƒRƒ“ƒ|[ƒlƒ“ƒgB
-    /// Canvas”z‰º‚ÌGameObject‚ÉƒAƒ^ƒbƒ`‚µAInspector‚ÅPlayerInteractor‚ğƒAƒTƒCƒ“‚·‚é‚±‚ÆB
+    /// PlayerInteractor.OnFocusChangedã‚’è³¼èª­ã—ã€
+    /// ã‚¤ãƒ³ã‚¿ãƒ©ã‚¯ãƒˆå¯èƒ½ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«è¿‘ã¥ã„ãŸã¨ãã«
+    /// ãã®ãƒ’ãƒ³ãƒˆã‚’ãƒ†ã‚­ã‚¹ãƒˆã§è¡¨ç¤ºã™ã‚‹UIã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
+    /// Canvasã®ä¸‹ã®GameObjectã«ã‚¢ã‚¿ãƒƒãƒã—ã€Inspectorã§PlayerInteractorã‚’ã‚¢ã‚µã‚¤ãƒ³ã™ã‚‹ã“ã¨ã€‚
     /// </summary>
     public class InteractHintUI : MonoBehaviour
     {
-        [SerializeField] private PlayerInteractor playerInteractor;
-        [SerializeField] private TextMeshProUGUI hintText;
+        [SerializeField] private PlayerInteractor _playerInteractor;
+        [SerializeField] private TextMeshProUGUI _hintText;
 
         private void Awake()
         {
@@ -22,23 +22,23 @@ namespace HorrorGame.UI
 
         private void OnEnable()
         {
-            if (playerInteractor == null)
+            if (_playerInteractor == null)
             {
-                DebugCustom.LogError("[HintUI] PlayerInteractor‚ªƒAƒTƒCƒ“‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                DebugCustom.LogError("[HintUI] PlayerInteractorãŒã‚¢ã‚µã‚¤ãƒ³ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
                 return;
             }
-            playerInteractor.OnFocusChanged += HandleFocusChanged;
+            _playerInteractor.OnFocusChanged += HandleFocusChanged;
         }
 
         private void OnDisable()
         {
-            if (playerInteractor == null) return;
-            playerInteractor.OnFocusChanged -= HandleFocusChanged;
+            if (_playerInteractor == null) return;
+            _playerInteractor.OnFocusChanged -= HandleFocusChanged;
         }
 
         /// <summary>
-        /// OnFocusChanged‚Ìƒnƒ“ƒhƒ‰B
-        /// hint ‚ª null ‚Ü‚½‚Í‹ó‚Ì‚Æ‚«‚ÍƒtƒH[ƒJƒX‚ªŠO‚ê‚½‚Æ”»’f‚µ‚Ä”ñ•\¦‚É‚·‚éB
+        /// OnFocusChangedã®ãƒãƒ³ãƒ‰ãƒ©ã€‚
+        /// hint ãŒ null ã¾ãŸã¯ç©ºã®ã¨ãã¯ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¤–ã‚ŒãŸã¨åˆ¤æ–­ã—ã¦éè¡¨ç¤ºã«ã™ã‚‹ã€‚
         /// </summary>
         private void HandleFocusChanged(string hint)
         {
@@ -47,14 +47,14 @@ namespace HorrorGame.UI
                 SetHintVisible(false);
                 return;
             }
-            DebugCustom.Log($"[HintUI] ƒtƒH[ƒJƒX‚ª•Ï‚í‚è‚Ü‚µ‚½Bƒqƒ“ƒg: {hint}");
-            hintText.text = hint;
+            DebugCustom.Log($"[HintUI] ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¤‰ã‚ã‚Šã¾ã—ãŸã€‚ãƒ’ãƒ³ãƒˆ: {hint}");
+            _hintText.text = hint;
             SetHintVisible(true);
         }
 
         private void SetHintVisible(bool visible)
         {
-            hintText.gameObject.SetActive(visible);
+            _hintText.gameObject.SetActive(visible);
         }
     }
 }

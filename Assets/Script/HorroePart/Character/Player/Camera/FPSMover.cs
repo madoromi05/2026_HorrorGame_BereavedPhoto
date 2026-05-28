@@ -1,95 +1,99 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒLƒƒƒ‰ƒNƒ^[‚Ì…•½ˆÚ“®‚ÆY²‰ñ“]‚ğ’S“–‚·‚éB
-/// CharacterController‚ğg—p‚·‚é‚½‚ßƒRƒŠƒWƒ‡ƒ“‚ª—LŒøB
+/// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®æ°´å¹³ç§»å‹•ã¨Yè»¸å›è»¢ã‚’åˆ¶å¾¡ã™ã‚‹ã€‚
+/// CharacterControllerã‚’ä½¿ç”¨ã™ã‚‹ãŸã‚ã‚³ãƒªã‚¸ãƒ§ãƒ³ãŒæœ‰åŠ¹ã€‚
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(InputPlayerController))]
 public class FPSMover : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float yawSensitivity = 0.1f;
-    [SerializeField] private float crouchHeightOffset = 0.7f;
+    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _yawSensitivity = 0.1f;
+    [SerializeField] private float _crouchHeightOffset = 0.7f;
+    [SerializeField] private Transform _cameraTransform;
 
-    public bool IsCrouching => isCrouching;
-    public bool IsMoving => moveInput.sqrMagnitude > 0.01f;
+    public bool IsCrouching => _isCrouching;
+    public bool IsMoving => _moveInput.sqrMagnitude > 0.01f;
 
-    private CharacterController characterController;
-    private InputPlayerController inputCallbackController;
+    private CharacterController _characterController;
+    private InputPlayerController _inputCallbackController;
     private const float kAimSpeed = 0.5f;
-    private bool isAiming = false;
-    private Vector2 moveInput;
-    private float currentYaw;
-    private bool isCrouching = false;
-    private float standHeight;
+    private bool _isAiming = false;
+    private Vector2 _moveInput;
+    private float _currentYaw;
+    private bool _isCrouching = false;
+    private float _standHeight;
+    private float _cameraStandLocalY;
 
     private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
-        inputCallbackController = GetComponent<InputPlayerController>();
-        standHeight = characterController.height;
-        currentYaw = transform.eulerAngles.y;
+        _characterController = GetComponent<CharacterController>();
+        _inputCallbackController = GetComponent<InputPlayerController>();
+        _standHeight = _characterController.height;
+        _currentYaw = transform.eulerAngles.y;
+        if (_cameraTransform != null)
+            _cameraStandLocalY = _cameraTransform.localPosition.y;
     }
 
     private void OnEnable()
     {
-        inputCallbackController.OnMovePerformed += HandleMove;
-        inputCallbackController.OnLookPerformed += HandleLook;
-        inputCallbackController.OnCameraPerformed += HandleCamera;
-        inputCallbackController.OnCrouchPerformed += HandleCrouch;
+        _inputCallbackController.OnMovePerformed += HandleMove;
+        _inputCallbackController.OnLookPerformed += HandleLook;
+        _inputCallbackController.OnCameraPerformed += HandleCamera;
+        _inputCallbackController.OnCrouchPerformed += HandleCrouch;
     }
 
     private void OnDisable()
     {
-        inputCallbackController.OnMovePerformed -= HandleMove;
-        inputCallbackController.OnLookPerformed -= HandleLook;
-        inputCallbackController.OnCameraPerformed -= HandleCamera;
-        inputCallbackController.OnCrouchPerformed += HandleCrouch;
+        _inputCallbackController.OnMovePerformed -= HandleMove;
+        _inputCallbackController.OnLookPerformed -= HandleLook;
+        _inputCallbackController.OnCameraPerformed -= HandleCamera;
+        _inputCallbackController.OnCrouchPerformed -= HandleCrouch;
     }
 
-    private void HandleMove(Vector2 _input)
+    private void HandleMove(Vector2 input)
     {
-        moveInput = _input;
+        _moveInput = input;
     }
 
-    private void HandleLook(Vector2 _input)
+    private void HandleLook(Vector2 input)
     {
-        // ¶‰E‰ñ“]iYawj‚Ì‚İXVBã‰º‰ñ“]‚ÍFPSCamera‚ª’S“–
-        currentYaw += _input.x * yawSensitivity;
-        transform.eulerAngles = new Vector3(0f, currentYaw, 0f);
+        // å·¦å³å›è»¢ï¼ˆYawï¼‰ã®ã¿æ›´æ–°ã€‚ä¸Šä¸‹å›è»¢ã¯FPSCameraãŒåˆ¶å¾¡
+        _currentYaw += input.x * _yawSensitivity;
+        transform.eulerAngles = new Vector3(0f, _currentYaw, 0f);
     }
 
-    private void HandleCamera(bool _isAiming)
+    private void HandleCamera(bool isAiming)
     {
-            _isAiming = isAiming;
+        _isAiming = isAiming;
     }
 
     private void FixedUpdate()
     {
-        // ƒJƒƒ‰‚Ìã‰ºŒü‚«‚Éˆø‚«‚¸‚ç‚ê‚È‚¢‚æ‚¤…•½¬•ª‚Ì‚İg—p
-        Vector3 _forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
-        Vector3 _right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
+        // ã‚«ãƒ¡ãƒ©ã®ä¸Šä¸‹å‘ãã«å½±éŸ¿ã•ã‚Œãªã„ã‚ˆã†æ°´å¹³æˆåˆ†ã®ã¿ä½¿ç”¨
+        Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
+        Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
 
-        float _speed = 0f;
-        if (isAiming)
-        {
-                _speed = moveSpeed * kAimSpeed;
-        }else
-        {
-                _speed = moveSpeed;
-        }
+        float speed = _isAiming ? _moveSpeed * kAimSpeed : _moveSpeed;
 
-        Vector3 _movement = (_forward * moveInput.y + _right * moveInput.x)
-             * _speed * Time.fixedDeltaTime;
-        characterController.Move(_movement);
+        Vector3 movement = (forward * _moveInput.y + right * _moveInput.x)
+             * speed * Time.fixedDeltaTime;
+        _characterController.Move(movement);
     }
 
-    private void HandleCrouch(bool _isCrouching)
+    private void HandleCrouch(bool isCrouching)
     {
-        isCrouching = _isCrouching;
-        float _targetHeight = isCrouching ? standHeight - crouchHeightOffset : standHeight;
-        characterController.height = _targetHeight;
-        characterController.center = new Vector3(0, _targetHeight / 2f, 0);
+        _isCrouching = isCrouching;
+        float targetHeight = _isCrouching ? _standHeight - _crouchHeightOffset : _standHeight;
+        _characterController.height = targetHeight;
+        _characterController.center = new Vector3(0, targetHeight / 2f, 0);
+
+        if (_cameraTransform != null)
+        {
+            float cameraY = _isCrouching ? _cameraStandLocalY - _crouchHeightOffset : _cameraStandLocalY;
+            Vector3 localPos = _cameraTransform.localPosition;
+            _cameraTransform.localPosition = new Vector3(localPos.x, cameraY, localPos.z);
+        }
     }
 }

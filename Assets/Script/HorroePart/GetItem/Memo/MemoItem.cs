@@ -6,37 +6,37 @@ using UnityEngine;
 namespace HorrorGame.Interaction
 {
     /// <summary>
-    /// ƒCƒ“ƒ^ƒ‰ƒNƒg‚·‚é‚Æƒƒ‚–{•¶‚ğ MemoUIPresenter ‚É“n‚µ‚Ä‰æ–Ê‚É•\¦‚·‚éƒAƒCƒeƒ€B
-    /// ‰½“x‚Å‚à“Ç‚İ•Ô‚¹‚éd—lB1“x‚µ‚©“Ç‚Ü‚¹‚½‚­‚È‚¢ê‡‚Í
-    /// OnInteract() “à‚Å gameObject.SetActive(false) ‚ğ’Ç‰Á‚·‚é‚±‚ÆB
+    /// ã‚¤ãƒ³ã‚¿ãƒ©ã‚¯ãƒˆã™ã‚‹ã¨ãƒ¡ãƒ¢æœ¬æ–‡ã‚’MemoUIPresenterã«æ¸¡ã—ã¦ç”»é¢ã«è¡¨ç¤ºã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã€‚
+    /// ä½•åº¦ã§ã‚‚èª­ã¿è¿”ã›ã‚‹ä»•æ§˜ã€‚1åº¦ã ã‘èª­ã‚“ã ã‚‰æ¶ˆã™å ´åˆã¯
+    /// OnInteract() å†…ã« gameObject.SetActive(false) ã‚’è¿½åŠ ã™ã‚‹ã“ã¨ã€‚
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class MemoItem : MonoBehaviour, IInteractable
     {
-        [SerializeField][TextArea(3, 10)] private string memoContent;
-        [SerializeField] private ItemData itemData;
+        [SerializeField][TextArea(3, 10)] private string _memoContent;
+        [SerializeField] private ItemData _itemData;
         public bool CanInteract => true;
-        public string HintText => "ƒƒ‚‚ğ“Ç‚Ş";
+        public string HintText => "ãƒ¡ãƒ¢ã‚’èª­ã‚€";
 
-        private MemoUIPresenter uiPresenter;    // memoUI‚ÍDI’“ü
-        private Inventory inventory;
+        private MemoUIPresenter _uiPresenter;
+        private Inventory _inventory;
 
         public void Init(MemoUIPresenter presenter, Inventory inventory)
         {
-            uiPresenter = presenter;
-            this.inventory = inventory;
+            _uiPresenter = presenter;
+            _inventory = inventory;
         }
 
         public void OnInteract()
         {
-            if (uiPresenter == null)
+            if (_uiPresenter == null)
             {
-                DebugCustom.LogWarning("[MemoItem] MemoUIPresenter ‚ª–¢İ’è‚Å‚·B");
+                DebugCustom.LogWarning("[MemoItem] MemoUIPresenter ãŒæœªè¨­å®šã§ã™ã€‚");
                 return;
             }
 
-            uiPresenter.Show(memoContent);
-            inventory.AddItem(itemData);
+            _uiPresenter.Show(_memoContent);
+            _inventory.AddItem(_itemData);
         }
     }
 }

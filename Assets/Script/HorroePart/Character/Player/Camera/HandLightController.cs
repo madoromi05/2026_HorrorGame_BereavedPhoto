@@ -11,48 +11,47 @@ public class HandLightController : MonoBehaviour
     [SerializeField] private GameObject handLight;
 
     [Header("点灯時間設定")]
-    [SerializeField] private float maxLightDuration = 30f;   // 連続点灯できる上限時間（秒）
-    [SerializeField] private float flickerStartTime = 5f;    // 消灯の何秒前から点滅を開始するか
-    [SerializeField] private float flickerInterval = 0.2f;   // 点滅間隔（秒）
+    [SerializeField] private float _maxLightDuration = 30f;   // 連続点灯できる上限時間（秒）
+    [SerializeField] private float _flickerStartTime = 5f;    // 消灯の何秒前から点滅を開始するか
+    [SerializeField] private float _flickerInterval = 0.2f;   // 点滅間隔（秒）
 
     // カメラを構えた時の強制解除
     public void ForceOff() => TurnOff();
     // 外部から点灯状態を参照
-    public bool IsLightOn => isLightOn;
+    public bool IsLightOn => _isLightOn;
 
-    private InputPlayerController inputController;
-    private bool isLightOn = false;
-    private float lightOnTimer = 0f;
+    private InputPlayerController _inputController;
+    private bool _isLightOn = false;
+    private float _lightOnTimer = 0f;
 
     // 警告点滅コルーチンの参照（手動OFFで中断するために保持）
-    private Coroutine flickerCoroutine;
-
+    private Coroutine _flickerCoroutine;
     private void Awake()
     {
-        inputController = GetComponent<InputPlayerController>();
+        _inputController = GetComponent<InputPlayerController>();
     }
 
     private void OnEnable()
     {
-        inputController.OnHandLightPerformed += HandleHandLightToggle;
+        _inputController.OnHandLightPerformed += HandleHandLightToggle;
     }
 
     private void OnDisable()
     {
-        inputController.OnHandLightPerformed -= HandleHandLightToggle;
+        _inputController.OnHandLightPerformed -= HandleHandLightToggle;
     }
 
     private void Update()
     {
-        if (!isLightOn) return;
+        if (!_isLightOn) return;
 
-        lightOnTimer += Time.deltaTime;
+        _lightOnTimer += Time.deltaTime;
 
         // 点滅開始タイミングに達したらコルーチンを起動（二重起動を防ぐ）
-        bool _shouldFlicker = lightOnTimer >= maxLightDuration - flickerStartTime;
-        if (_shouldFlicker && flickerCoroutine == null)
+        bool shouldFlicker = _lightOnTimer >= _maxLightDuration - _flickerStartTime;
+        if (shouldFlicker && _flickerCoroutine == null)
         {
-            flickerCoroutine = StartCoroutine(FlickerThenTurnOff());
+            _flickerCoroutine = StartCoroutine(FlickerThenTurnOff());
         }
     }
 
@@ -62,7 +61,7 @@ public class HandLightController : MonoBehaviour
     /// </summary>
     private void HandleHandLightToggle()
     {
-        if (isLightOn)
+        if (_isLightOn)
         {
             TurnOff();
         }
@@ -74,8 +73,8 @@ public class HandLightController : MonoBehaviour
 
     private void TurnOn()
     {
-        isLightOn = true;
-        lightOnTimer = 0f;
+        _isLightOn = true;
+        _lightOnTimer = 0f;
         handLight.SetActive(true);
     }
 
@@ -85,14 +84,14 @@ public class HandLightController : MonoBehaviour
     /// </summary>
     private void TurnOff()
     {
-        isLightOn = false;
-        lightOnTimer = 0f;
+        _isLightOn = false;
+        _lightOnTimer = 0f;
         handLight.SetActive(false);
 
-        if (flickerCoroutine != null)
+        if (_flickerCoroutine != null)
         {
-            StopCoroutine(flickerCoroutine);
-            flickerCoroutine = null;
+            StopCoroutine(_flickerCoroutine);
+            _flickerCoroutine = null;
         }
     }
 
@@ -102,13 +101,13 @@ public class HandLightController : MonoBehaviour
     /// </summary>
     private IEnumerator FlickerThenTurnOff()
     {
-        float _remainingTime = maxLightDuration - lightOnTimer;
+        float remainingTime = _maxLightDuration - _lightOnTimer;
 
-        while (_remainingTime > 0f)
+        while (remainingTime > 0f)
         {
             handLight.SetActive(!handLight.activeSelf);
-            yield return new WaitForSeconds(flickerInterval);
-            _remainingTime -= flickerInterval;
+            yield return new WaitForSeconds(_flickerInterval);
+            remainingTime -= _flickerInterval;
         }
 
         TurnOff();

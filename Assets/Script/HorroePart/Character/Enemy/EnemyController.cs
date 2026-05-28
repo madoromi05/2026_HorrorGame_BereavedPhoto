@@ -1,106 +1,105 @@
 using UnityEngine;
 
 /// <summary>
-/// Player ‚ğ’ÇÕ‚·‚é“G‚Ìs“®‚ğŠÇ—‚·‚éƒNƒ‰ƒXB
-/// œpœjƒƒWƒbƒN‚Í IEnemyBehavioriRoomWanderer / MapWandererj‚ÉˆÏ÷‚·‚éB
-/// ŒŸ’m”ÍˆÍ“à‚É Player ‚ª‚¢‚éŠÔ‚Í IEnemyBehavior ‚Ì Tick ‚ğ~‚ß‚Ä’ÇÕ‚ÉØ‚è‘Ö‚¦‚éB
-/// ’ÇÕI—¹‚Í OnChaseEnded ‚ğŒÄ‚Ño‚µABehavior ‘¤‚Éó‘ÔƒŠƒZƒbƒg‚ğ’Ê’m‚·‚éB
+/// Player ã‚’è¿½è·¡ã™ã‚‹æ•µã®è¡Œå‹•ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+/// å¾˜å¾Šãƒ­ã‚¸ãƒƒã‚¯ã¯ IEnemyBehaviorï¼ˆRoomWanderer / MapWandererï¼‰ã«å§”è­²ã™ã‚‹ã€‚
+/// æ¤œçŸ¥ç¯„å›²å†…ã« Player ãŒã„ã‚‹é–“ã¯ IEnemyBehavior ã® Tick ã‚’æ­¢ã‚ã¦è¿½è·¡ã«åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
+/// è¿½è·¡çµ‚äº†æ™‚ã¯ OnChaseEnded ã‚’å‘¼ã³å‡ºã—ã€Behavior å´ã«çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆã‚’é€šçŸ¥ã™ã‚‹ã€‚
 ///
-/// ’ÇÕÕ“Ë‚Ì’â~‚ğ–h‚®‚½‚ß WallSlider ‚ÅˆÚ“®•ûŒü‚ğ•Ç–Ê‚É‰ˆ‚Á‚Ä•â³‚·‚éB
+/// è¿½è·¡è¡çªæ™‚ã®åœæ­¢ã‚’é˜²ããŸã‚ã« WallSlider ã§ç§»å‹•æ–¹å‘ã‚’å£é¢ã«åˆã‚ã›ã¦è£œæ­£ã™ã‚‹ã€‚
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
-    [Header("ƒXƒeƒ‹ƒXŒŸ’m")]
-    [SerializeField] private float lightDetectRange = 20f;
-    [SerializeField] private float lightDetectAngle = 60f;
+    [Header("ã‚¹ãƒ†ãƒ«ã‚¹æ¤œçŸ¥")]
+    [SerializeField] private float _lightDetectRange = 20f;
+    [SerializeField] private float _lightDetectAngle = 60f;
 
-    [Header("’ÇÕ")]
-    [SerializeField] private float detectRange = 10f;
-    [SerializeField] private float chaseSpeed = 4f;
-    [SerializeField] private float accelerationForce = 30f;
+    [Header("è¿½è·¡")]
+    [SerializeField] private float _detectRange = 10f;
+    [SerializeField] private float _chaseSpeed = 4f;
+    [SerializeField] private float _accelerationForce = 30f;
 
-    [Header("‰ñ“]")]
-    [SerializeField] private float rotateSpeed = 10f;
+    [Header("å›è»¢")]
+    [SerializeField] private float _rotateSpeed = 10f;
 
-    private Rigidbody rb;
-    private WallSlider wallSlider;
-    private Transform player;
-    private IEnemyBehavior wanderBehavior;
-    private GameOverHandler gameOverHandler;
-    private bool wasChasingLastFrame;
-    private PlayerStealthStatus playerStealth;
+    private Rigidbody _rb;
+    private WallSlider _wallSlider;
+    private Transform _player;
+    private IEnemyBehavior _wanderBehavior;
+    private GameOverHandler _gameOverHandler;
+    private bool _wasChasingLastFrame;
+    private PlayerStealthStatus _playerStealth;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        wallSlider = GetComponent<WallSlider>();
+        _rb = GetComponent<Rigidbody>();
+        _wallSlider = GetComponent<WallSlider>();
 
-        if (wallSlider == null)
-            DebugCustom.LogWarning($"[EnemyController] WallSlider ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {gameObject.name} ¨ •ÇƒXƒ‰ƒCƒh–³Œø");
+        if (_wallSlider == null)
+            DebugCustom.LogWarning($"[EnemyController] WallSliderãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {gameObject.name} â†’ å£ã‚¹ãƒ©ã‚¤ãƒ‰ãªã—");
 
-        rb.constraints = RigidbodyConstraints.FreezeRotation
+        _rb.constraints = RigidbodyConstraints.FreezeRotation
                         | RigidbodyConstraints.FreezePositionY;
 
-        wanderBehavior = (IEnemyBehavior)GetComponent<RoomWanderer>()
+        _wanderBehavior = (IEnemyBehavior)GetComponent<RoomWanderer>()
                        ?? (IEnemyBehavior)GetComponent<MapWanderer>();
 
-        if (wanderBehavior == null)
-            DebugCustom.LogWarning($"[EnemyController] IEnemyBehavior ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {gameObject.name} ¨ œpœj‚È‚µ");
+        if (_wanderBehavior == null)
+            DebugCustom.LogWarning($"[EnemyController] IEnemyBehaviorãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {gameObject.name} â†’ å¾˜å¾Šãªã—");
     }
 
     /// <summary>
-    /// ŠO•”‚©‚ç Player ‚Ì Transform ‚ğ’“ü‚·‚éB
-    /// EnemySpawner ‚ª Instantiate Œã‚ÉŒÄ‚Ño‚·‚±‚ÆB
+    /// å¤–éƒ¨ã‹ã‚‰ Player ã® Transform ã‚’æ³¨å…¥ã™ã‚‹ã€‚
+    /// EnemySpawner ãŒ Instantiate å¾Œã«å‘¼ã³å‡ºã™ã“ã¨ã€‚
     /// </summary>
-    public void SetPlayer(Transform _player)
+    public void SetPlayer(Transform player)
     {
-        player = _player;
-        gameOverHandler = player.GetComponent<GameOverHandler>();
+        _player = player;
+        _gameOverHandler = _player.GetComponent<GameOverHandler>();
 
-        if (gameOverHandler == null)
+        if (_gameOverHandler == null)
         {
-            DebugCustom.LogWarning($"[EnemyController] GameOverHandler ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ: {player.name}");
-
+            DebugCustom.LogWarning($"[EnemyController] GameOverHandlerãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“: {_player.name}");
         }
     }
 
     private void FixedUpdate()
     {
-        if (player == null) return;
+        if (_player == null) return;
 
-        var _isChasing = IsPlayerDetected();
+        var isChasing = IsPlayerDetected();
 
-        if (wasChasingLastFrame && !_isChasing)
-            wanderBehavior?.OnChaseEnded();
+        if (_wasChasingLastFrame && !isChasing)
+            _wanderBehavior?.OnChaseEnded();
 
-        wasChasingLastFrame = _isChasing;
+        _wasChasingLastFrame = isChasing;
 
-        if (_isChasing)
+        if (isChasing)
             Chase();
         else
-            wanderBehavior?.Tick();
+            _wanderBehavior?.Tick();
     }
 
     private bool IsPlayerDetected()
     {
-        float _sqDist = (player.position - transform.position).sqrMagnitude;
+        float sqDist = (_player.position - transform.position).sqrMagnitude;
 
-        // ’Êí‚Ì‹ßÚŒŸ’mi]—ˆ’Ê‚èj
-        if (_sqDist <= detectRange * detectRange) return true;
+        // é€šå¸¸ã®è¿‘æ¥æ¤œçŸ¥ï¼ˆè·é›¢ã®ã¿ï¼‰
+        if (sqDist <= _detectRange * _detectRange) return true;
 
-        if (playerStealth == null) return false;
+        if (_playerStealth == null) return false;
 
-        // ‘«‰¹ŒŸ’miˆÚ“®’†‚ÌƒmƒCƒY”¼Œa“à‚É“ü‚Á‚½‚çj
-        float noise = playerStealth.FootstepNoiseRadius;
-        if (noise > 0f && _sqDist <= noise * noise) return true;
+        // è¶³éŸ³æ¤œçŸ¥ï¼ˆç§»å‹•æ™‚ã®ãƒã‚¤ã‚ºåŠå¾„å†…ã«å…¥ã£ãŸã¨ãï¼‰
+        float noise = _playerStealth.FootstepNoiseRadius;
+        if (noise > 0f && sqDist <= noise * noise) return true;
 
-        // ƒ‰ƒCƒgŒŸ’miƒ‰ƒCƒg‚ªON‚©‚Âˆê’è”ÍˆÍ“àA‚©‚Â©•ª‚Ì•ûŒü‚ğŒü‚¢‚Ä‚¢‚éj
-        if (playerStealth.IsLightOn && _sqDist <= lightDetectRange * lightDetectRange)
+        // ãƒ©ã‚¤ãƒˆæ¤œçŸ¥ï¼ˆãƒ©ã‚¤ãƒˆONæ™‚ã¯ç¯„å›²å†…ã‹ã¤æ­£é¢æ–¹å‘ã«å­˜åœ¨ã™ã‚‹ã¨ãï¼‰
+        if (_playerStealth.IsLightOn && sqDist <= _lightDetectRange * _lightDetectRange)
         {
-            Vector3 _toEnemy = (transform.position - player.position).normalized;
-            float _angle = Vector3.Angle(player.forward, _toEnemy);
-            if (_angle <= lightDetectAngle) return true;
+            Vector3 toEnemy = (transform.position - _player.position).normalized;
+            float angle = Vector3.Angle(_player.forward, toEnemy);
+            if (angle <= _lightDetectAngle) return true;
         }
 
         return false;
@@ -108,44 +107,44 @@ public class EnemyController : MonoBehaviour
 
     private void Chase()
     {
-        var _direction = new Vector3(
-            player.position.x - transform.position.x,
+        var direction = new Vector3(
+            _player.position.x - transform.position.x,
             0f,
-            player.position.z - transform.position.z
+            _player.position.z - transform.position.z
         ).normalized;
-        ApplyMovement(_direction, chaseSpeed);
+        ApplyMovement(direction, _chaseSpeed);
     }
 
     /// <summary>
-    /// WallSlider ‚Å•Ç–Ê‚É‰ˆ‚¤‚æ‚¤•â³‚µ‚Ä‚©‚ç AddForce ‚ÅˆÚ“®‚·‚éB
-    /// velocity ‚Ì’¼Ú‘ã“ü‚Í AddForce ‚ÌŒ‹‰Ê‚Æ•Ç‚Ì”½”­—Í‚ªŠ±Â‚·‚é‚½‚ßˆêØs‚í‚È‚¢B
-    /// ‘¬“x·‚É AddForce ‚Ì—Ê‚ğŠ|‚¯‚é‚±‚Æ‚ÅŠÔÚ“I‚É§Œä‚·‚éB
+    /// WallSliderã§å£é¢ã«åˆã‚ã›ã¦è£œæ­£ã—ã¦ã‹ã‚‰ AddForce ã§ç§»å‹•ã™ã‚‹ã€‚
+    /// velocityã®ç›´æ¥æ“ä½œã¯ AddForce ã®çµæœã¨å£ã®ååŠ›ãŒå¹²æ¸‰ã™ã‚‹ãŸã‚ä¸€åˆ‡è¡Œã‚ãªã„ã€‚
+    /// é€Ÿåº¦ã‚’ AddForce ã®é‡ã«æ›ã‘ã‚‹ã“ã¨ã§é–“æ¥çš„ã«åˆ¶å¾¡ã™ã‚‹ã€‚
     /// </summary>
-    private void ApplyMovement(Vector3 _direction, float _speed)
+    private void ApplyMovement(Vector3 direction, float speed)
     {
-        if (_direction == Vector3.zero) return;
+        if (direction == Vector3.zero) return;
 
-        var _slideDir = wallSlider != null
-            ? wallSlider.SlideDirection(_direction)
-            : _direction;
+        var slideDir = _wallSlider != null
+            ? _wallSlider.SlideDirection(direction)
+            : direction;
 
-        if (_slideDir == Vector3.zero) return;
+        if (slideDir == Vector3.zero) return;
 
-        var _targetRot = Quaternion.LookRotation(_slideDir);
-        rb.rotation = Quaternion.Slerp(rb.rotation, _targetRot, rotateSpeed * Time.fixedDeltaTime);
+        var targetRot = Quaternion.LookRotation(slideDir);
+        _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRot, _rotateSpeed * Time.fixedDeltaTime);
 
-        var _targetVel = _slideDir * _speed;
-        var _currentVel = new Vector3(rb.rotation.x, 0f, rb.rotation.z);
-        var _diff = _targetVel - _currentVel;
+        var targetVel = slideDir * speed;
+        var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
+        var diff = targetVel - currentVel;
 
-        // –Ú•W‘¬“x‚ğ’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ğ‚©‚¯‚È‚¢ivelocity ‚ğ’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ğ–h‚®j
-        if (Vector3.Dot(_diff, _slideDir) > 0f)
-            rb.AddForce(_diff * accelerationForce, ForceMode.Force);
+        // ç›®æ¨™é€Ÿåº¦ã‚’è¶…ãˆã¦ã„ã‚‹æ–¹å‘ã«ã¯ Force ã‚’åŠ ãˆãªã„ï¼ˆvelocityã‚’ç›´æ¥è§¦ã‚‰ãšã«éé€Ÿã‚’é˜²ãï¼‰
+        if (Vector3.Dot(diff, slideDir) > 0f)
+            _rb.AddForce(diff * _accelerationForce, ForceMode.Force);
     }
 
-    private void OnCollisionEnter(Collision _collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (_collision.gameObject != player.gameObject) return;
-        gameOverHandler?.TriggerGameOver();
+        if (collision.gameObject != _player.gameObject) return;
+        _gameOverHandler?.TriggerGameOver();
     }
 }

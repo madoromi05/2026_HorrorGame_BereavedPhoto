@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class StoryManager : MonoBehaviour
 {
-    [SerializeField] private StoryData[] storyDatas;
-    [SerializeField] private Image background;
-    [SerializeField] private Image characterImage;
-    [SerializeField] private TextMeshProUGUI storyText;
-    [SerializeField] private TextMeshProUGUI characterName;
-    [SerializeField] private InputScenarioController inputController;
+    [SerializeField] private StoryData[] _storyDatas;
+    [SerializeField] private Image _background;
+    [SerializeField] private Image _characterImage;
+    [SerializeField] private TextMeshProUGUI _storyText;
+    [SerializeField] private TextMeshProUGUI _characterName;
+    [SerializeField] private InputScenarioController _inputController;
 
-    //ƒXƒg[ƒŠ[‚ÌƒGƒŒƒƒ“ƒg”z—ñ”Ô†‚ª•K—v‚È‚Ì‚ÅƒvƒƒpƒeƒB‚ð
+    // ã‚¹ãƒˆãƒ¼ãƒªãƒ¼ã®ã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆé…åˆ—ç•ªå·ãŒå¿…è¦ãªã®ã§ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã«
     public int StoryIndex { get; private set; }
     public int TextIndex { get; private set; }
 
@@ -21,19 +21,17 @@ public class StoryManager : MonoBehaviour
     private Coroutine _typingCoroutine;
     private bool _isTyping = false;
 
-    //Start‚ÅŒÄ‚Ño‚»‚¤
     private void Start()
     {
         SetStoryElement(StoryIndex, TextIndex);
-        inputController.OnClickPerformed += AdvanceStory;
+        _inputController.OnClickPerformed += AdvanceStory;
     }
 
     private void OnDisable()
     {
-        inputController.OnClickPerformed -= AdvanceStory;
+        _inputController.OnClickPerformed -= AdvanceStory;
     }
 
-    // ƒNƒŠƒbƒN“ü—Í‚ðŽó‚¯Žæ‚èAƒ^ƒCƒsƒ“ƒO’†‚©”Û‚©‚Åˆ—‚ðŒˆ‚ß‚é
     private void OnClickReceived()
     {
         if (_isTyping)
@@ -42,13 +40,11 @@ public class StoryManager : MonoBehaviour
             AdvanceStory();
     }
 
-    // ƒXƒg[ƒŠ[‚ðŽŸ‚ÌƒeƒLƒXƒg‚Öi‚ß‚éB
-    // storyDatas ‚Ì”ÍˆÍŠOƒAƒNƒZƒX‚ð–h‚®‚½‚ßA—¼ƒCƒ“ƒfƒbƒNƒX‚ðŽ–‘OŒŸØ‚·‚éB
     public void AdvanceStory()
     {
         TextIndex++;
 
-        if (TextIndex < storyDatas[StoryIndex].stories.Count)
+        if (TextIndex < _storyDatas[StoryIndex].Stories.Count)
         {
             SetStoryElement(StoryIndex, TextIndex);
         }
@@ -57,54 +53,47 @@ public class StoryManager : MonoBehaviour
             TextIndex = 0;
             StoryIndex++;
 
-            if (StoryIndex < storyDatas.Length)
+            if (StoryIndex < _storyDatas.Length)
             {
                 SetStoryElement(StoryIndex, TextIndex);
             }
             else
             {
-                Debug.Log("‘SƒXƒg[ƒŠ[I—¹");
+                Debug.Log("å…¨ã‚¹ãƒˆãƒ¼ãƒªãƒ¼çµ‚äº†");
             }
         }
     }
 
     private void SetStoryElement(int storyIndex, int textIndex)
     {
-        //“¯‚¶Œ¾—t‚ð‚Ü‚Æ‚ß‚Ä‚¨‚­‚½‚ß‚Ìvar
-        var storyElement = storyDatas[storyIndex].stories[textIndex];
-        //‚Ç‚ÌƒXƒg[ƒŠ[ƒf[ƒ^‚ÌA‚Ç‚ÌƒoƒbƒNƒOƒ‰ƒ“ƒh‚©
-        background.sprite = storyElement.Background;
-        //‚Ç‚ÌƒXƒg[ƒŠ[ƒf[ƒ^‚ÌA‚Ç‚ÌƒLƒƒƒ‰ƒNƒ^‚©
-        characterImage.sprite = storyElement.CharacterImages;
-        //‚Ç‚ÌƒXƒg[ƒŠ[ƒf[ƒ^‚ÌA‚Ç‚ÌƒeƒLƒXƒg‚©
-        storyText.text = storyElement.StoryText;
-        //‚Ç‚ÌƒXƒg[ƒŠ[ƒf[ƒ^‚ÌA‚Ç‚ÌƒLƒƒƒ‰–¼‚©
-        characterName.text = storyElement.CharacterName;
+        var storyElement = _storyDatas[storyIndex].Stories[textIndex];
+        _background.sprite = storyElement.Background;
+        _characterImage.sprite = storyElement.CharacterImages;
+        _storyText.text = storyElement.StoryText;
+        _characterName.text = storyElement.CharacterName;
 
-        storyText.text = "";
+        _storyText.text = "";
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
         _typingCoroutine = StartCoroutine(TypeSentence(storyElement.StoryText));
     }
 
-    // 1•¶Žš‚¸‚Â•\Ž¦‚·‚é
     private IEnumerator TypeSentence(string sentence)
     {
         _isTyping = true;
         foreach (var letter in sentence)
         {
-            storyText.text += letter;
+            _storyText.text += letter;
             yield return new WaitForSeconds(kTypingInterval);
         }
         _isTyping = false;
         _typingCoroutine = null;
     }
 
-    // ƒ^ƒCƒsƒ“ƒO’†‚ÉƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«AŽc‚è‚ð‘¦Žž‘S•\Ž¦‚·‚é
     private void SkipTyping()
     {
         StopCoroutine(_typingCoroutine);
         _typingCoroutine = null;
-        storyText.text = storyDatas[StoryIndex].stories[TextIndex].StoryText;
+        _storyText.text = _storyDatas[StoryIndex].Stories[TextIndex].StoryText;
         _isTyping = false;
     }
 }

@@ -1,16 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// •Ç‚ÉÚG‚µ‚½‚Æ‚«‚Ì–@ü‚ð•ÛŽ‚µAˆÚ“®•ûŒü‚ð•Ç–Ê‚É‰ˆ‚¤‚æ‚¤•â³‚·‚éƒNƒ‰ƒXB
-/// •¡”‚ÌÚG“_–@ü‚ðŒÂ•Ê‚É Slerp •âŠÔ‚µ‚½ã‚ÅÅ‘å¬•ª‡¬‚µA
-/// Špi2•Ç‚ªŒð‚í‚é‰ÓŠj‚Å–@ü•½‹Ï‚ªƒ[ƒ‚É‚È‚é–â‘è‚ð‰ñ”ð‚·‚éB
-/// OnCollisionExit ’¼Œã‚É OnCollisionStay ‚ªÄ”­‰Î‚·‚éƒ`ƒƒƒ^ƒŠƒ“ƒO‚ð‹zŽû‚·‚é‚½‚ßA
-/// Exit Žž‚Í‘¦ƒŠƒZƒbƒg‚¹‚¸ kExitCooldownDuration •b‚Ì—P—\‚ðŽ‚½‚¹‚Ä‚©‚çƒŠƒZƒbƒg‚·‚éB
+/// å£ã«æŽ¥è§¦ã—ãŸã¨ãã®æ³•ç·šã‚’ä¿æŒã—ã€ç§»å‹•æ–¹å‘ã‚’å£é¢ã«åˆã†ã‚ˆã†è£œæ­£ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+/// è¤‡æ•°ã®æŽ¥è§¦ç‚¹ã®æ³•ç·šã‚’åˆæˆã—ã¦æœ€å¤§å€¤ã§åˆç®—ã—ã€æœ€å¤§çµ¶å¯¾å€¤ã§åˆã‚ã›ã‚‹ã€‚
+/// è§’ï¼ˆ2å£ã®åˆã‚ã›ç›®ï¼‰ã§æ³•ç·šãŒã‚¼ãƒ­ã«ãªã‚‹å ´åˆã«å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®æ³•ç·šã‚’ä¿æŒã™ã‚‹ã€‚
+/// OnCollisionExit ã®å¾Œã« OnCollisionStay ãŒç™ºç«ã™ã‚‹ãƒãƒ£ã‚¿ãƒªãƒ³ã‚°ã‚’æƒ³å®šã™ã‚‹ãŸã‚ã€
+/// Exit æ™‚ã¯å³åº§ã‚»ãƒƒãƒˆã›ãš kExitCooldownDuration ç§’ã®çŒ¶äºˆæ™‚é–“ãŒçµŒã£ã¦ã‹ã‚‰ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 /// </summary>
 public class WallSlider : MonoBehaviour
 {
-    // –@üƒXƒ€[ƒWƒ“ƒO‚Ì’Ç]‘¬“xB‘å‚«‚¢‚Ù‚ÇŠŠ‚ç‚©‚¾‚ª’Ç]‚ª’x‚­‚È‚é
-    [SerializeField] private float normalSmoothing = 15f;
+    [SerializeField] private float _normalSmoothing = 15f;
 
     private Vector3 _wallNormal;
     private bool _isTouchingWall;
@@ -18,13 +17,10 @@ public class WallSlider : MonoBehaviour
     private float _wallContactDuration;
     private float _xzSpeed;
 
-    // OnCollisionExit Œã‚É‘¦ƒŠƒZƒbƒg‚¹‚¸A‚±‚Ì•b”‚¾‚¯ isTouchingWall ‚ðˆÛŽ‚·‚é
     private float _exitCooldown;
 
     private const float kStuckSpeedThreshold = 0.05f;
     private const float kStuckDurationThreshold = 0.5f;
-
-    // ŠpE”–‚¢•Ç‚Å OnCollisionExit ¨ OnCollisionStay ‚ª‚•p“x‚ÅŒðŒÝ‚É—ˆ‚éƒ`ƒƒƒ^ƒŠƒ“ƒO‚ð‹zŽû‚·‚é—P—\ŽžŠÔ
     private const float kExitCooldownDuration = 0.1f;
 
     private Rigidbody _rb;
@@ -40,7 +36,7 @@ public class WallSlider : MonoBehaviour
 
         _exitCooldown -= Time.fixedDeltaTime;
 
-        // —P—\ŽžŠÔ‚ªØ‚ê‚½‚çƒŠƒZƒbƒgBOnCollisionStay ‚ª—ˆ‚Ä‚¢‚ê‚Î Awake ‚Åã‘‚«‚³‚ê‚Ä‚¢‚é‚½‚ß‰e‹¿‚È‚µ
+        // çŒ¶äºˆæ™‚é–“ãŒåˆ‡ã‚ŒãŸã‚‰ãƒªã‚»ãƒƒãƒˆã€‚OnCollisionStay ãŒæ¥ã¦ã„ã‚‹å ´åˆã¯ Awake ã§ä¸Šæ›¸ãã•ã‚Œã¦ã„ã‚‹ãŸã‚å½±éŸ¿ãªã—
         if (_exitCooldown <= 0f)
         {
             _isTouchingWall = false;
@@ -52,16 +48,13 @@ public class WallSlider : MonoBehaviour
 
     private void OnCollisionStay(Collision col)
     {
-        // Stay ‚ª—ˆ‚½‚Ì‚Å—P—\ƒ^ƒCƒ}[‚ðƒLƒƒƒ“ƒZƒ‹‚µ‚ÄÚGó‘Ô‚ðˆÛŽ‚·‚é
         _exitCooldown = 0f;
 
         var compositeNormal = CompositeNormal(col);
 
-        // ‡¬Œ‹‰Ê‚ªƒ[ƒ‚Ìê‡i‹É‚ß‚Ä‹Hj‚Í‘OƒtƒŒ[ƒ€‚Ì–@ü‚ðˆÛŽ‚·‚é
         if (compositeNormal == Vector3.zero) return;
 
-        // ‘OƒtƒŒ[ƒ€‚Ì–@ü‚©‚ç Slerp •âŠÔ‚µ‚Ä“¯ƒtƒŒ[ƒ€‚Ì‹}Œƒ‚È”½“]‚ð—}‚¦‚é
-        _wallNormal = Vector3.Slerp(_wallNormal, compositeNormal, normalSmoothing * Time.fixedDeltaTime);
+        _wallNormal = Vector3.Slerp(_wallNormal, compositeNormal, _normalSmoothing * Time.fixedDeltaTime);
         _isTouchingWall = true;
 
         _wallContactDuration += Time.fixedDeltaTime;
@@ -70,27 +63,27 @@ public class WallSlider : MonoBehaviour
         if (_wallContactDuration >= kStuckDurationThreshold && _xzSpeed <= kStuckSpeedThreshold)
         {
             DebugCustom.LogWarning(
-                $"[WallSlider] ’âŽ~ŒŸ’m: {gameObject.name}\n" +
-                $"  •Ç–@ü(ƒXƒ€[ƒWƒ“ƒOŒã) = {_wallNormal}\n" +
-                $"  •Ç–@ü(‡¬)          = {compositeNormal}\n" +
-                $"  XZ‘¬“x               = {_xzSpeed:F4}\n" +
-                $"  ÚGŒp‘±ŽžŠÔ         = {_wallContactDuration:F2}s\n" +
-                $"  ÚGƒIƒuƒWƒFƒNƒg      = {col.gameObject.name}\n" +
-                $"  ÚG“_”             = {col.contactCount}"
+                $"[WallSlider] åœæ­¢æ¤œçŸ¥: {gameObject.name}\n" +
+                $"  å£æ³•ç·š(ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°å¾Œ) = {_wallNormal}\n" +
+                $"  å£æ³•ç·š(ç”Ÿå€¤)          = {compositeNormal}\n" +
+                $"  XZé€Ÿåº¦               = {_xzSpeed:F4}\n" +
+                $"  æŽ¥è§¦ç¶™ç¶šæ™‚é–“         = {_wallContactDuration:F2}s\n" +
+                $"  æŽ¥è§¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ      = {col.gameObject.name}\n" +
+                $"  æŽ¥è§¦ç‚¹æ•°             = {col.contactCount}"
             );
         }
     }
 
     private void OnCollisionExit(Collision col)
     {
-        // ‘¦ƒŠƒZƒbƒg‚¹‚¸—P—\ŽžŠÔ‚ðÝ’è‚·‚éBƒ`ƒƒƒ^ƒŠƒ“ƒO‚Å Stay ‚ª—ˆ‚½‚çƒ^ƒCƒ}[‚ÍƒLƒƒƒ“ƒZƒ‹‚³‚ê‚é
+        // å³ã‚»ãƒƒãƒˆã›ãšçŒ¶äºˆæ™‚é–“ã‚’è¨­å®šã™ã‚‹ã€‚
         _exitCooldown = kExitCooldownDuration;
     }
 
     /// <summary>
-    /// ÚG“_‚Ì–@ü‚ð XZ •½–Ê‚É“Š‰e‚µAŠe¬•ª‚Ìâ‘Î’lÅ‘å’l‚Å‡¬‚·‚éB
-    /// ’Pƒ•½‹Ï‚Å‚Í2•Ç‚ª’¼Šp‚Ì‚Æ‚«–@ü‚ªƒ[ƒ‚É‚È‚é‚½‚ßA
-    /// ¬•ª‚²‚Æ‚ÉÅ‘å’l‚ðÌ—p‚·‚é‚±‚Æ‚Å•K‚¸—LŒø‚È’Eo•ûŒü‚ð•ÛŽ‚·‚éB
+    /// æŽ¥è§¦ç‚¹ã®æ³•ç·šã‚’ XZ æ–¹å‘ã«æŠ•å½±ã—ã€å„è»¸ã®çµ¶å¯¾å€¤ã§æœ€å¤§å€¤ã§åˆæˆã™ã‚‹ã€‚
+    /// å˜è»¸åˆç®—ã§ã¯2å£ã«æŒŸã¾ã£ãŸã¨ãæ³•ç·šãŒã‚¼ãƒ­ã«ãªã‚‹ãŸã‚ã€
+    /// å„è»¸ã”ã¨ã«æœ€å¤§å€¤ã‚’å–ã‚‹ç”¨ã‚’æŽ¡ç”¨ã™ã‚‹ã“ã¨ã§å¿…ãšã„ãšã‚Œã‹ã®å£ã‹ã‚‰å‡ºã‚‹æ–¹å‘ã‚’ä¿æŒã™ã‚‹ã€‚
     /// </summary>
     private static Vector3 CompositeNormal(Collision col)
     {
@@ -108,9 +101,9 @@ public class WallSlider : MonoBehaviour
     }
 
     /// <summary>
-    /// •Ç‚ÉÚG’†‚Å‚ ‚ê‚Î–@ü•½–Ê‚Ö‚ÌŽË‰e‚Å•ûŒü‚ð•â³‚µ‚Ä•Ô‚·B
-    /// •â³Œã‚ªƒ[ƒƒxƒNƒgƒ‹iŠp‚É^³–Ê‚©‚ç“–‚½‚Á‚Ä‚¢‚éj‚Ìê‡‚Í
-    /// ‡¬–@ü•ûŒüi•Ç‚©‚ç—£‚ê‚é•ûŒüj‚ð•Ô‚µ‚Ä’Eo‚ð‘£‚·B
+    /// å£ã«æŽ¥è§¦ã—ã¦ã„ã‚‹å ´åˆã€æ³•ç·šæ–¹å‘ã¸ã®å°„å½±ã§æ–¹å‘ã‚’è£œæ­£ã—ã¦è¿”ã™ã€‚
+    /// è£œæ­£å¾ŒãŒã‚¼ãƒ­ãƒ™ã‚¯ãƒˆãƒ«ï¼ˆå£ã«çœŸæ­£é¢ã‹ã‚‰å½“ãŸã£ã¦ã„ã‚‹ï¼‰ã®å ´åˆã¯
+    /// å£æ³•ç·šæ–¹å‘ï¼ˆå£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ï¼‰ã‚’è¿”ã—ã¦è„±å‡ºã‚’ä¿ƒã™ã€‚
     /// </summary>
     public Vector3 SlideDirection(Vector3 direction)
     {
@@ -118,7 +111,7 @@ public class WallSlider : MonoBehaviour
 
         var slid = Vector3.ProjectOnPlane(direction, _wallNormal).normalized;
 
-        // Šp‹l‚Ü‚èŽž‚Í‡¬–@ü‚»‚Ì‚à‚Ì‚ð’Eo•ûŒü‚Æ‚µ‚Ä•Ô‚·
+        // è§’è©°ã¾ã‚Šæ™‚ã¯å£æ³•ç·šãã®ã‚‚ã®ã‚’è„±å‡ºæ–¹å‘ã¨ã—ã¦è¿”ã™
         if (slid == Vector3.zero)
             return _wallNormal;
 
@@ -128,11 +121,11 @@ public class WallSlider : MonoBehaviour
     public bool IsTouchingWall => _isTouchingWall;
 
     /// <summary>
-    /// Šp‹l‚Ü‚èi•ÇÚG‚ªˆê’èŽžŠÔ‘±‚« XZ ‘¬“x‚ª‚Ù‚Úƒ[ƒj‚ðŒŸo‚µ‚½‚ç true ‚ð•Ô‚µA
-    /// “¯Žž‚É wallNormal ‚ÉŒ»Ý‚Ì•Ç–@ü‚ðo—Í‚µ‚Ä _wallContactDuration ‚ðƒŠƒZƒbƒg‚·‚éB
-    /// wallNormal ‚ðŒÄ‚Ño‚µ‘¤‚É“n‚·‚±‚Æ‚ÅA•Ç‚©‚ç—£‚ê‚é•ûŒü‚ðŠî€‚É‚µ‚½’Eo•ûŒü‚Ì’Š‘I‚ð‰Â”\‚É‚·‚éB
-    /// ƒvƒƒpƒeƒB‚Å‚Í‚È‚­ƒƒ\ƒbƒh‚É‚·‚é‚±‚Æ‚Åu“Ç‚ñ‚¾‚çÁ”ï‚³‚ê‚évˆê”­ƒCƒxƒ“ƒg‚Æ‚µ‚Äˆµ‚¢A
-    /// –ˆƒtƒŒ[ƒ€ true ‚ð•Ô‚µ‘±‚¯‚Ä Behavior ‘¤‚Å•ûŒü‚ª˜A‘±Ä’Š‘I‚³‚ê‚é‚Ì‚ð–h‚®B
+    /// è§’è©°ã¾ã‚Šï¼ˆå£æŽ¥è§¦ã‹ã¤ä¸€å®šæ™‚é–“ XZ é€Ÿåº¦ãŒã»ã¼ã‚¼ãƒ­ï¼‰ã‚’æ¤œå‡ºã—ãŸã‚‰ true ã‚’è¿”ã—ã€
+    /// wallNormal ã«ç¾åœ¨ã®å£æ³•ç·šã‚’å‡ºåŠ›ã™ã‚‹ã€‚åŒæ™‚ã« _wallContactDuration ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+    /// wallNormal ã‚’å‘¼ã³å‡ºã—å…ƒã«æ¸¡ã™ã“ã¨ã§ã€å£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ã«å‘ã‘ãŸè„±å‡ºå‡¦ç†ã‚’å¯èƒ½ã«ã™ã‚‹ã€‚
+    /// ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã§ã¯ãªããƒ¡ã‚½ãƒƒãƒ‰ã«ã™ã‚‹ã“ã¨ã§ã€Œèª­ã‚“ã ã¨ãç™ºç«ã€ã‚¤ãƒ™ãƒ³ãƒˆã¨ã—ã¦æ‰±ã„ã€
+    /// åŒãƒ•ãƒ¬ãƒ¼ãƒ  true ã‚’è¿”ã—ãŸå¾Œ Behavior å´ã§å‡¦ç†ã—ã€å†åº¦æ¤œå‡ºã‚’é˜²ãã€‚
     /// </summary>
     public bool ConsumeStuck(out Vector3 wallNormal)
     {

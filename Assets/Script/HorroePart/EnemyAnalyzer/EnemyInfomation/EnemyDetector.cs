@@ -7,13 +7,13 @@ using UnityEngine;
 /// </summary>
 public class EnemyDetector : MonoBehaviour
 {
-    [SerializeField] private EnemyAnalyzer analyzer;
-    [SerializeField] private Camera fpsCam;
+    [SerializeField] private EnemyAnalyzer _analyzer;
+    [SerializeField] private Camera _fpsCam;
 
     [Header("検知設定")]
-    [SerializeField] private float detectRange = 2.0f;   // SphereCastの球半径
-    [SerializeField] private float detectDistance = 30.0f;  // 最大検知距離
-    [SerializeField] private LayerMask enemyLayer;          // 敵レイヤーのみ対象
+    [SerializeField] private float _detectRange = 2.0f;   // SphereCastの球半径
+    [SerializeField] private float _detectDistance = 30.0f;  // 最大検知距離
+    [SerializeField] private LayerMask _enemyLayer;          // 敵レイヤーのみ対象
 
     private bool _isAiming = false;
 
@@ -23,18 +23,17 @@ public class EnemyDetector : MonoBehaviour
     {
         if (!_isAiming)
         {
-            analyzer.SetEnemyInRange(false, null);
+            _analyzer.SetEnemyInRange(false);
             return;
         }
 
         if (TryDetectEnemy(out RaycastHit hit))
         {
-            var analyzable = hit.collider.GetComponent<IAnalyzable>();
-            analyzer.SetEnemyInRange(true, analyzable);
+            _analyzer.SetEnemyInRange(true);
         }
         else
         {
-            analyzer.SetEnemyInRange(false, null);
+            _analyzer.SetEnemyInRange(false);
         }
     }
 
@@ -44,27 +43,27 @@ public class EnemyDetector : MonoBehaviour
     /// </summary>
     private bool TryDetectEnemy(out RaycastHit hit)
     {
-        Ray ray = new Ray(fpsCam.transform.position, fpsCam.transform.forward);
+        Ray ray = new Ray(_fpsCam.transform.position, _fpsCam.transform.forward);
         return Physics.SphereCast(
             ray,
-            detectRange,
+            _detectRange,
             out hit,
-            detectDistance,
-            enemyLayer
+            _detectDistance,
+            _enemyLayer
         );
     }
 
     // デバッグ用：Scene View で検知範囲を可視化
     private void OnDrawGizmosSelected()
     {
-        if (fpsCam == null) return;
+        if (_fpsCam == null) return;
 
         Gizmos.color = Color.cyan;
-        Vector3 origin = fpsCam.transform.position;
-        Vector3 end = origin + fpsCam.transform.forward * detectDistance;
+        Vector3 origin = _fpsCam.transform.position;
+        Vector3 end = origin + _fpsCam.transform.forward * _detectDistance;
 
-        Gizmos.DrawWireSphere(origin, detectRange);
+        Gizmos.DrawWireSphere(origin, _detectRange);
         Gizmos.DrawLine(origin, end);
-        Gizmos.DrawWireSphere(end, detectRange);
+        Gizmos.DrawWireSphere(end, _detectRange);
     }
 }

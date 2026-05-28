@@ -5,24 +5,24 @@ using UnityEngine.UI;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// ‰~Œ`ƒŠƒr[ƒ‹‰‰o‚Æ’·‰Ÿ‚µƒNƒ[ƒY‚ğ‹¤’Ê‰»‚µ‚½’ŠÛŠî’êƒNƒ‰ƒXB
-    /// MemoUIPresenterEItemAcquiredUIPresenter‚ªŒp³‚·‚éB
-    /// Show()/Hide()‚ÌƒI[ƒo[ƒ‰ƒCƒh‚ÅŠeUI‚Ì•\¦“à—e‚ğÀ‘•‚·‚é‚±‚ÆB
+    /// å††å½¢ãƒªãƒ“ãƒ¼ãƒ«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã§è¡¨ç¤ºãƒ»ã‚¯ãƒ­ãƒ¼ã‚ºã™ã‚‹å…±é€šåŸºåº•ã‚¯ãƒ©ã‚¹ã€‚
+    /// MemoUIPresenterãƒ»ItemAcquiredUIPresenterãŒç¶™æ‰¿ã™ã‚‹ã€‚
+    /// Show()/Hide()ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã§å„UIã®è¡¨ç¤ºå†…å®¹ã‚’è¨­å®šã™ã‚‹ã“ã¨ã€‚
     /// </summary>
     public abstract class RevealUIPresenterBase : MonoBehaviour
     {
-        [SerializeField] protected GameObject overlayPanel;
-        [SerializeField] protected Image revealImage;
-        [SerializeField] protected InputPlayerController inputController;
-        [SerializeField] protected Image holdProgressImage;
-        [SerializeField] protected GameObject playerLight;
+        [SerializeField] protected GameObject _overlayPanel;
+        [SerializeField] protected Image _revealImage;
+        [SerializeField] protected InputPlayerController _inputController;
+        [SerializeField] protected Image _holdProgressImage;
+        [SerializeField] protected GameObject _playerLight;
 
-        protected bool isShowing = false;
+        protected bool _isShowing = false;
 
-        private float holdElapsed = 0f;
-        private bool isHolding = false;
-        private Coroutine revealCoroutine;
-        private Material revealMaterialInstance;
+        private float _holdElapsed = 0f;
+        private bool _isHolding = false;
+        private Coroutine _revealCoroutine;
+        private Material _revealMaterialInstance;
 
         private const float kHoldDuration = 1f;
         private const float kRevealDuration = 0.6f;
@@ -30,103 +30,101 @@ namespace HorrorGame.UI
 
         protected virtual void Start()
         {
-            overlayPanel.SetActive(false);
-            holdProgressImage.fillAmount = 0f;
-            holdProgressImage.gameObject.SetActive(false);
+            _overlayPanel.SetActive(false);
+            _holdProgressImage.fillAmount = 0f;
+            _holdProgressImage.gameObject.SetActive(false);
         }
 
         private void OnEnable()
         {
-            inputController.OnInteractHeld += OnInteractHeld;
-            inputController.OnInteractReleased += OnInteractReleased;
+            _inputController.OnInteractHeld += OnInteractHeld;
+            _inputController.OnInteractReleased += OnInteractReleased;
         }
 
         private void OnDisable()
         {
-            inputController.OnInteractHeld -= OnInteractHeld;
-            inputController.OnInteractReleased -= OnInteractReleased;
+            _inputController.OnInteractHeld -= OnInteractHeld;
+            _inputController.OnInteractReleased -= OnInteractReleased;
         }
 
         private void Update()
         {
-            if (!isShowing || !isHolding) return;
+            if (!_isShowing || !_isHolding) return;
 
-            holdElapsed += Time.deltaTime;
-            holdProgressImage.fillAmount = holdElapsed / kHoldDuration;
+            _holdElapsed += Time.deltaTime;
+            _holdProgressImage.fillAmount = _holdElapsed / kHoldDuration;
 
-            if (holdElapsed >= kHoldDuration)
+            if (_holdElapsed >= kHoldDuration)
                 Hide();
         }
 
         private void OnInteractHeld()
         {
-            if (!isShowing) return;
-            isHolding = true;
-            holdElapsed = 0f;
-            holdProgressImage.gameObject.SetActive(true);
+            if (!_isShowing) return;
+            _isHolding = true;
+            _holdElapsed = 0f;
+            _holdProgressImage.gameObject.SetActive(true);
         }
 
         private void OnInteractReleased()
         {
-            if (!isShowing) return;
-            isHolding = false;
-            holdElapsed = 0f;
-            holdProgressImage.fillAmount = 0f;
-            holdProgressImage.gameObject.SetActive(false);
+            if (!_isShowing) return;
+            _isHolding = false;
+            _holdElapsed = 0f;
+            _holdProgressImage.fillAmount = 0f;
+            _holdProgressImage.gameObject.SetActive(false);
         }
 
         /// <summary>
-        /// ƒI[ƒo[ƒŒƒC‚ğ•\¦‚µ‰~Œ`ƒŠƒr[ƒ‹‰‰o‚ğÄ¶‚·‚éB
-        /// ”h¶ƒNƒ‰ƒX‚Í‚±‚Ìƒƒ\ƒbƒh‚ğƒI[ƒo[ƒ‰ƒCƒh‚µ‚Ä•\¦“à—e‚ğƒZƒbƒg‚µ‚½ŒãA
-        /// base.ShowBase()‚ğŒÄ‚Ô‚±‚ÆB
+        /// ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤è¡¨ç¤ºã—ã¦å††å½¢ãƒªãƒ“ãƒ¼ãƒ«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’å†ç”Ÿã™ã‚‹ã€‚
+        /// æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã¯ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã¦è¡¨ç¤ºå†…å®¹ã‚’ã‚»ãƒƒãƒˆã—ãŸå¾Œã€
+        /// base.ShowBase()ã‚’å‘¼ã¶ã“ã¨ã€‚
         /// </summary>
         protected void ShowBase()
         {
-            overlayPanel.SetActive(true);
-            isShowing = true;
-            inputController.SetPlayerInputEnabled(false);
+            _overlayPanel.SetActive(true);
+            _isShowing = true;
+            _inputController.SetPlayerInputEnabled(false);
 
-            if (playerLight != null)
-                playerLight.SetActive(false);
-            if (revealCoroutine != null)
-                StopCoroutine(revealCoroutine);
-            revealCoroutine = StartCoroutine(PlayRevealAnimation());
+            if (_playerLight != null)
+                _playerLight.SetActive(false);
+            if (_revealCoroutine != null)
+                StopCoroutine(_revealCoroutine);
+            _revealCoroutine = StartCoroutine(PlayRevealAnimation());
         }
 
         public virtual void Hide()
         {
-            overlayPanel.SetActive(false);
-            isShowing = false;
-            isHolding = false;
-            holdElapsed = 0f;
-            holdProgressImage.fillAmount = 0f;
-            holdProgressImage.gameObject.SetActive(false);
-            inputController.SetPlayerInputEnabled(true);
+            _overlayPanel.SetActive(false);
+            _isShowing = false;
+            _isHolding = false;
+            _holdElapsed = 0f;
+            _holdProgressImage.fillAmount = 0f;
+            _holdProgressImage.gameObject.SetActive(false);
+            _inputController.SetPlayerInputEnabled(true);
         }
 
         /// <summary>
-        /// _Radius‚ğ0¨1.5‚ÉƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚Ä‰~Œ`ƒŠƒr[ƒ‹‚ğÄ¶‚·‚éB
-        /// 1.5‚Ü‚ÅL‚°‚é‚Ì‚ÍUV‘ÎŠpüiã0.5à0.707j‚ğ’´‚¦‚Ä‰æ–Ê’[‚Ü‚ÅŠmÀ‚É•\¦‚·‚é‚½‚ßB
+        /// _Radiusã‚’0ã‹ã‚‰1.5ã«ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã—ã¦å††å½¢ãƒªãƒ“ãƒ¼ãƒ«ã‚’å†ç”Ÿã™ã‚‹ã€‚
+        /// 1.5ã¾ã§åºƒã’ã‚‹ã®ã¯UVå¯¾è§’è·é›¢ï¼ˆæœ€å¤§0.5â†’0.707ï¼‰ã‚’è¶…ãˆã¦ç”»é¢ç«¯ã¾ã§ç¢ºå®Ÿã«è¡¨ç¤ºã™ã‚‹ãŸã‚ã€‚
         /// </summary>
         private IEnumerator PlayRevealAnimation()
         {
-            DebugCustom.Log("PlayRevealAnimation started");
-            revealMaterialInstance = revealImage.material;
-            revealMaterialInstance.SetFloat(kShaderRadius, 0f);
+            _revealMaterialInstance = _revealImage.material;
+            _revealMaterialInstance.SetFloat(kShaderRadius, 0f);
 
             float elapsed = 0f;
             while (elapsed < kRevealDuration)
             {
                 elapsed += Time.deltaTime;
-                // easeOutCubic‚ÅÅ‰‚Í‘¬‚­AI”Õ‚ÍŠŠ‚ç‚©‚ÉL‚ª‚é
                 float t = elapsed / kRevealDuration;
                 float eased = 1f - Mathf.Pow(1f - t, 3f);
-                revealMaterialInstance.SetFloat(kShaderRadius, Mathf.Lerp(0f, 1.5f, eased));
+                _revealMaterialInstance.SetFloat(kShaderRadius, Mathf.Lerp(0f, 1.5f, eased));
                 yield return null;
             }
 
-            revealMaterialInstance.SetFloat(kShaderRadius, 1.5f);
-            revealCoroutine = null;
+            _revealMaterialInstance.SetFloat(kShaderRadius, 1.5f);
+            _revealCoroutine = null;
         }
     }
 }

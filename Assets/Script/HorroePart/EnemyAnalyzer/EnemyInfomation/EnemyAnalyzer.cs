@@ -8,10 +8,10 @@ using UnityEngine;
 public class EnemyAnalyzer : MonoBehaviour
 {
     // ---- 調整パラメータ ----
-    [SerializeField] private float analyzeSpeed = 0.1f;  // %/秒
-    [SerializeField] private float decaySpeed = 0f;     // 範囲外で減衰させたい場合は正値に
-    [SerializeField] private AnalyzerUI analyzerUI;
-    [SerializeField] private AnalyzerVignetteController vignetteController;
+    [SerializeField] private float _analyzeSpeed = 0.1f;  // %/秒
+    [SerializeField] private float _decaySpeed = 0f;     // 範囲外で減衰させたい場合は正値に
+    [SerializeField] private AnalyzerUI _analyzerUI;
+    [SerializeField] private AnalyzerVignetteController _vignetteController;
 
     public float AnalyzePercent { get; private set; } = 0f;
     public bool IsComplete => AnalyzePercent >= 100f;
@@ -25,22 +25,18 @@ public class EnemyAnalyzer : MonoBehaviour
         if (IsComplete) return;
         if (!_isAiming) return;
         if (_enemyInRange)
-            AnalyzePercent = Mathf.Min(100f, AnalyzePercent + analyzeSpeed * Time.deltaTime);
-        else if (decaySpeed > 0f)
-            AnalyzePercent = Mathf.Max(0f, AnalyzePercent - decaySpeed * Time.deltaTime);
+            AnalyzePercent = Mathf.Min(100f, AnalyzePercent + _analyzeSpeed * Time.deltaTime);
+        else if (_decaySpeed > 0f)
+            AnalyzePercent = Mathf.Max(0f, AnalyzePercent - _decaySpeed * Time.deltaTime);
 
-        analyzerUI.OnAnalyzeUpdate(AnalyzePercent);
-        vignetteController.UpdateVignette(AnalyzePercent);
+        _analyzerUI.OnAnalyzeUpdate(AnalyzePercent);
+        _vignetteController.UpdateVignette(AnalyzePercent);
     }
 
     /// <summary>敵が解析範囲に入ったか否かを外部から通知する。</summary>
-    public void SetEnemyInRange(bool inRange, IAnalyzable target = null)
+    public void SetEnemyInRange(bool inRange)
     {
         _enemyInRange = inRange;
-
-        // 新しい敵を検知したタイミングでUIにデータをセット
-        if (inRange && target != null)
-            analyzerUI.SetEnemyData(target);
     }
 
     // 構えを解除したときの処理
@@ -49,7 +45,7 @@ public class EnemyAnalyzer : MonoBehaviour
         AnalyzePercent = 0f;
         _enemyInRange = false;
         _isAiming = false;
-        analyzerUI.ResetFields();
-        vignetteController.ResetVignette();
+        _analyzerUI.ResetFields();
+        _vignetteController.ResetVignette();
     }
 }

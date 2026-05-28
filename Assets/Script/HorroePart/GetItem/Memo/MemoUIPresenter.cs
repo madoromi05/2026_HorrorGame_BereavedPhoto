@@ -4,20 +4,20 @@ using UnityEngine;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// ƒƒ‚‚Ì–{•¶‚ğ‰æ–Ê’†‰›‚ÉƒI[ƒo[ƒŒƒC•\¦‚·‚éUI§ŒäƒNƒ‰ƒXB
-    /// Canvas”z‰º‚Ìƒpƒlƒ‹‚ÉƒAƒ^ƒbƒ`‚µAMemoItem ‚©‚ç Show() ‚ğŒÄ‚ÔB
-    /// EƒL[‚Ü‚½‚Í•Â‚¶‚éƒ{ƒ^ƒ“‚Å”ñ•\¦‚É‚È‚éB
+    /// ãƒ¡ãƒ¢ã®æœ¬æ–‡ã‚’ç”»é¢ä¸­å¤®ã«ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤è¡¨ç¤ºã™ã‚‹UIã‚¯ãƒ©ã‚¹ã€‚
+    /// Canvasã®ä¸‹ã®ãƒ‘ãƒãƒ«ã«ã‚¢ã‚¿ãƒƒãƒã—ã€MemoItem ã‹ã‚‰ Show() ã‚’å‘¼ã¶ã€‚
+    /// Eã‚­ãƒ¼ã¾ãŸã¯é•·æŠ¼ã—ãƒœã‚¿ãƒ³ã§éè¡¨ç¤ºã«ãªã‚‹ã€‚
     /// </summary>
     public class MemoUIPresenter : RevealUIPresenterBase
     {
-        [SerializeField] private TextMeshProUGUI memoText;
+        [SerializeField] private TextMeshProUGUI _memoText;
 
         /// <summary>
-        /// ƒƒ‚–{•¶‚ğó‚¯æ‚èƒI[ƒo[ƒŒƒC‚ğ•\¦‚·‚éBMemoItem‚©‚çŒÄ‚Î‚ê‚éB
+        /// ãƒ¡ãƒ¢æœ¬æ–‡ã‚’å—ã‘å–ã‚Šã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ã‚’è¡¨ç¤ºã™ã‚‹ã€‚MemoItemã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚
         /// </summary>
         public void Show(string content)
         {
-            memoText.text = content;
+            _memoText.text = content;
             ShowBase();
         }
     }

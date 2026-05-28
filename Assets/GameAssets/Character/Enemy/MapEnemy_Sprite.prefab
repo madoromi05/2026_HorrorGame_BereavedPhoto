@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 7864443649624027618}
   - component: {fileID: 774548280682853366}
   - component: {fileID: 8573397869608896876}
-  - component: {fileID: -2947195945512408364}
   m_Layer: 6
   m_Name: MapEnemy_Sprite
   m_TagString: Untagged
@@ -126,10 +125,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRange: 10
-  chaseSpeed: 4
-  accelerationForce: 30
-  rotateSpeed: 10
+  _lightDetectRange: 20
+  _lightDetectAngle: 60
+  _detectRange: 10
+  _chaseSpeed: 4
+  _accelerationForce: 30
+  _rotateSpeed: 10
 --- !u!114 &7864443649624027618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,10 +143,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a2df105d2192384e8d898b43c5902be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderSpeed: 2
-  rotateSpeed: 10
-  accelerationForce: 20
-  arrivalRadius: 1
+  _wanderSpeed: 2
+  _rotateSpeed: 10
+  _accelerationForce: 20
+  _arrivalRadius: 1
 --- !u!114 &774548280682853366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,7 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSmoothing: 15
+  _normalSmoothing: 15
 --- !u!212 &8573397869608896876
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -214,21 +215,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-2947195945512408364
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa1d6c0601046f54e932acd267dfc73b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  age: 25
-  gender: MAN
-  height: 175
-  bodyWeight: 70
-  condition: HAPPY
-  threatPct: 55

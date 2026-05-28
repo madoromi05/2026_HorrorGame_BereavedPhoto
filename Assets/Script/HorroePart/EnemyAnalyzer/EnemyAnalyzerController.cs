@@ -6,11 +6,11 @@ using UnityEngine;
 /// </summary>
 public class EnemyAnalyzerController : MonoBehaviour
 {
-    [SerializeField] private InputPlayerController inputController;
-    [SerializeField] private EnemyAnalyzer analyzer;
-    [SerializeField] private CanvasGroup analyzerUIGroup;
-    [SerializeField] private EnemyDetector detector;
-    [SerializeField] private HandLightController handLightController;
+    [SerializeField] private InputPlayerController _inputController;
+    [SerializeField] private EnemyAnalyzer _analyzer;
+    [SerializeField] private CanvasGroup _analyzerUIGroup;
+    [SerializeField] private EnemyDetector _detector;
+    [SerializeField] private HandLightController _handLightController;
     // カメラUIのフェード速度
     [SerializeField] private float uiFadeSpeed = 8f;
 
@@ -18,41 +18,41 @@ public class EnemyAnalyzerController : MonoBehaviour
 
     private void OnEnable()
     {
-        inputController.OnCameraPerformed += HandleCamera;
+        _inputController.OnCameraPerformed += HandleCamera;
     }
 
     private void OnDisable()
     {
-        inputController.OnCameraPerformed -= HandleCamera;
+        _inputController.OnCameraPerformed -= HandleCamera;
     }
 
     private void Update()
     {
         // UIをフェードイン/アウト
         float targetAlpha = m_isAiming ? 1f : 0f;
-        analyzerUIGroup.alpha = Mathf.MoveTowards(
-            analyzerUIGroup.alpha,
+        _analyzerUIGroup.alpha = Mathf.MoveTowards(
+            _analyzerUIGroup.alpha,
             targetAlpha,
             uiFadeSpeed * Time.deltaTime
         );
 
         // 構えていないときは解析を止める
         if (!m_isAiming)
-            analyzer.SetEnemyInRange(false, null);
+            _analyzer.SetEnemyInRange(false);
     }
 
     private void HandleCamera(bool isAiming)
     {
         m_isAiming = isAiming;
 
-        detector.SetAiming(isAiming);
-        analyzer.SetAiming(isAiming);
+        _detector.SetAiming(isAiming);
+        _analyzer.SetAiming(isAiming);
 
         // 構えを解除したらリセット
         if (isAiming)
-            handLightController.ForceOff();
+            _handLightController.ForceOff();
         else
-            analyzer.Reset();
+            _analyzer.Reset();
 
     }
 }

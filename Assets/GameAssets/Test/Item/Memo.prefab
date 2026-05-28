@@ -149,5 +149,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd373bcf40b06b8469b6e8215d245a9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  memoContent: "test\u3060\u3088\uFF5E"
-  itemData: {fileID: 11400000, guid: 2d952a0891d036c4f8bb02f6dab175f5, type: 2}
+  _memoContent: 
+  _itemData: {fileID: 11400000, guid: 2d952a0891d036c4f8bb02f6dab175f5, type: 2}

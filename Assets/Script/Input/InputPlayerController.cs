@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlayerActions
+public class InputPlayerController : MonoBehaviourã€€, InputSystem_Actions.IPlayerActions
 {
     public event Action<Vector2> OnMovePerformed;
     public event Action<Vector2> OnLookPerformed;
@@ -13,45 +13,46 @@ public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlaye
     public event Action OnInteractHeld;
     public event Action OnInteractReleased;
 
-    private bool isPlayerInputEnabled = true;
-    private InputSystem_Actions inputActions;
+    private bool _isPlayerInputEnabled = true;
+    private InputSystem_Actions _inputActions;
 
-    //---------- —LŒø‰» ----------
+    //---------- æœ‰åŠ¹åŒ– ----------
     private void OnEnable()
     {
-        if (inputActions == null)
+        if (_inputActions == null)
         {
-            inputActions = new InputSystem_Actions();
-            inputActions.Player.SetCallbacks(this);
+            _inputActions = new InputSystem_Actions();
+            _inputActions.Player.SetCallbacks(this);
         }
-        inputActions.Player.Enable();
+        _inputActions.Player.Enable();
     }
 
-    //---------- –³Œø‰» ----------
+    //---------- ç„¡åŠ¹åŒ– ----------
     private void OnDisable()
     {
-        inputActions?.Player.Disable();
+        _inputActions?.Player.Disable();
     }
 
     /// <summary>
-    /// ƒƒ‚•\¦’†‚È‚ÇAƒvƒŒƒCƒ„[‘€ì‚ğ••‚¶‚é•K—v‚ª‚ ‚é‚Æ‚«‚ÉŒÄ‚ÔB
-    /// MoveELookEInteract‚ÌƒCƒxƒ“ƒg”­‰Î‚ğ—}§‚·‚éB
+    /// ãƒ¡ãƒ¢è¡¨ç¤ºãªã©ã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ“ä½œã‚’å°ã˜ã‚‹å¿…è¦ãŒã‚ã‚‹ã¨ãã«å‘¼ã¶ã€‚
+    /// Moveãƒ»Lookãƒ»Interactã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ­¢ã‚ã‚‹ã€‚
     /// </summary>
     public void SetPlayerInputEnabled(bool enabled)
     {
-        isPlayerInputEnabled = enabled;
+        _isPlayerInputEnabled = enabled;
     }
-    //-------------------- ƒR[ƒ‹ƒoƒbƒNÀ‘• --------------------
+
+    //-------------------- ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ç¾¤ --------------------
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (!isPlayerInputEnabled) return;
+        if (!_isPlayerInputEnabled) return;
         if (context.performed || context.canceled)
             OnMovePerformed?.Invoke(context.ReadValue<Vector2>());
     }
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        if (!isPlayerInputEnabled) return;
+        if (!_isPlayerInputEnabled) return;
         if (context.performed || context.canceled)
             OnLookPerformed?.Invoke(context.ReadValue<Vector2>());
     }
@@ -60,7 +61,7 @@ public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlaye
     {
         if (context.performed)
         {
-            if (isPlayerInputEnabled)
+            if (_isPlayerInputEnabled)
                 OnInteractPerformed?.Invoke();
             else
                 OnInteractHeld?.Invoke();
@@ -72,7 +73,7 @@ public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlaye
 
     public void OnCrouch(InputAction.CallbackContext context)
     {
-        if (!isPlayerInputEnabled) return;
+        if (!_isPlayerInputEnabled) return;
         if (context.performed)
         {
             Debug.Log("Crouch performed, invoking event with true...");
@@ -92,7 +93,7 @@ public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlaye
 
     public void OnCamera(InputAction.CallbackContext context)
     {
-        if (!isPlayerInputEnabled) return;
+        if (!_isPlayerInputEnabled) return;
         if (context.performed)
             OnCameraPerformed?.Invoke(true);
         else if (context.canceled)
@@ -101,7 +102,7 @@ public class InputPlayerController : MonoBehaviour@, InputSystem_Actions.IPlaye
 
     public void OnHandLight(InputAction.CallbackContext context)
     {
-        if (!isPlayerInputEnabled) return;
+        if (!_isPlayerInputEnabled) return;
         if (context.performed)
         {
             OnHandLightPerformed?.Invoke();

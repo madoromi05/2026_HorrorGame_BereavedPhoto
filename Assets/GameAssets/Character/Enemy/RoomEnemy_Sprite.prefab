@@ -133,7 +133,6 @@ GameObject:
   - component: {fileID: 2956920703997310545}
   - component: {fileID: 774548280682853366}
   - component: {fileID: -1084362197312838748}
-  - component: {fileID: 3819793337731234279}
   m_Layer: 6
   m_Name: RoomEnemy_Sprite
   m_TagString: Untagged
@@ -245,10 +244,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRange: 10
-  chaseSpeed: 4
-  accelerationForce: 30
-  rotateSpeed: 10
+  _lightDetectRange: 20
+  _lightDetectAngle: 60
+  _detectRange: 10
+  _chaseSpeed: 4
+  _accelerationForce: 30
+  _rotateSpeed: 10
 --- !u!114 &774548280682853366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,7 +262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSmoothing: 15
+  _normalSmoothing: 15
 --- !u!114 &-1084362197312838748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,27 +275,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 285f67f302142544e93cda3a3147f908, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderSpeed: 2
-  wanderInterval: 3
-  accelerationForce: 20
-  rotateSpeed: 10
-  rayDistance: 1.5
-  rayOriginOffset: 0.4
---- !u!114 &3819793337731234279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa1d6c0601046f54e932acd267dfc73b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyType: SOLDIER
-  level: 12
-  maxHp: 480
-  attack: 38
-  defense: 22
-  threatPct: 55
+  _wanderSpeed: 2
+  _wanderInterval: 3
+  _accelerationForce: 20
+  _rotateSpeed: 10
+  _rayDistance: 1.5
+  _rayOriginOffset: 0.4

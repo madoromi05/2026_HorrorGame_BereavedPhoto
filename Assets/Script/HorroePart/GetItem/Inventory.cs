@@ -5,32 +5,32 @@ using UnityEngine;
 namespace HorrorGame.Item
 {
     /// <summary>
-    /// ƒvƒŒƒCƒ„[‚ªæ“¾‚µ‚½ƒAƒCƒeƒ€‚ğŠÇ—‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒgB
-    /// PlayerInteractor‚Æ“¯‚¶GameObject‚ÉƒAƒ^ƒbƒ`‚µ‚Äg—p‚·‚éB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒç²å¾—ã—ãŸã‚¢ã‚¤ãƒ†ãƒ ã‚’ç®¡ç†ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
+    /// PlayerInteractorã¨åŒã˜GameObjectã«ã‚¢ã‚¿ãƒƒãƒã—ã¦ä½¿ç”¨ã™ã‚‹ã€‚
     /// </summary>
     public class Inventory : MonoBehaviour
     {
-        /// ƒAƒCƒeƒ€æ“¾‚É”­‰ÎBUI‚âƒhƒA‰ğùƒ`ƒFƒbƒN‚Åw“Ç‚·‚éB
+        /// ã‚¢ã‚¤ãƒ†ãƒ å–å¾—æ™‚ã«ç™ºç«ã€‚UIã‚„ãƒ‰ã‚¢åˆ¤å®šã§è³¼èª­ã™ã‚‹ã€‚
         public event Action<ItemData> OnItemAdded;
 
-        private readonly HashSet<ItemType> acquiredItems = new();
+        private readonly HashSet<ItemType> _acquiredItems = new();
 
-        /// ƒAƒCƒeƒ€‚ğŠƒŠƒXƒg‚É’Ç‰Á‚µAOnItemAdded‚ğ”­‰Î‚·‚éB
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—æ¸ˆã¿ãƒªã‚¹ãƒˆã«è¿½åŠ ã—ã€OnItemAddedã‚’ç™ºç«ã™ã‚‹ã€‚
         public void AddItem(ItemData itemData)
         {
             if (itemData == null)
             {
-                DebugCustom.LogWarning("[Inventory] null‚ÌItemData‚ğ’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½B");
+                DebugCustom.LogWarning("[Inventory] nullã®ItemDataã‚’è¿½åŠ ã—ã‚ˆã†ã¨ã—ã¾ã—ãŸã€‚");
                 return;
             }
 
-            acquiredItems.Add(itemData.ItemType);
+            _acquiredItems.Add(itemData.ItemType);
             OnItemAdded?.Invoke(itemData);
 
-            DebugCustom.Log($"[Inventory] æ“¾: {itemData.DisplayName}");
+            DebugCustom.Log($"[Inventory] å–å¾—: {itemData.DisplayName}");
         }
 
-        /// w’èí•Ê‚ÌƒAƒCƒeƒ€‚ğŠ‚µ‚Ä‚¢‚é‚©BƒhƒA‰ğù‚È‚Ç‚Ì”»’è‚Ég‚¤B
-        public bool HasItem(ItemType type) => acquiredItems.Contains(type);
+        /// æŒ‡å®šç¨®é¡ã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—ã—ã¦ã„ã‚‹ã‹ã€‚ãƒ‰ã‚¢åˆ¤å®šãªã©ã«ä½¿ã†ã€‚
+        public bool HasItem(ItemType type) => _acquiredItems.Contains(type);
     }
 }

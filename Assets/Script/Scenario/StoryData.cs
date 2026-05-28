@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Sinario", menuName = "StoryData")]
 public class StoryData : ScriptableObject
 {
-    public List<Story> stories = new List<Story>();
+    public List<Story> Stories = new List<Story>();
 }
 
 [System.Serializable]

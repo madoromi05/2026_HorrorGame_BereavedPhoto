@@ -3,21 +3,21 @@ using UnityEngine;
 namespace HorrorGame.Item
 {
     /// <summary>
-    /// �A�C�e��1��ނ̐ÓI�f�[�^��ێ�����ScriptableObject�B
-    /// Inspector�ō쐬���AItemPickup�ɃA�^�b�`���Ďg�p����B
-    /// �����^�C���ŕύX����邱�Ƃ͑z�肵�Ă��Ȃ��i�ǂݎ���p�f�[�^�j�B
+    /// アイテム1種類の静的データを保持するScriptableObject。
+    /// Inspectorで作成し、ItemPickupにアタッチして使用する。
+    /// 実行時に変更されることは想定していない（読み取り専用データ）。
     /// </summary>
     [CreateAssetMenu(fileName = "ItemData", menuName = "ItemData")]
     public class ItemData : ScriptableObject
     {
-        [SerializeField] private ItemType itemType;
-        [SerializeField] private string displayName;
+        [SerializeField] private ItemType _itemType;
+        [SerializeField] private string _displayName;
 
         [TextArea(2, 5)]
-        [SerializeField] private string description;
+        [SerializeField] private string _description;
 
-        public ItemType ItemType => itemType;
-        public string DisplayName => displayName;
-        public string Description => description;
+        public ItemType ItemType => _itemType;
+        public string DisplayName => _displayName;
+        public string Description => _description;
     }
 }

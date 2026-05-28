@@ -6,43 +6,43 @@ using UnityEngine;
 namespace HorrorGame.Dungeon
 {
     /// <summary>
-    /// ƒ_ƒ“ƒWƒ‡ƒ“¶¬Œã‚É•”‰®“à‚ÌItemUI‚Ì‰Šú‰»‚ğs‚¤ƒNƒ‰ƒXB
+    /// ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³ç”Ÿæˆå¾Œã«éƒ¨å±‹å†…ã®Itemã¨UIã®åˆæœŸåŒ–ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã€‚
     /// </summary>
     public class ItemInitializer : MonoBehaviour
     {
-        [SerializeField] private MemoUIPresenter memoUIPresenter;
-        [SerializeField] private ItemAcquiredUIPresenter itemAcquiredUIPresenter;
-        [SerializeField] private Transform playerTransform;
-        [SerializeField] private DungeonGenerator dungeonGenerator;
+        [SerializeField] private MemoUIPresenter _memoUIPresenter;
+        [SerializeField] private ItemAcquiredUIPresenter _itemAcquiredUIPresenter;
+        [SerializeField] private Transform _playerTransform;
+        [SerializeField] private DungeonGenerator _dungeonGenerator;
 
         private void Start()
         {
-            dungeonGenerator.OnRoomPlaced += Initialize;
+            _dungeonGenerator.OnRoomPlaced += Initialize;
         }
 
         private void OnDestroy()
         {
-            dungeonGenerator.OnRoomPlaced -= Initialize;
+            _dungeonGenerator.OnRoomPlaced -= Initialize;
         }
 
         /// <summary>
-        /// roomParent”z‰º‚Ì‘SMemoItemEItemPickup‚ÉPresenter‚ÆInventory‚ğ’“ü‚·‚éB
-        /// SectionPlacer.Place()Š®—¹Œã‚ÉŒÄ‚Ô‚±‚ÆB
+        /// roomParenté…ä¸‹ã®å…¨MemoItemãƒ»ItemPickupã«Presenterã¨Inventoryã‚’æ³¨å…¥ã™ã‚‹ã€‚
+        /// SectionPlacer.Place()ã®å¾Œã«å‘¼ã¶ã“ã¨ã€‚
         /// </summary>
         public void Initialize(Transform roomParent)
         {
-            var inventory = playerTransform.GetComponent<Inventory>();
+            var inventory = _playerTransform.GetComponent<Inventory>();
             if (inventory == null)
             {
-                DebugCustom.LogWarning("[ItemInitializer] Inventory‚ªƒvƒŒƒCƒ„[‚ÉŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                DebugCustom.LogWarning("[ItemInitializer] InventoryãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
                 return;
             }
 
             foreach (var memo in roomParent.GetComponentsInChildren<MemoItem>())
-                memo.Init(memoUIPresenter, inventory);
+                memo.Init(_memoUIPresenter, inventory);
 
             foreach (var pickup in roomParent.GetComponentsInChildren<ItemPickup>())
-                pickup.Init(itemAcquiredUIPresenter);
+                pickup.Init(_itemAcquiredUIPresenter);
         }
     }
 }

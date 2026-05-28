@@ -6,32 +6,33 @@ using HorrorGame.Item;
 namespace HorrorGame.Interaction
 {
     /// <summary>
-    /// DoorƒIƒuƒWƒFƒNƒg‚ÉƒAƒ^ƒbƒ`‚·‚éƒRƒ“ƒ|[ƒlƒ“ƒgB
-    /// ‘Î‰‚·‚é ItemType ‚ÌŒ®‚ğ Inventory ‚ÉŠ‚µ‚Ä‚¢‚éê‡‚Ì‚İ
-    /// ScenarioScene ‚Ö‘JˆÚ‚·‚éƒhƒAB
-    /// requiredKey ‚Í Inspector ‚Å‘Î‰‚·‚é KeyItem ‚Ì ItemType ‚Æˆê’v‚³‚¹‚é‚±‚ÆB
+    /// Doorã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¢ã‚¿ãƒƒãƒã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
+    /// å¯¾å¿œã™ã‚‹ ItemType ã®éµã‚’ Inventory ã«æŒã£ã¦ã„ã‚‹å ´åˆã®ã¿
+    /// ScenarioScene ã¸é·ç§»ã™ã‚‹ãƒ‰ã‚¢ã€‚
+    /// requiredKey ã¯ Inspectorã§å¯¾å¿œã™ã‚‹ KeyItem ã® ItemType ã¨ä¸€è‡´ã•ã›ã‚‹ã“ã¨ã€‚
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class ScenarioDoor : MonoBehaviour, IInteractable
     {
         private const string kScenarioSceneName = "ScenarioPart";
 
-        [SerializeField] private ItemType requiredKey;
+        [SerializeField] private ItemType _requiredKey;
 
         public bool CanInteract => true;
-        public string HintText => "”à‚ÉŒ®‚ğg‚¤";
+        public string HintText => "éµã‚’ä½¿ã£ã¦é–‹ã‘ã‚‹";
+
         public void OnInteract()
         {
             var inventory = FindFirstObjectByType<Inventory>();
             if (inventory == null)
             {
-                DebugCustom.LogWarning("[ScenarioDoor] Inventory ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
+                DebugCustom.LogWarning("[ScenarioDoor] Inventory ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚");
                 return;
             }
 
-            if (!inventory.HasItem(requiredKey))
+            if (!inventory.HasItem(_requiredKey))
             {
-                DebugCustom.Log($"[ScenarioDoor] Œ® '{requiredKey}' ‚ğ‚Á‚Ä‚¢‚È‚¢‚½‚ßŠJ‚¯‚ç‚ê‚È‚¢B");
+                DebugCustom.Log($"[ScenarioDoor] éµ '{_requiredKey}' ã‚’æŒã£ã¦ã„ãªã„ãŸã‚é–‹ã‘ã‚‰ã‚Œãªã„ã€‚");
                 return;
             }
 
