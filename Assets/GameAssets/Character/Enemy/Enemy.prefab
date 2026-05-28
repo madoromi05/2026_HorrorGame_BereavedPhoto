@@ -179,10 +179,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectRange: 10
-  chaseSpeed: 4
-  accelerationForce: 30
-  rotateSpeed: 10
+  _sightRange: 13
+  _sightHalfAngle: 35
+  _sightLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _eyeHeightOffset: 1.5
+  _lightDetectRange: 20
+  _lightDetectAngle: 60
+  _detectRange: 2
+  _chaseSpeed: 6
+  _accelerationForce: 30
+  _rotateSpeed: 10
 --- !u!114 &-8907279812266083297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,10 +203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a2df105d2192384e8d898b43c5902be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderSpeed: 2
-  rotateSpeed: 10
-  accelerationForce: 20
-  arrivalRadius: 1
+  _wanderSpeed: 2
+  _rotateSpeed: 10
+  _accelerationForce: 20
+  _arrivalRadius: 1
 --- !u!114 &2612355546425580720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,4 +219,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSmoothing: 15
+  _normalSmoothing: 15

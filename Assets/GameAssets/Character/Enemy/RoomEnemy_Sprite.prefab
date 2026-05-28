@@ -244,10 +244,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _sightRange: 8
+  _sightHalfAngle: 35
+  _sightLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _eyeHeightOffset: 1.5
   _lightDetectRange: 20
   _lightDetectAngle: 60
   _detectRange: 10
-  _chaseSpeed: 4
+  _chaseSpeed: 6
   _accelerationForce: 30
   _rotateSpeed: 10
 --- !u!114 &774548280682853366

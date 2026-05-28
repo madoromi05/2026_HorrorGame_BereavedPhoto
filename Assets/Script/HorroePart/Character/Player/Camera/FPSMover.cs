@@ -10,11 +10,20 @@ public class FPSMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _yawSensitivity = 0.1f;
-    [SerializeField] private float _crouchHeightOffset = 0.7f;
+    [SerializeField] private float _crouchHeightOffset = 0.7f;  // しゃがみで縮む Collider 高さ
+    [SerializeField] private float _dashSpeed = 8f;             // ダッシュ速度
+    [SerializeField] private float _dashDuration = 2.0f;        // ダッシュの持続時間（秒）
+    [SerializeField] private float _dashMaxGauge = 100f;        // ダッシュゲージの最大値
+    [SerializeField] private float _dashCostPerUse = 1f;        // ダッシュ使用時のゲージ消費量
+    [SerializeField] private float _dashRegenRate = 20f;        // ダッシュゲージの回復速度
+    [SerializeField] private float _dashRegenDelay = 1.5f;      // ダッシュ後の回復開始までの遅延時間
     [SerializeField] private Transform _cameraTransform;
 
     public bool IsCrouching => _isCrouching;
     public bool IsMoving => _moveInput.sqrMagnitude > 0.01f;
+    public bool IsDashing => _isDashing;
+    public float DashGauge => _dashGauge;
+    public float DashMaxGauge => _dashMaxGauge;
 
     private CharacterController _characterController;
     private InputPlayerController _inputCallbackController;
@@ -25,6 +34,11 @@ public class FPSMover : MonoBehaviour
     private bool _isCrouching = false;
     private float _standHeight;
     private float _cameraStandLocalY;
+    private float _dashGauge;
+    private bool _isDashing;
+    private float _dashTimer;
+    private float _regenDelayTimer;
+    private bool _sprintPressed;
 
     private void Awake()
     {
@@ -32,6 +46,7 @@ public class FPSMover : MonoBehaviour
         _inputCallbackController = GetComponent<InputPlayerController>();
         _standHeight = _characterController.height;
         _currentYaw = transform.eulerAngles.y;
+        _dashGauge = _dashMaxGauge;
         if (_cameraTransform != null)
             _cameraStandLocalY = _cameraTransform.localPosition.y;
     }
@@ -42,6 +57,7 @@ public class FPSMover : MonoBehaviour
         _inputCallbackController.OnLookPerformed += HandleLook;
         _inputCallbackController.OnCameraPerformed += HandleCamera;
         _inputCallbackController.OnCrouchPerformed += HandleCrouch;
+        _inputCallbackController.OnSprintPerformed += HandleSprint;
     }
 
     private void OnDisable()
@@ -50,6 +66,7 @@ public class FPSMover : MonoBehaviour
         _inputCallbackController.OnLookPerformed -= HandleLook;
         _inputCallbackController.OnCameraPerformed -= HandleCamera;
         _inputCallbackController.OnCrouchPerformed -= HandleCrouch;
+        _inputCallbackController.OnSprintPerformed -= HandleSprint;
     }
 
     private void HandleMove(Vector2 input)
@@ -69,13 +86,51 @@ public class FPSMover : MonoBehaviour
         _isAiming = isAiming;
     }
 
+    private void HandleSprint(bool pressed)
+    {
+        if (pressed && !_isDashing && _dashGauge >= _dashCostPerUse)
+            _sprintPressed = true;
+    }
+
     private void FixedUpdate()
     {
+        // ダッシュ開始
+        if (_sprintPressed)
+        {
+            _sprintPressed = false;
+            _isDashing = true;
+            _dashTimer = _dashDuration;
+            _dashGauge -= _dashCostPerUse;
+            _regenDelayTimer = _dashRegenDelay;
+        }
+
+        // ダッシュタイマー
+        if (_isDashing)
+        {
+            _dashTimer -= Time.fixedDeltaTime;
+            if (_dashTimer <= 0f)
+                _isDashing = false;
+        }
+
+        // ゲージ回復
+        if (_regenDelayTimer > 0f)
+            _regenDelayTimer -= Time.fixedDeltaTime;
+        else if (_dashGauge < _dashMaxGauge)
+            _dashGauge = Mathf.Min(_dashGauge + _dashRegenRate * Time.fixedDeltaTime, _dashMaxGauge);
+
+        // 速度決定
+        float speed;
+        if (_isDashing) speed = _dashSpeed;
+        else if (_isAiming) speed = _moveSpeed * kAimSpeed;
+        else speed = _moveSpeed;
+
         // カメラの上下向きに影響されないよう水平成分のみ使用
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
 
-        float speed = _isAiming ? _moveSpeed * kAimSpeed : _moveSpeed;
+        Vector2 input = (_isDashing && _moveInput.sqrMagnitude < 0.01f)
+        ? Vector2.up
+        : _moveInput;
 
         Vector3 movement = (forward * _moveInput.y + right * _moveInput.x)
              * speed * Time.fixedDeltaTime;

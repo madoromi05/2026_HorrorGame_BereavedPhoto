@@ -8,6 +8,7 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlay
     public event Action<Vector2> OnLookPerformed;
     public event Action<bool> OnCameraPerformed;
     public event Action<bool> OnCrouchPerformed;
+    public event Action<bool> OnSprintPerformed;
     public event Action OnInteractPerformed;
     public event Action OnHandLightPerformed;
     public event Action OnInteractHeld;
@@ -76,19 +77,22 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlay
         if (!_isPlayerInputEnabled) return;
         if (context.performed)
         {
-            Debug.Log("Crouch performed, invoking event with true...");
             OnCrouchPerformed?.Invoke(true);
         }
         else if (context.canceled)
         {
-            Debug.Log("Crouch canceled, invoking event with false...");
             OnCrouchPerformed?.Invoke(false);
         }
     }
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        throw new NotImplementedException();
+
+        if (!_isPlayerInputEnabled) return;
+        if (context.performed)
+            OnSprintPerformed?.Invoke(true);
+        else if (context.canceled)
+            OnSprintPerformed?.Invoke(false);
     }
 
     public void OnCamera(InputAction.CallbackContext context)

@@ -48,6 +48,9 @@ public class WallSlider : MonoBehaviour
 
     private void OnCollisionStay(Collision col)
     {
+        // 敵同士の衝突は壁として扱わない
+        if (col.gameObject.GetComponent<EnemyController>() != null) return;
+
         _exitCooldown = 0f;
 
         var compositeNormal = CompositeNormal(col);
@@ -76,6 +79,9 @@ public class WallSlider : MonoBehaviour
 
     private void OnCollisionExit(Collision col)
     {
+        // 敵同士の衝突はスキップ
+        if (col.gameObject.GetComponent<EnemyController>() != null) return;
+
         // 即セットせず猶予時間を設定する。
         _exitCooldown = kExitCooldownDuration;
     }

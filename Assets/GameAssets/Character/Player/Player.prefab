@@ -157,7 +157,7 @@ MonoBehaviour:
   _detectDistance: 30
   _enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!1 &3196851748486230088
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,6 +466,12 @@ MonoBehaviour:
   _moveSpeed: 5
   _yawSensitivity: 0.1
   _crouchHeightOffset: 0.7
+  _dashSpeed: 8
+  _dashDuration: 3
+  _dashMaxGauge: 100
+  _dashCostPerUse: 10
+  _dashRegenRate: 20
+  _dashRegenDelay: 1.5
   _cameraTransform: {fileID: 7259929905500910563}
 --- !u!114 &7081637313270575495
 MonoBehaviour:
@@ -493,6 +499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _walkNoiseRadius: 5
   _crouchNoiseRadius: 1.5
+  _dashNoiseRadius: 10
 --- !u!114 &2787352667941523424
 MonoBehaviour:
   m_ObjectHideFlags: 0
