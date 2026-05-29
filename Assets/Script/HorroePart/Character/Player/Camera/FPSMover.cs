@@ -35,7 +35,6 @@ public class FPSMover : MonoBehaviour
 
     public MoveState CurrentMoveState => GetMoveState();
 
-    // ---- プライベートフィールド ----
     private CharacterController _characterController;
     private InputPlayerController _inputCallbackController;
     private Vector2 _moveInput;
@@ -127,9 +126,9 @@ public class FPSMover : MonoBehaviour
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 right   = Vector3.ProjectOnPlane(transform.right,   Vector3.up).normalized;
 
-        // その場ダッシュ防止：入力ゼロでダッシュしたときは正面方向へ
+        // その場ダッシュ防止：入力ゼロでダッシュしたときはzero
         Vector2 input = (_isDashing && _moveInput.sqrMagnitude < 0.01f)
-            ? Vector2.up
+            ? Vector2.zero
             : _moveInput;
 
         Vector3 movement = (forward * input.y + right * input.x) * speed * Time.fixedDeltaTime;
