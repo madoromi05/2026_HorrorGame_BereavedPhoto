@@ -9,7 +9,7 @@ public class PlayerStealthStatus : MonoBehaviour
     [SerializeField] private float _crouchNoiseRadius = 1.5f;
     [SerializeField] private float _dashNoiseRadius = 10f;
 
-    private FPSMover _mover;
+    private PlayerMover _mover;
     private HandLightController _lightController;
 
     public float FootstepNoiseRadius { get; private set; }
@@ -17,7 +17,7 @@ public class PlayerStealthStatus : MonoBehaviour
 
     private void Awake()
     {
-        _mover = GetComponent<FPSMover>();
+        _mover = GetComponent<PlayerMover>();
         _lightController = GetComponent<HandLightController>();
     }
 
@@ -26,9 +26,9 @@ public class PlayerStealthStatus : MonoBehaviour
         // MoveState ごとに足音半径を切り替える（FPSMover.MoveState と対応）
         FootstepNoiseRadius = _mover.CurrentMoveState switch
         {
-            FPSMover.MoveState.Dash   => _dashNoiseRadius,
-            FPSMover.MoveState.Walk   => _walkNoiseRadius,
-            FPSMover.MoveState.Crouch => _crouchNoiseRadius,
+            PlayerMover.MoveState.Dash   => _dashNoiseRadius,
+            PlayerMover.MoveState.Walk   => _walkNoiseRadius,
+            PlayerMover.MoveState.Crouch => _crouchNoiseRadius,
             _                         => 0f,  // Idle：静止中は無音
         };
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 /// Y軸回転はFPSMoverが制御する。
 /// </summary>
 [RequireComponent(typeof(InputPlayerController))]
-public class FPSCamera : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private float _pitchSensitivity = 0.1f;
