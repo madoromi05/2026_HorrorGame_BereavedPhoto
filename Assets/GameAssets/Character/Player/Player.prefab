@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3198508526754958859}
   - component: {fileID: 5710999237306648069}
   - component: {fileID: 7165474492473475749}
+  - component: {fileID: 8725230009951359403}
   m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -158,6 +159,21 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &8725230009951359403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405947021499546498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdcd06815c47d30489f70df42db56a48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frustumSettings:
+    baseSettings: {fileID: 0}
+    qualitySettings: {fileID: 0}
 --- !u!1 &3196851748486230088
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,6 +185,7 @@ GameObject:
   - component: {fileID: 5854834807832911320}
   - component: {fileID: 909176965550732169}
   - component: {fileID: 4639329303110510434}
+  - component: {fileID: 5091973518204619265}
   m_Layer: 0
   m_Name: SpotLightFoucus
   m_TagString: Untagged
@@ -201,14 +218,14 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 300
+  m_Color: {r: 1, g: 0.9411765, b: 0.78431374, a: 1}
+  m_Intensity: 10
   m_Range: 15
-  m_SpotAngle: 20.913696
+  m_SpotAngle: 30
   m_InnerSpotAngle: 5.4467497
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -279,6 +296,39 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &5091973518204619265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3196851748486230088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f01d29d88278f45458d99e6b5199e920, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strength: 1
+  useScattering: 0
+  overrideScattering: 0
+  overridingScattering: 0.5
+  scatteringBias: 0
+  useColorTemperatureTint: 0
+  overrideColor: 0
+  overridingColor: {r: 1, g: 1, b: 1, a: 1}
+  useShadow: 1
+  useCookie: 0
+  cookieMapRenderTexture: {fileID: 0}
+  enableOutOfPhaseColor: 0
+  outOfPhaseColorStrength: 0.1
+  outOfPhaseColor: {r: 0, g: 1, b: 1, a: 1}
+  customDistanceFalloffThreshold: 0.5
+  customDistanceFalloffPower: 2
+  customCookieDistanceFalloffStartThreshold: 0.1
+  customCookieDistanceFalloffEndThreshold: 0.25
+  customCookieDistanceFalloffPower: 2
+  customAngularFalloffThreshold: 0.587
+  customAngularFalloffPower: 2
 --- !u!1 &3351915601385271846
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,7 +609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraTransform: {fileID: 7259929905500910563}
-  _crouchHeightOffset: 2
+  _crouchHeightOffset: 1.5
   _crouchTransitionSpeed: 4
   _crouchCurve:
     serializedVersion: 2
@@ -573,6 +623,24 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.2568526
+      value: 0.07899271
+      inSlope: 0.6687754
+      outSlope: 0.6687754
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.18374686
+    - serializedVersion: 3
+      time: 0.7184338
+      value: 0.93311054
+      inSlope: 0.7167386
+      outSlope: 0.7167386
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.17164516
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1

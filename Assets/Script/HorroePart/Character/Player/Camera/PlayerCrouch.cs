@@ -12,6 +12,9 @@ public class PlayerCrouch : MonoBehaviour
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private float _crouchHeightOffset = 2.0f;  //しゃがみの高さ
     [SerializeField] private float _crouchTransitionSpeed = 2f;  // しゃがみのトランジション速度
+
+    // インスペクターで視覚的に編集できるカーブ
+    [SerializeField] private AnimationCurve _crouchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     public bool IsCrouching { get; private set; }
 
     private CharacterController _characterController;
@@ -80,7 +83,7 @@ public class PlayerCrouch : MonoBehaviour
             float clampedT = Mathf.Clamp01(t);
 
             // S字カーブ（動き出しと止まる直前を滑らかにする）を適用
-            float curveT = Mathf.SmoothStep(0f, 1f, clampedT);
+            float curveT = _crouchCurve.Evaluate(clampedT);
 
             // 記録した開始値と目標値の間を、カーブを適用した進行度で補間
             float newHeight = Mathf.Lerp(startHeight, targetHeight, curveT);

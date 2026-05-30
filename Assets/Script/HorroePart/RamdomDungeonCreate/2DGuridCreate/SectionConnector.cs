@@ -251,6 +251,22 @@ public class SectionConnector
                     _ => 1.0f,
                 };
 
+                if (cellType == GridType.Empty)
+                {
+                    foreach (var adjDir in neighbors)
+                    {
+                        var adj = neighbor + adjDir;
+                        if (adj == current) continue;
+                        if (!IsInGrid(adj)) continue;
+                        if (_grid[adj.x, adj.y] == GridType.Corridor)
+                        {
+                            moveCost += 1.5f;
+                            break;
+                        }
+                    }
+                }
+
+
                 float newG = gCost[current] + moveCost;
                 if (gCost.TryGetValue(neighbor, out float existingG) && newG >= existingG) continue;
 

@@ -2,33 +2,43 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// ‰ù’†“d“”‚Ì“_“”EÁ“”EŒx“_–ÅE©“®Á“”‚ğŠÇ—‚·‚éB
-/// ˜A‘±“_“”ŠÔ‚ªãŒÀ‚É’B‚·‚é‚ÆŒx“_–Å‚ğŒo‚Ä©“®Á“”‚µA
-/// è“®‚ÅOFF‚É‚·‚é‚Ü‚ÅÄ“_“”‚Å‚«‚È‚¢B
+/// æ‰‹æŒã¡ãƒ©ã‚¤ãƒˆã®ç‚¹ç¯ãƒ»æ¶ˆç¯ãƒ»ç‚¹æ»…ã‚’ä¸€å…ƒç®¡ç†ã™ã‚‹ã€‚
+/// ç‚¹ç¯æ™‚é–“ãŒä¸Šé™ã«é”ã™ã‚‹ã¨ç‚¹æ»…ã—ã¦ã‹ã‚‰è‡ªå‹•æ¶ˆç¯ã—ã€
+/// æ‰‹å‹•ã§OFFã«ã™ã‚‹ã¾ã§å†ç‚¹ç¯ã§ããªã„ã€‚
 /// </summary>
 public class HandLightController : MonoBehaviour
 {
+    [Header("ãƒ©ã‚¤ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆè¨­å®š")]
+    [Tooltip("æ‰‹ã‹ã‚‰ã¨ã‚‰ã™ãƒ©ã‚¤ãƒˆã®ã‚¹ãƒãƒƒãƒˆãƒ©ã‚¤ãƒˆã‚’æŒã¤ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ")]
     [SerializeField] private GameObject handLight;
 
-    [Header("“_“”ŠÔİ’è")]
-    [SerializeField] private float _maxLightDuration = 30f;   // ˜A‘±“_“”‚Å‚«‚éãŒÀŠÔi•bj
-    [SerializeField] private float _flickerStartTime = 5f;    // Á“”‚Ì‰½•b‘O‚©‚ç“_–Å‚ğŠJn‚·‚é‚©
-    [SerializeField] private float _flickerInterval = 0.2f;   // “_–ÅŠÔŠui•bj
+    [Header("ç‚¹ç¯æ™‚é–“è¨­å®š")]
+    [SerializeField] private float _maxLightDuration = 30f;   // æœ€å¤§ç‚¹ç¯ã§ãã‚‹æ™‚é–“ï¼ˆç§’ï¼‰
+    [SerializeField] private float _flickerStartTime = 5f;    // æ®‹ã‚Šä½•ç§’å‰ã‹ã‚‰ç‚¹æ»…ã‚’é–‹å§‹ã™ã‚‹ã‹
+    [SerializeField] private float _flickerInterval = 0.2f;   // ç‚¹æ»…é–“éš”ï¼ˆç§’ï¼‰
 
-    // ƒJƒƒ‰‚ğ\‚¦‚½‚Ì‹­§‰ğœ
+    // ã‚«ãƒ¡ãƒ©ã‹ã‚‰å‘¼ã³å‡ºã›ã‚‹å…¬é–‹ãƒ¡ã‚½ãƒƒãƒ‰
     public void ForceOff() => TurnOff();
-    // ŠO•”‚©‚ç“_“”ó‘Ô‚ğQÆ
+    // å¤–éƒ¨ã‹ã‚‰ã®ç‚¹ç¯çŠ¶æ…‹ã‚’å‚ç…§
     public bool IsLightOn => _isLightOn;
 
     private InputPlayerController _inputController;
+    private Light _mainLightComponent;
+
     private bool _isLightOn = false;
     private float _lightOnTimer = 0f;
 
-    // Œx“_–ÅƒRƒ‹[ƒ`ƒ“‚ÌQÆiè“®OFF‚Å’†’f‚·‚é‚½‚ß‚É•Ûj
+    // ç‚¹æ»…ã‚³ãƒ«ãƒ¼ãƒãƒ³ã®å‚ç…§ï¼ˆæ‰‹å‹•OFFã§ä¸­æ–­ã™ã‚‹ãŸã‚ã«ä¿æŒï¼‰
     private Coroutine _flickerCoroutine;
+
     private void Awake()
     {
         _inputController = GetComponent<InputPlayerController>();
+
+        if (handLight != null)
+        {
+            _mainLightComponent = handLight.GetComponent<Light>();
+        }
     }
 
     private void OnEnable()
@@ -47,7 +57,7 @@ public class HandLightController : MonoBehaviour
 
         _lightOnTimer += Time.deltaTime;
 
-        // “_–ÅŠJnƒ^ƒCƒ~ƒ“ƒO‚É’B‚µ‚½‚çƒRƒ‹[ƒ`ƒ“‚ğ‹N“®i“ñd‹N“®‚ğ–h‚®j
+        // ç‚¹æ»…é–‹å§‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã«é”ã—ãŸã‚‰ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’èµ·å‹•ï¼ˆäºŒé‡èµ·å‹•ã‚’é˜²ãï¼‰
         bool shouldFlicker = _lightOnTimer >= _maxLightDuration - _flickerStartTime;
         if (shouldFlicker && _flickerCoroutine == null)
         {
@@ -56,8 +66,8 @@ public class HandLightController : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒgƒOƒ‹“ü—Í‚ğó‚¯‚ÄON/OFF‚ğØ‚è‘Ö‚¦‚éB
-    /// “_–Å’†‚Å‚àè“®OFF‚ğó‚¯•t‚¯Aƒ^ƒCƒ}[‚ğƒŠƒZƒbƒg‚·‚éB
+    /// ãƒˆã‚°ãƒ«å…¥åŠ›ã‚’å—ã‘ã¦ON/OFFã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
+    /// ç‚¹æ»…ä¸­ã§ã‚‚æ‰‹å‹•OFFã‚’å—ã‘ä»˜ã‘ã€ã‚¿ã‚¤ãƒãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     /// </summary>
     private void HandleHandLightToggle()
     {
@@ -75,18 +85,18 @@ public class HandLightController : MonoBehaviour
     {
         _isLightOn = true;
         _lightOnTimer = 0f;
-        handLight.SetActive(true);
+        SetLightActive(true);
     }
 
     /// <summary>
-    /// è“®E©“®‚Ç‚¿‚ç‚ÌOFF‚Å‚àŒÄ‚Î‚ê‚é‹¤’Êˆ—B
-    /// “_–ÅƒRƒ‹[ƒ`ƒ“‚ğŠmÀ‚É’â~‚µ‚Äƒ^ƒCƒ}[‚ğƒŠƒZƒbƒg‚·‚éB
+    /// æ‰‹å‹•ãƒ»è‡ªå‹•ã©ã¡ã‚‰ã‹ã‚‰å‘¼ã°ã‚Œã¦ã‚‚å…±é€šå‡¦ç†ã€‚
+    /// ç‚¹æ»…ã‚³ãƒ«ãƒ¼ãƒãƒ³ã‚’ç¢ºå®Ÿã«åœæ­¢ã—ã¦ã‚¿ã‚¤ãƒãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
     /// </summary>
     private void TurnOff()
     {
         _isLightOn = false;
         _lightOnTimer = 0f;
-        handLight.SetActive(false);
+        SetLightActive(false);
 
         if (_flickerCoroutine != null)
         {
@@ -96,8 +106,7 @@ public class HandLightController : MonoBehaviour
     }
 
     /// <summary>
-    /// Œx“_–Å‚ğs‚¢AŠ®‘–‚µ‚½‚ç©“®Á“”‚·‚éB
-    /// è“®OFF‚ª“ü‚Á‚½ê‡‚ÍTurnOff()‘¤‚ÅƒRƒ‹[ƒ`ƒ“‚ª’â~‚³‚ê‚éB
+    /// ç‚¹æ»…ã‚’å®Ÿè¡Œã—ã€æ™‚é–“åˆ‡ã‚Œã§è‡ªå‹•æ¶ˆç¯ã™ã‚‹ã€‚
     /// </summary>
     private IEnumerator FlickerThenTurnOff()
     {
@@ -105,11 +114,18 @@ public class HandLightController : MonoBehaviour
 
         while (remainingTime > 0f)
         {
-            handLight.SetActive(!handLight.activeSelf);
+            bool nextState = !(handLight != null && handLight.activeSelf);
+            SetLightActive(nextState);
+
             yield return new WaitForSeconds(_flickerInterval);
             remainingTime -= _flickerInterval;
         }
 
         TurnOff();
+    }
+
+    private void SetLightActive(bool isActive)
+    {
+        if (handLight != null) handLight.SetActive(isActive);
     }
 }
