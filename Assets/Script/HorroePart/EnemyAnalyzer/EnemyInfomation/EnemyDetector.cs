@@ -24,6 +24,8 @@ public class EnemyDetector : MonoBehaviour
 
     private void Update()
     {
+        if (_analyzer == null) return;
+
         // エイム中でない場合は検知状態をリセットして処理を抜ける
         if (!_isAiming)
         {
