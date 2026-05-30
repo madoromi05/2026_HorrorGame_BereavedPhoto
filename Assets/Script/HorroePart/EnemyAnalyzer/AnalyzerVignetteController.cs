@@ -9,7 +9,8 @@ using UnityEngine.Rendering.Universal;
 public class AnalyzerVignetteController : MonoBehaviour
 {
     [SerializeField] private Volume _volume;
-    [SerializeField] private float _maxVignetteIntensity = 0.8f; // 解析率100%のときの Vignette 強度
+    [SerializeField, Range(0f, 1f)] private float _permanentVignetteIntensity = 0.25f; // 常時表示するビネット強度
+    [SerializeField] private float _maxVignetteIntensity = 0.8f; // 解析率100%のときの Vignette 追加強度
     [SerializeField] private float _resetFadeSpeed = 2f; // リセット時に元に戻る速さ
 
     private Vignette vignette;
@@ -18,12 +19,26 @@ public class AnalyzerVignetteController : MonoBehaviour
 
     private void Awake()
     {
-        if (!_volume.profile.TryGet(out vignette))
+        if (_volume == null)
         {
-            Debug.LogWarning("[AnalyzerVignetteController] VolumeProfile に Vignette が見つかりません。");
+            Debug.LogError("[VignetteCtrl] _volume が Inspector で未アサインです。");
             return;
         }
-        baseIntensity = vignette.intensity.value;
+        if (_volume.sharedProfile == null)
+        {
+            Debug.LogError("[VignetteCtrl] sharedProfile が null です。Volume に Profile を設定してください。");
+            return;
+        }
+
+        _volume.profile = Instantiate(_volume.sharedProfile);
+
+        if (!_volume.profile.TryGet(out vignette))
+            vignette = _volume.profile.Add<Vignette>(overrides: true);
+
+        vignette.active = true;
+        vignette.intensity.overrideState = true;
+        vignette.intensity.value = _permanentVignetteIntensity;
+        baseIntensity = _permanentVignetteIntensity;
     }
 
     private void Update()
