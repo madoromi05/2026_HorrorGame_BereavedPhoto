@@ -1,48 +1,74 @@
-using UnityEditor.AddressableAssets.Build.AnalyzeRules;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// “G‚ÌŒŸ’mó‘Ô‚ğŠÇ—‚µA‰ğÍis—¦‚ğXV‚·‚éB
-/// ŒŸ’mE”ñŒŸ’m‚ÌØ‚è‘Ö‚¦‚ÍŠO•”‚©‚ç SetEnemyInRange() ‚Å’Ê’m‚·‚éB
+/// æ•µã®æ¤œçŸ¥çŠ¶æ…‹ã‚’ç®¡ç†ã—ã€è§£æé€²è¡Œç‡ã‚’æ›´æ–°ã™ã‚‹ã€‚
+/// è§£æç‡ã¯æ•µã®InstanceIDã‚’ã‚­ãƒ¼ã¨ã—ãŸDictionaryã§æ•µã”ã¨ã«ä¿å­˜ã™ã‚‹ã€‚
+/// æ¤œçŸ¥ãƒ»éæ¤œçŸ¥ã®åˆ‡ã‚Šæ›¿ãˆã¯å¤–éƒ¨ã‹ã‚‰ SetEnemyInRange() ã§é€šçŸ¥ã™ã‚‹ã€‚
+/// æ³¨ç›®ä¸­ã®æ•µã®åˆ‡ã‚Šæ›¿ãˆã¯ SetCurrentEnemy() ã§é€šçŸ¥ã™ã‚‹ã€‚
 /// </summary>
 public class EnemyAnalyzer : MonoBehaviour
 {
-    // ---- ’²®ƒpƒ‰ƒ[ƒ^ ----
-    [SerializeField] private float _analyzeSpeed = 0.1f;  // %/•b
-    [SerializeField] private float _decaySpeed = 0f;     // ”ÍˆÍŠO‚ÅŒ¸Š‚³‚¹‚½‚¢ê‡‚Í³’l‚É
+    [SerializeField] private float _analyzeSpeed = 0.1f;
+    [SerializeField] private float _decaySpeed = 0f;
     [SerializeField] private AnalyzerUI _analyzerUI;
     [SerializeField] private AnalyzerVignetteController _vignetteController;
 
-    public float AnalyzePercent { get; private set; } = 0f;
+    private readonly Dictionary<int, float> _analyzePercents = new();
+    private int? _currentEnemyId = null;
+
+    public float AnalyzePercent =>
+        _currentEnemyId.HasValue && _analyzePercents.TryGetValue(_currentEnemyId.Value, out var v) ? v : 0f;
     public bool IsComplete => AnalyzePercent >= 100f;
 
     private bool _enemyInRange = false;
     private bool _isAiming = false;
 
     public void SetAiming(bool isAiming) => _isAiming = isAiming;
-    private void Update()
-    {
-        if (IsComplete) return;
-        if (!_isAiming) return;
-        if (_enemyInRange)
-            AnalyzePercent = Mathf.Min(100f, AnalyzePercent + _analyzeSpeed * Time.deltaTime);
-        else if (_decaySpeed > 0f)
-            AnalyzePercent = Mathf.Max(0f, AnalyzePercent - _decaySpeed * Time.deltaTime);
 
-        _analyzerUI.OnAnalyzeUpdate(AnalyzePercent);
-        _vignetteController.UpdateVignette(AnalyzePercent);
+    /// <summary>ç¾åœ¨æ³¨ç›®ã—ã¦ã„ã‚‹æ•µã‚’è¨­å®šã™ã‚‹ã€‚nullãªã‚‰æœªã‚¿ãƒ¼ã‚²ãƒƒãƒˆçŠ¶æ…‹ã€‚</summary>
+    public void SetCurrentEnemy(GameObject enemy)
+    {
+        _currentEnemyId = enemy != null ? (int?)enemy.GetInstanceID() : null;
     }
 
-    /// <summary>“G‚ª‰ğÍ”ÍˆÍ‚É“ü‚Á‚½‚©”Û‚©‚ğŠO•”‚©‚ç’Ê’m‚·‚éB</summary>
+    private void Update()
+    {
+        if (!_isAiming) return;
+
+        if (!_currentEnemyId.HasValue)
+        {
+            _analyzerUI.OnAnalyzeUpdate(0f);
+            _vignetteController.UpdateVignette(0f);
+            return;
+        }
+
+        float current = AnalyzePercent;
+
+        if (!IsComplete)
+        {
+            if (_enemyInRange)
+                current = Mathf.Min(100f, current + _analyzeSpeed * Time.deltaTime);
+            else if (_decaySpeed > 0f)
+                current = Mathf.Max(0f, current - _decaySpeed * Time.deltaTime);
+
+            _analyzePercents[_currentEnemyId.Value] = current;
+        }
+
+        _analyzerUI.OnAnalyzeUpdate(current);
+        _vignetteController.UpdateVignette(current);
+    }
+
+    /// <summary>æ•µãŒè§£æç¯„å›²å†…ã«ã„ã‚‹ã‹ã©ã†ã‹ã‚’å¤–éƒ¨ã‹ã‚‰é€šçŸ¥ã™ã‚‹ã€‚</summary>
     public void SetEnemyInRange(bool inRange)
     {
         _enemyInRange = inRange;
     }
 
-    // \‚¦‚ğ‰ğœ‚µ‚½‚Æ‚«‚Ìˆ—
+    /// <summary>ã‚¨ã‚¤ãƒ ã‚’å¤–ã—ãŸã¨ãã®çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆã€‚æ•µã”ã¨ã®è§£æç‡ã¯ä¿æŒã•ã‚Œã‚‹ã€‚</summary>
     public void Reset()
     {
-        AnalyzePercent = 0f;
+        _currentEnemyId = null;
         _enemyInRange = false;
         _isAiming = false;
         _analyzerUI.ResetFields();

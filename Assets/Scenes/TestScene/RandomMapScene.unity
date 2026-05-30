@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 954e850fbc7ff2348834c782b80c6f7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _analyzeSpeed: 0.1
+  _analyzeSpeed: 0.3
   _decaySpeed: 0
   _analyzerUI: {fileID: 3078745226012300514}
   _vignetteController: {fileID: 8956264521362112321}

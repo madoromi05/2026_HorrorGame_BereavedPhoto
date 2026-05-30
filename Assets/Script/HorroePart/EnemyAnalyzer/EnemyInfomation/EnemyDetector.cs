@@ -1,45 +1,53 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒJƒƒ‰‘O•û‚Ö SphereCast ‚ğ”ò‚Î‚µAIAnalyzable ‚ğ‚Â“G‚ğŒŸ’m‚·‚éB
-/// ŒŸ’mŒ‹‰Ê‚Í EnemyAnalyzer ‚Ö’Ê’m‚·‚éB
-/// ŒŸ’m”ÍˆÍE‹——£‚Í Inspector ‚©‚ç’²®‰Â”\B
+/// ã‚«ãƒ¡ãƒ©ã®æ­£é¢ã«å‘ã‘ã¦SphereCastã‚’é£›ã°ã—ã€æ•µã‚’æ¤œçŸ¥ã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+/// æ¤œçŸ¥çµæœã¯EnemyAnalyzerã«é€šçŸ¥ã•ã‚Œã‚‹ã€‚
+/// æ¤œçŸ¥ç¯„å›²ã‚„è·é›¢ã¯Inspectorã‹ã‚‰èª¿æ•´å¯èƒ½ã€‚
 /// </summary>
 public class EnemyDetector : MonoBehaviour
 {
     [SerializeField] private EnemyAnalyzer _analyzer;
     [SerializeField] private Camera _fpsCam;
 
-    [Header("ŒŸ’mİ’è")]
-    [SerializeField] private float _detectRange = 2.0f;      // SphereCast‚Ì‹…”¼Œa
-    [SerializeField] private float _detectDistance = 30.0f;  // Å‘åŒŸ’m‹——£
-    [SerializeField] private LayerMask _enemyLayer;          // “GƒŒƒCƒ„[‚Ì‚İ‘ÎÛ
+    [Header("æ¤œçŸ¥è¨­å®š")]
+    [SerializeField] private float _detectRange = 2.0f;      // SphereCastã®åŠå¾„ï¼ˆæ¤œçŸ¥ã®å½“ãŸã‚Šåˆ¤å®šã®å¤ªã•ï¼‰
+    [SerializeField] private float _detectDistance = 30.0f;  // æœ€å¤§æ¤œçŸ¥è·é›¢
+    [SerializeField] private LayerMask _enemyLayer;          // æ¤œçŸ¥å¯¾è±¡ã¨ã™ã‚‹æ•µã®ãƒ¬ã‚¤ãƒ¤ãƒ¼
 
     private bool _isAiming = false;
 
+    /// <summary>
+    /// ã‚¨ã‚¤ãƒ çŠ¶æ…‹ã‚’è¨­å®šã™ã‚‹ã€‚
+    /// </summary>
     public void SetAiming(bool isAiming) => _isAiming = isAiming;
 
     private void Update()
     {
+        // ã‚¨ã‚¤ãƒ ä¸­ã§ãªã„å ´åˆã¯æ¤œçŸ¥çŠ¶æ…‹ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦å‡¦ç†ã‚’æŠœã‘ã‚‹
         if (!_isAiming)
         {
+            _analyzer.SetCurrentEnemy(null);
             _analyzer.SetEnemyInRange(false);
             return;
         }
 
+        // ã‚¨ã‚¤ãƒ ä¸­ã®å ´åˆã¯æ•µã®æ¤œçŸ¥ã‚’è©¦ã¿ã‚‹
         if (TryDetectEnemy(out RaycastHit hit))
         {
+            _analyzer.SetCurrentEnemy(hit.collider.gameObject);
             _analyzer.SetEnemyInRange(true);
         }
         else
         {
+            _analyzer.SetCurrentEnemy(null);
             _analyzer.SetEnemyInRange(false);
         }
     }
 
     /// <summary>
-    /// ƒJƒƒ‰‘O•û‚Ö SphereCast ‚ğ”ò‚Î‚µA“G‚ğŒŸ’m‚·‚éB
-    /// outˆø”‚Åƒqƒbƒgî•ñ‚ğ•Ô‚·‚½‚ßAŒÄ‚Ño‚µ‘¤‚ÅˆÊ’uî•ñ‚ğg‚¢‚½‚¢ê‡‚É‘Î‰‚Å‚«‚éB
+    /// ã‚«ãƒ¡ãƒ©ã®æ­£é¢ã«å‘ã‘ã¦SphereCastã‚’é£›ã°ã—ã€æ•µã®æ¤œçŸ¥ã‚’è¡Œã†ã€‚
+    /// outãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã§ãƒ’ãƒƒãƒˆæƒ…å ±ã‚’è¿”ã™ãŸã‚ã€å‘¼ã³å‡ºã—å´ã§è©³ç´°ãªåº§æ¨™ã‚„å¯¾è±¡ã‚’å–å¾—å¯èƒ½ã€‚
     /// </summary>
     private bool TryDetectEnemy(out RaycastHit hit)
     {
@@ -53,7 +61,9 @@ public class EnemyDetector : MonoBehaviour
         );
     }
 
-    // ƒfƒoƒbƒO—pFScene View ‚ÅŒŸ’m”ÍˆÍ‚ğ‰Â‹‰»
+    /// <summary>
+    /// ãƒ‡ãƒãƒƒã‚°ç”¨ï¼šScene Viewã§é¸æŠæ™‚ã«æ¤œçŸ¥ç¯„å›²ã®ã‚®ã‚ºãƒ¢ã‚’æç”»ã™ã‚‹
+    /// </summary>
     private void OnDrawGizmosSelected()
     {
         if (_fpsCam == null) return;
@@ -62,6 +72,7 @@ public class EnemyDetector : MonoBehaviour
         Vector3 origin = _fpsCam.transform.position;
         Vector3 end = origin + _fpsCam.transform.forward * _detectDistance;
 
+        // å§‹ç‚¹ã¨çµ‚ç‚¹ã®çƒã€ãŠã‚ˆã³ãã®é–“ã‚’çµã¶ç·šã‚’æç”»ã—ã¦SphereCastã®è»Œè·¡ã‚’å¯è¦–åŒ–
         Gizmos.DrawWireSphere(origin, _detectRange);
         Gizmos.DrawLine(origin, end);
         Gizmos.DrawWireSphere(end, _detectRange);
