@@ -103,7 +103,6 @@ public class LightBeamEffect : MonoBehaviour
             new[] { new GradientAlphaKey(_particleAlpha, 0f), new GradientAlphaKey(0f, 1f) }
         );
         col.color = gradient;
-        Debug.Log($"[LightBeamEffect] _particleAlpha={_particleAlpha}, gradient alpha[0]={gradient.Evaluate(0f).a}, gradient alpha[1]={gradient.Evaluate(1f).a}");
 
         // --- Renderer: 加算合成で光っぽく見せる ---
         renderer.material = CreateAdditiveMaterial();
@@ -134,7 +133,6 @@ public class LightBeamEffect : MonoBehaviour
 
         mat.color = Color.white;
         mat.enableInstancing = true;
-        Debug.Log($"[LightBeamEffect] shader={shader?.name ?? "null"}, renderQueue={mat.renderQueue}, srcBlend={mat.GetInt("_SrcBlend")}, dstBlend={mat.GetInt("_DstBlend")}");
         return mat;
     }
 }

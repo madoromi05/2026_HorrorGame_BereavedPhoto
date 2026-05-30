@@ -1,31 +1,44 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒ_ƒbƒVƒ…‚Ì“ü—Í‚ÆƒQ[ƒWŠÇ—‚ğs‚¤B
-/// ƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚éŠÔ‚¾‚¯ƒ_ƒbƒVƒ…ó‘Ô‚É‚·‚éB
+/// ãƒ€ãƒƒã‚·ãƒ¥ã®å…¥åŠ›ã¨ã‚²ãƒ¼ã‚¸ç®¡ç†ã‚’è¡Œã†ã€‚
+/// ã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ã‚‹é–“ã ã‘ãƒ€ãƒƒã‚·ãƒ¥çŠ¶æ…‹ã«ã™ã‚‹ã€‚
 /// </summary>
 [RequireComponent(typeof(PlayerMover))]
 [RequireComponent(typeof(InputPlayerController))]
+[RequireComponent(typeof(PlayerCrouch))]
 public class PlayerDashController : MonoBehaviour
 {
-    [Header("ƒ_ƒbƒVƒ…ƒQ[ƒWİ’è")]
+    [Header("ãƒ€ãƒƒã‚·ãƒ¥ã‚²ãƒ¼ã‚¸è¨­å®š")]
     [SerializeField] private float _dashMaxGauge = 100f;
-    [SerializeField] private float _dashConsumeRate = 30f; // 1•bŠÔ‰Ÿ‚µ‘±‚¯‚½Û‚ÌÁ”ï—Ê
+    [SerializeField] private float _dashConsumeRate = 30f; // 1ç§’é–“æŠ¼ã—ç¶šã‘ãŸã¨ãã®æ¶ˆè²»é‡
     [SerializeField] private float _dashRegenRate = 20f;
     [SerializeField] private float _dashRegenDelay = 1.5f;
 
+    [Header("ç–²åŠ´ï¼ˆæ¯åˆ‡ã‚Œï¼‰è¨­å®š")]
+    // ã‚²ãƒ¼ã‚¸ã‚’ä½¿ã„åˆ‡ã£ãŸã‚ã¨ã€ãƒ€ãƒƒã‚·ãƒ¥ã§ããªããªã‚‹ç§’æ•°
+    [SerializeField] private float _exhaustDuration = 3f;
+
     private PlayerMover _mover;
     private InputPlayerController _inputController;
+    private PlayerCrouch _playerCrouch;
 
     private float _dashGauge;
     private float _regenDelayTimer;
     private bool _isSprintKeyHeld;
     private Vector2 _moveInput;
 
+    private bool _isExhausted;
+    private float _exhaustTimer;
+
+    /// <summary>ã‚²ãƒ¼ã‚¸æ¯æ¸‡ã«ã‚ˆã‚‹æ¯åˆ‡ã‚Œä¸­ã‹ã€‚PlayerStealthStatus ãŒãƒã‚¤ã‚ºå¢—ã«å‚ç…§ã™ã‚‹ã€‚</summary>
+    public bool IsExhausted => _isExhausted;
+
     private void Awake()
     {
         _mover = GetComponent<PlayerMover>();
         _inputController = GetComponent<InputPlayerController>();
+        _playerCrouch = GetComponent<PlayerCrouch>();
         _dashGauge = _dashMaxGauge;
     }
 
@@ -43,31 +56,45 @@ public class PlayerDashController : MonoBehaviour
 
     private void HandleMove(Vector2 input) => _moveInput = input;
 
-    // ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éŠÔ‚Í trueA—£‚³‚ê‚½‚ç false ‚ª“n‚³‚ê‚é‘z’è
+    // ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹é–“ã¯ trueã€é›¢ã•ã‚ŒãŸã‚‰ false ãŒæ¸¡ã•ã‚Œã‚‹æƒ³å®š
     private void HandleSprint(bool isPressed) => _isSprintKeyHeld = isPressed;
 
     private void FixedUpdate()
     {
-        // ƒ_ƒbƒVƒ…ÀsğŒ: ƒL[‚ğ‰Ÿ‚µ‚Ä‚¢‚é • ƒQ[ƒW‚ªc‚Á‚Ä‚¢‚é • ˆÚ“®“ü—Í‚ª‚ ‚é
+        // ç–²åŠ´ã‚¿ã‚¤ãƒãƒ¼ã®æ¶ˆåŒ–ï¼ˆç–²åŠ´ä¸­ã¯ãƒ€ãƒƒã‚·ãƒ¥ä¸å¯ï¼‰
+        if (_isExhausted)
+        {
+            _exhaustTimer -= Time.fixedDeltaTime;
+            if (_exhaustTimer <= 0f)
+                _isExhausted = false;
+        }
+
+        // ãƒ€ãƒƒã‚·ãƒ¥å®Ÿè¡Œæ¡ä»¶: ã‚­ãƒ¼ã‚’æŠ¼ã—ã¦ã„ã‚‹ âˆ§ ã‚²ãƒ¼ã‚¸ãŒæ®‹ã£ã¦ã„ã‚‹ âˆ§ ç§»å‹•å…¥åŠ›ãŒã‚ã‚‹ âˆ§ ç–²åŠ´ã—ã¦ã„ãªã„
         bool isMoving = _moveInput.sqrMagnitude > 0.01f;
-        bool canDash = _isSprintKeyHeld && _dashGauge > 0f && isMoving;
+        bool canDash = _isSprintKeyHeld && _dashGauge > 0f && isMoving && !_isExhausted;
 
         if (canDash)
         {
+            // ã—ã‚ƒãŒã¿ä¸­ã«ãƒ€ãƒƒã‚·ãƒ¥ã—ãŸã‚‰ã—ã‚ƒãŒã¿ã‚’è§£é™¤ã—ã¦ã‹ã‚‰èµ°ã‚‹ï¼ˆCancelCrouch å†…ã§ã‚¬ãƒ¼ãƒ‰ï¼‰
+            _playerCrouch.CancelCrouch();
+
             _mover.IsDashing = true;
             _dashGauge -= _dashConsumeRate * Time.fixedDeltaTime;
             _regenDelayTimer = _dashRegenDelay;
 
-            if (_dashGauge < 0f)
+            if (_dashGauge <= 0f)
             {
                 _dashGauge = 0f;
+                // ã‚²ãƒ¼ã‚¸æ¯æ¸‡ â†’ ä¸€å®šæ™‚é–“ãƒ€ãƒƒã‚·ãƒ¥ä¸å¯ï¼†æ¯åˆ‡ã‚Œï¼ˆãƒã‚¤ã‚ºå¢—ï¼‰ã®ç–²åŠ´çŠ¶æ…‹ã¸
+                _isExhausted = true;
+                _exhaustTimer = _exhaustDuration;
             }
         }
         else
         {
             _mover.IsDashing = false;
 
-            // ƒQ[ƒW‚Ì‰ñ•œˆ—
+            // ã‚²ãƒ¼ã‚¸ã®å›å¾©å‡¦ç†
             if (_regenDelayTimer > 0f)
             {
                 _regenDelayTimer -= Time.fixedDeltaTime;

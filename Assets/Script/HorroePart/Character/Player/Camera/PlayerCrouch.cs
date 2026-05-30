@@ -2,26 +2,26 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// ƒLƒƒƒ‰ƒNƒ^[‚Ì‚µ‚á‚ª‚İó‘ÔiƒRƒ‰ƒCƒ_[‚ÆƒJƒƒ‰‚Ì‚‚³j‚ğ§Œä‚·‚éB
+/// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ã—ã‚ƒãŒã¿çŠ¶æ…‹ï¼ˆã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã¨ã‚«ãƒ¡ãƒ©ã®é«˜ã•ï¼‰ã‚’åˆ¶å¾¡ã™ã‚‹ã€‚
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(InputPlayerController))]
 public class PlayerCrouch : MonoBehaviour
 {
-    [Header("‚µ‚á‚ª‚İİ’è")]
+    [Header("ã—ã‚ƒãŒã¿è¨­å®š")]
     [SerializeField] private Transform _cameraTransform;
-    [SerializeField] private float _crouchHeightOffset = 2.0f;  //‚µ‚á‚ª‚İ‚Ì‚‚³
-    [SerializeField] private float _crouchTransitionSpeed = 2f;  // ‚µ‚á‚ª‚İ‚Ìƒgƒ‰ƒ“ƒWƒVƒ‡ƒ“‘¬“x
+    [SerializeField] private float _crouchHeightOffset = 2.0f;  // ã—ã‚ƒãŒã¿ã®é«˜ã•
+    [SerializeField] private float _crouchTransitionSpeed = 2f; // ã—ã‚ƒãŒã¿ã®ãƒˆãƒ©ãƒ³ã‚¸ã‚·ãƒ§ãƒ³é€Ÿåº¦
 
-    // ƒCƒ“ƒXƒyƒNƒ^[‚Å‹Šo“I‚É•ÒW‚Å‚«‚éƒJ[ƒu
+    // ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ã§è¦–è¦šçš„ã«ç·¨é›†ã§ãã‚‹ã‚«ãƒ¼ãƒ–
     [SerializeField] private AnimationCurve _crouchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     public bool IsCrouching { get; private set; }
 
     private CharacterController _characterController;
     private InputPlayerController _inputCallbackController;
 
-    private float _standHeight;         // —§‚¿ó‘Ô‚ÌƒRƒ‰ƒCƒ_[‚Ì‚‚³
-    private float _cameraStandLocalY;   // —§‚¿ó‘Ô‚ÌƒJƒƒ‰‚Ìƒ[ƒJƒ‹YÀ•W
+    private float _standHeight;         // ç«‹ã¡çŠ¶æ…‹ã®ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®é«˜ã•
+    private float _cameraStandLocalY;   // ç«‹ã¡çŠ¶æ…‹ã®ã‚«ãƒ¡ãƒ©ã®ãƒ­ãƒ¼ã‚«ãƒ«Yåº§æ¨™
 
     private Coroutine _crouchCoroutine;
 
@@ -61,31 +61,41 @@ public class PlayerCrouch : MonoBehaviour
     }
 
     /// <summary>
-    /// –Ú•W‚Ì‚‚³itargetHeightj‚ÆƒJƒƒ‰ˆÊ’uitargetCameraYj‚ÉŒü‚¯‚Ä’l‚ğ•Ï‰»‚³‚¹‚Ü‚·B
-    /// Œo‰ßŠÔ‚ğg—p‚µ‚½SšƒJ[ƒuiSmoothStepj‚ğ“K—p‚µAlŠÔ‚ç‚µ‚¢ƒŠƒAƒ‹‚È‰ÁŒ¸‘¬‚ğÄŒ»‚µ‚Ü‚·B
+    /// ã—ã‚ƒãŒã¿çŠ¶æ…‹ã‚’å¼·åˆ¶çš„ã«è§£é™¤ã™ã‚‹ã€‚ãƒ€ãƒƒã‚·ãƒ¥é–‹å§‹æ™‚ãªã©ã«å¤–éƒ¨ã‹ã‚‰å‘¼ã¶ã€‚
+    /// ã—ã‚ƒãŒã¿ä¸­ã®ã¨ãã ã‘ HandleCrouch(false) ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
+    /// </summary>
+    public void CancelCrouch()
+    {
+        if (IsCrouching)
+            HandleCrouch(false);
+    }
+
+    /// <summary>
+    /// ç›®æ¨™ã®é«˜ã•ï¼ˆtargetHeightï¼‰ã¨ã‚«ãƒ¡ãƒ©ä½ç½®ï¼ˆtargetCameraYï¼‰ã«å‘ã‘ã¦å€¤ã‚’å¤‰åŒ–ã•ã›ã‚‹ã€‚
+    /// çµŒéæ™‚é–“ã‚’ä½¿ç”¨ã—ã¦Så­—ã‚«ãƒ¼ãƒ–ï¼ˆSmoothStepï¼‰ã‚’é©ç”¨ã—ã€äººé–“ã‚‰ã—ã„è‡ªç„¶ãªåŠ æ¸›é€Ÿã‚’å†ç¾ã™ã‚‹ã€‚
     /// </summary>
     private IEnumerator CrouchRoutine(float targetHeight, float targetCameraY)
     {
-        // ˆÚsŠJn‚ÌŒ»İ’l‚ğ‹L˜^‚µ‚Ä‚¨‚­
+        // é·ç§»é–‹å§‹æ™‚ã®ç¾åœ¨å€¤ã‚’è¨˜éŒ²ã—ã¦ãŠã
         float startHeight = _characterController.height;
         float startCameraY = _cameraTransform != null ? _cameraTransform.localPosition.y : 0f;
 
-        // is“xi0.0 ` 1.0j
+        // é€²è¡Œåº¦ï¼ˆ0.0 ã€œ 1.0ï¼‰
         float t = 0f;
 
-        // t ‚ª 1iŠ®—¹j‚É’B‚·‚é‚Ü‚Åƒ‹[ƒv
+        // t ãŒ 1ï¼ˆå®Œäº†ï¼‰ã«é”ã™ã‚‹ã¾ã§ãƒ«ãƒ¼ãƒ—
         while (t < 1f)
         {
-            // –ˆƒtƒŒ[ƒ€is“x‚ğ‰ÁZi_crouchTransitionSpeed ‚ª‚‚¢‚Ù‚Ç‘‚­ 1 ‚É“’B‚·‚éj
+            // æ¯ãƒ•ãƒ¬ãƒ¼ãƒ é€²è¡Œåº¦ã‚’åŠ ç®—ï¼ˆ_crouchTransitionSpeed ãŒå¤§ãã„ã»ã©é€Ÿã 1 ã«åˆ°é”ã™ã‚‹ï¼‰
             t += Time.deltaTime * _crouchTransitionSpeed;
 
-            // t ‚ğ 0`1 ‚Ì”ÍˆÍ“à‚Éû‚ß‚é
+            // t ã‚’ 0ã€œ1 ã®ç¯„å›²å†…ã«åã‚ã‚‹
             float clampedT = Mathf.Clamp01(t);
 
-            // SšƒJ[ƒui“®‚«o‚µ‚Æ~‚Ü‚é’¼‘O‚ğŠŠ‚ç‚©‚É‚·‚éj‚ğ“K—p
+            // Så­—ã‚«ãƒ¼ãƒ–ï¼ˆå‹•ãå‡ºã—ã¨æ­¢ã¾ã‚‹ç›´å‰ã‚’æ»‘ã‚‰ã‹ã«ã™ã‚‹ï¼‰ã‚’é©ç”¨
             float curveT = _crouchCurve.Evaluate(clampedT);
 
-            // ‹L˜^‚µ‚½ŠJn’l‚Æ–Ú•W’l‚ÌŠÔ‚ğAƒJ[ƒu‚ğ“K—p‚µ‚½is“x‚Å•âŠÔ
+            // è¨˜éŒ²ã—ãŸé–‹å§‹å€¤ã¨ç›®æ¨™å€¤ã®é–“ã‚’ã€ã‚«ãƒ¼ãƒ–ã‚’é©ç”¨ã—ãŸé€²è¡Œåº¦ã§è£œé–“
             float newHeight = Mathf.Lerp(startHeight, targetHeight, curveT);
 
             float newCameraY = 0f;
@@ -94,7 +104,7 @@ public class PlayerCrouch : MonoBehaviour
                 newCameraY = Mathf.Lerp(startCameraY, targetCameraY, curveT);
             }
 
-            // ŒvZ‚µ‚½’l‚ğÀÛ‚É“K—p
+            // è¨ˆç®—ã—ãŸå€¤ã‚’å®Ÿéš›ã«é©ç”¨
             ApplyCrouchState(newHeight, newCameraY);
 
             yield return null;
@@ -102,7 +112,7 @@ public class PlayerCrouch : MonoBehaviour
     }
 
     /// <summary>
-    /// CharacterController‚Ì‚‚³‚ÆƒJƒƒ‰‚ÌYÀ•W‚ğÀÛ‚É“K—p‚·‚é
+    /// CharacterControllerã®é«˜ã•ã¨ã‚«ãƒ¡ãƒ©ã®Yåº§æ¨™ã‚’å®Ÿéš›ã«é©ç”¨ã™ã‚‹
     /// </summary>
     private void ApplyCrouchState(float height, float cameraY)
     {

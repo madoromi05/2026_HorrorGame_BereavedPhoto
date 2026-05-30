@@ -13,6 +13,9 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlay
     public event Action OnHandLightPerformed;
     public event Action OnInteractHeld;
     public event Action OnInteractReleased;
+    public event Action<bool> OnLeanLeftPerformed;
+    public event Action<bool> OnLeanRightPerformed;
+    public event Action<bool> OnHoldBreathPerformed;
 
     private bool _isPlayerInputEnabled = true;
     private InputSystem_Actions _inputActions;
@@ -111,5 +114,32 @@ public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlay
         {
             OnHandLightPerformed?.Invoke();
         }
+    }
+
+    public void OnLeanLeft(InputAction.CallbackContext context)
+    {
+        if (!_isPlayerInputEnabled) return;
+        if (context.performed)
+            OnLeanLeftPerformed?.Invoke(true);
+        else if (context.canceled)
+            OnLeanLeftPerformed?.Invoke(false);
+    }
+
+    public void OnLeanRight(InputAction.CallbackContext context)
+    {
+        if (!_isPlayerInputEnabled) return;
+        if (context.performed)
+            OnLeanRightPerformed?.Invoke(true);
+        else if (context.canceled)
+            OnLeanRightPerformed?.Invoke(false);
+    }
+
+    public void OnHoldBreath(InputAction.CallbackContext context)
+    {
+        if (!_isPlayerInputEnabled) return;
+        if (context.performed)
+            OnHoldBreathPerformed?.Invoke(true);
+        else if (context.canceled)
+            OnHoldBreathPerformed?.Invoke(false);
     }
 }

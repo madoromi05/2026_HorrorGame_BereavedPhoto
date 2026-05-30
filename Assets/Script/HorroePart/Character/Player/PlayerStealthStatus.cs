@@ -9,8 +9,14 @@ public class PlayerStealthStatus : MonoBehaviour
     [SerializeField] private float _crouchNoiseRadius = 1.5f;
     [SerializeField] private float _dashNoiseRadius = 10f;
 
+    [Header("息切れ（疲労）ノイズ")]
+    // ダッシュ疲労中に底上げされる足音半径
+    [SerializeField] private float _exhaustNoiseRadius = 7f;
+
     private PlayerMover _mover;
     private HandLightController _lightController;
+    private PlayerBreath _breath; 
+    private PlayerDashController _dashController;
 
     public float FootstepNoiseRadius { get; private set; }
     public bool IsLightOn => _lightController.IsLightOn;
@@ -19,17 +25,34 @@ public class PlayerStealthStatus : MonoBehaviour
     {
         _mover = GetComponent<PlayerMover>();
         _lightController = GetComponent<HandLightController>();
+        _breath = GetComponent<PlayerBreath>();
+        _dashController = GetComponent<PlayerDashController>();
     }
 
     private void Update()
     {
         // MoveState ごとに足音半径を切り替える（FPSMover.MoveState と対応）
-        FootstepNoiseRadius = _mover.CurrentMoveState switch
+        float noise = _mover.CurrentMoveState switch
         {
             PlayerMover.MoveState.Dash   => _dashNoiseRadius,
             PlayerMover.MoveState.Walk   => _walkNoiseRadius,
             PlayerMover.MoveState.Crouch => _crouchNoiseRadius,
             _                         => 0f,  // Idle：静止中は無音
         };
+
+        // ダッシュ疲労（息切れ）中はノイズを底上げ
+        if (_dashController != null && _dashController.IsExhausted)
+            noise = Mathf.Max(noise, _exhaustNoiseRadius);
+
+        // 息止め関連：あえぎは大きく、息止め中はほぼ無音に上書き
+        if (_breath != null)
+        {
+            if (_breath.IsGasping)
+                noise = Mathf.Max(noise, _breath.GaspNoiseRadius);
+            else if (_breath.IsHoldingBreath)
+                noise = 0f;
+        }
+
+        FootstepNoiseRadius = noise;
     }
 }
