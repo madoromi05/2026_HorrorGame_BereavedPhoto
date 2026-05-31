@@ -31,7 +31,7 @@ public class PlayerStealthStatus : MonoBehaviour
 
     private void Update()
     {
-        // MoveState ごとに足音半径を切り替える（FPSMover.MoveState と対応）
+        // MoveState ごとに足音半径を切り替える（PlayerMover.MoveState と対応）
         float noise = _mover.CurrentMoveState switch
         {
             PlayerMover.MoveState.Dash   => _dashNoiseRadius,
@@ -40,11 +40,6 @@ public class PlayerStealthStatus : MonoBehaviour
             _                         => 0f,  // Idle：静止中は無音
         };
 
-        // ダッシュ疲労（息切れ）中はノイズを底上げ
-        if (_dashController != null && _dashController.IsExhausted)
-            noise = Mathf.Max(noise, _exhaustNoiseRadius);
-
-        // 息止め関連：あえぎは大きく、息止め中はほぼ無音に上書き
         if (_breath != null)
         {
             if (_breath.IsGasping)
@@ -52,6 +47,10 @@ public class PlayerStealthStatus : MonoBehaviour
             else if (_breath.IsHoldingBreath)
                 noise = 0f;
         }
+
+        // ダッシュ疲労（息切れ）中はノイズを底上げ。息止めより優先して上書き
+        if (_dashController != null && _dashController.IsExhausted)
+            noise = Mathf.Max(noise, _exhaustNoiseRadius);
 
         FootstepNoiseRadius = noise;
     }

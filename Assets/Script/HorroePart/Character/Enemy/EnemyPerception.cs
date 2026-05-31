@@ -35,8 +35,10 @@ public class EnemyPerception : MonoBehaviour
     [SerializeField] private float _baseGainRate = 1.2f;
     // プレイヤーがライト点灯中の蓄積倍率＆実効視界レンジ倍率
     [SerializeField] private float _lightGainMultiplier = 1.6f;
-    // 音・ライトビーム検知時に加算する1秒あたり蓄積量
+    // 音検知時に加算する1秒あたり蓄積量
     [SerializeField] private float _soundGainBonus = 0.6f;
+    // ライトビーム検知時に加算する1秒あたり蓄積量
+    [SerializeField] private float _lightBeamGainBonus = 0.6f;
     // 刺激が無いときの1秒あたり減衰量
     [SerializeField] private float _awarenessDecayRate = 0.35f;
     // この警戒度以上で「警戒(Suspicious)」状態に入る。1.0で追跡(Chase)
@@ -142,7 +144,7 @@ public class EnemyPerception : MonoBehaviour
                 float beamAngle = Vector3.Angle(_player.forward, toEnemy);
                 if (beamAngle <= _lightDetectAngle)
                 {
-                    gain += _soundGainBonus;
+                    gain += _lightBeamGainBonus;
                     stimulus = true;
                     RecordStimulus(flatDir);
                 }

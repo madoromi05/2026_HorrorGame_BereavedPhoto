@@ -298,7 +298,7 @@ public class EnemyController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject != _player.gameObject) return;
+        if (_player == null || collision.gameObject != _player.gameObject) return;
         _gameOverHandler?.TriggerGameOver();
     }
 }

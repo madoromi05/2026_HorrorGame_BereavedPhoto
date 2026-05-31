@@ -42,7 +42,7 @@ public class PlayerMover : MonoBehaviour
     {
         _characterController = GetComponent<CharacterController>();
         _inputCallbackController = GetComponent<InputPlayerController>();
-        _playerCrouch = GetComponent<PlayerCrouch>(); // 追加
+        _playerCrouch = GetComponent<PlayerCrouch>();
         _currentYaw = transform.eulerAngles.y;
     }
 

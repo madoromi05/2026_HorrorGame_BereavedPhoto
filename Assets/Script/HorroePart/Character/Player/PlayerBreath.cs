@@ -46,6 +46,7 @@ public class PlayerBreath : MonoBehaviour
     private void OnDisable()
     {
         _input.OnHoldBreathPerformed -= HandleHoldBreath;
+        _holdKeyHeld = false;
     }
 
     private void HandleHoldBreath(bool pressed) => _holdKeyHeld = pressed;
