@@ -130,11 +130,11 @@ public class ExitDoor : MonoBehaviour, IInteractable
     private static string GetMessage(ExitCondition cond) => cond switch
     {
         ExitCondition.NeedAnalysis =>
-            "まだ、変えるわけにはいかない...",
+            "まだ、帰るわけにはいかない...",
         ExitCondition.NeedKey =>
             "鍵が掛かってる...",
         ExitCondition.NeedBoth =>
-            "まだ、変えるわけにはいかない...",
+            "まだ、帰るわけにはいかない...",
         _ => ""
     };
 }

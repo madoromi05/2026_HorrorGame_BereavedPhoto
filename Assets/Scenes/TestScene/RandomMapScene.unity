@@ -168,7 +168,7 @@ MonoBehaviour:
   _analyzerUIGroup: {fileID: 5220230801884752741}
   _detector: {fileID: 1889967942}
   _handLightController: {fileID: 1016573251}
-  uiFadeSpeed: 8
+  _uiFadeSpeed: 8
 --- !u!1 &105192662
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,6 +681,7 @@ GameObject:
   - component: {fileID: 599387394}
   - component: {fileID: 599387393}
   - component: {fileID: 599387392}
+  - component: {fileID: 599387395}
   m_Layer: 0
   m_Name: ItemHintCanvas
   m_TagString: Untagged
@@ -737,10 +738,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -771,6 +772,22 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &599387395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 599387390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e68675b53e25e469df1a2a660b4f04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _messageText: {fileID: 1599978667}
+  _canvasGroup: {fileID: 5220230801884752741}
+  _displayDuration: 3
+  _fadeSpeed: 2
 --- !u!1 &632120346
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,6 +960,7 @@ MonoBehaviour:
   _inputController: {fileID: 1016573256}
   _holdProgressImage: {fileID: 567458602}
   _playerLight: {fileID: 1691731667}
+  _interactHintUI: {fileID: 998892881}
   itemNameText: {fileID: 1399082884}
 --- !u!114 &677163221
 MonoBehaviour:
@@ -1047,6 +1065,7 @@ MonoBehaviour:
   _inputController: {fileID: 1016573256}
   _holdProgressImage: {fileID: 2059764515}
   _playerLight: {fileID: 1691731667}
+  _interactHintUI: {fileID: 998892881}
   _memoText: {fileID: 313051854}
 --- !u!1 &878872112
 GameObject:
@@ -1791,8 +1810,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -266}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: -260}
+  m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1599978667
 MonoBehaviour:
@@ -1848,8 +1867,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -2012,7 +2031,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 1
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2353,7 +2372,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _barFill: {fileID: 3518505725231803487}
-  _typewriterInterval: 10
 --- !u!224 &3422157061923051096
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2539,16 +2557,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2459017983334848606, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
+      propertyPath: field of view
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 2459017983334848606, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_BackGroundColor.b
-      value: 1
+      value: 0.69803923
       objectReference: {fileID: 0}
     - target: {fileID: 2459017983334848606, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_BackGroundColor.g
-      value: 1
+      value: 0.6509804
       objectReference: {fileID: 0}
     - target: {fileID: 2459017983334848606, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_BackGroundColor.r
-      value: 1
+      value: 0.61960787
       objectReference: {fileID: 0}
     - target: {fileID: 3351915601385271846, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_Name
