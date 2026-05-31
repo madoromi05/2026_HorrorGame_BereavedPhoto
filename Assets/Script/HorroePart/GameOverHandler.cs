@@ -2,20 +2,19 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ƒQ[ƒ€ƒI[ƒo[ğŒ‚ğó‚¯æ‚èScene‘JˆÚ‚ğs‚¤ƒRƒ“ƒ|[ƒlƒ“ƒgB
-/// Player‚ÉƒAƒ^ƒbƒ`‚µAEnemyController‚©‚ç TriggerGameOver() ‚ğŒÄ‚ÔB
+/// ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã‚’å—ã‘å–ã‚Š GameOverScene ã¸é·ç§»ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
+/// Player ã«ã‚¢ã‚¿ãƒƒãƒã—ã€EnemyController ã‹ã‚‰ TriggerGameOver() ã‚’å‘¼ã¶ã€‚
+/// GameProgressManager ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã¯å¤‰æ›´ã—ãªã„ï¼ˆãƒªãƒˆãƒ©ã‚¤ã§åŒã˜ã‚·ãƒ¼ãƒ³ã«æˆ»ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ï¼‰ã€‚
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
-    private const string kGameOverSceneName = "GameOverScene";
-
     /// <summary>
-    /// ƒQ[ƒ€ƒI[ƒo[‚ğƒgƒŠƒK[‚·‚éB
-    /// “ñdŒÄ‚Ño‚µ‚ğ–h‚®‚½‚ßAŒÄ‚Ño‚µŒã‚Í©g‚ğ–³Œø‰»‚·‚éB
+    /// ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã‚’ãƒˆãƒªã‚¬ãƒ¼ã™ã‚‹ã€‚
+    /// äºŒé‡å‘¼ã³å‡ºã—ã‚’é˜²ããŸã‚ã€å‘¼ã³å‡ºã—å¾Œã¯è‡ªèº«ã‚’ç„¡åŠ¹åŒ–ã™ã‚‹ã€‚
     /// </summary>
     public void TriggerGameOver()
     {
         enabled = false;
-        SceneManager.LoadScene(kGameOverSceneName);
+        SceneManager.LoadScene(GameProgressManager.SceneGameOver);
     }
 }

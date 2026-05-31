@@ -33,6 +33,12 @@ public class DungeonGenerator : MonoBehaviour
     private SectionPlacer _sectionPlacer;
     private CorridorPlacer _corridorPlacer;
 
+    /// <summary>
+    /// Awake タイミングで外部から RoomDataBase を上書きする。
+    /// HorrorSceneConfigurator が Generate() より前に呼び出す。
+    /// </summary>
+    public void SetRoomDataBase(RoomDataBase data) => _roomDataBase = data;
+
     private void Start()
     {
         Generate();

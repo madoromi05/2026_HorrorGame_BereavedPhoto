@@ -32,5 +32,8 @@ namespace HorrorGame.Item
 
         /// 指定種類のアイテムを取得しているか。ドア判定などに使う。
         public bool HasItem(ItemType type) => _acquiredItems.Contains(type);
+
+        /// <summary>デバッグ: アイテムタイプを直接追加（UIイベントなし）。</summary>
+        public void DebugAddItem(ItemType type) => _acquiredItems.Add(type);
     }
 }

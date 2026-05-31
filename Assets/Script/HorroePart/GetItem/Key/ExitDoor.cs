@@ -5,39 +5,45 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// ゲームの脱出ドア。
-/// 以下の条件をすべて満たしたときのみ脱出できる：
-///   1. 対象の敵（EnemyAnalyzer）の解析率が 100%
-///   2. 指定された鍵アイテムを所持している
+/// 脱出ドア（ScenarioDoor を統合した汎用版）。
+/// 以下の条件をすべて満たしたとき GameProgressManager.LoadNextScene() で次のシーンへ遷移する：
+///   1. いずれかの EnemyAnalyzer 解析率が 100%
+///   2. _requiredKey に対応する鍵を Inventory に持っている
 ///
-/// 条件を満たしていない状態でクリックすると、
-/// ExitCondition の状態に応じたメッセージを InteractFeedbackUI に表示する。
+/// [SerializeField] が未設定の場合は FindFirstObjectByType でシーン内を自動検索する。
+/// プロシージャルダンジョンでも手動配置シーンでもどちらでも使える。
+/// _onExit は互換性のために残してある。
 /// </summary>
+[RequireComponent(typeof(Collider))]
 public class ExitDoor : MonoBehaviour, IInteractable
 {
-    // ---- 脱出条件の状態 ----
     private enum ExitCondition
     {
-        Ready,          // 全条件クリア → 脱出可能
-        NeedAnalysis,   // 解析未完了のみ
-        NeedKey,        // 鍵なしのみ
-        NeedBoth,       // 解析未完了 + 鍵なし
+        Ready,
+        NeedAnalysis,
+        NeedKey,
+        NeedBoth,
     }
 
     [Header("脱出条件")]
-    [SerializeField] private EnemyAnalyzer _enemyAnalyzer;
-    [SerializeField] private ItemType _requiredKey = ItemType.KeyFather;
-    [SerializeField] private Inventory _inventory;
+    [Tooltip("脱出に必要な鍵の種類。GameProgressManager が存在する場合はステージから自動判定するためこの値は無視される。")]
+    [SerializeField] private ItemType _requiredKey = ItemType.KeyMother;
 
-    [Header("UI")]
+    [Header("参照（未設定の場合はシーン内から自動検索）")]
+    [SerializeField] private EnemyAnalyzer      _enemyAnalyzer;
+    [SerializeField] private Inventory          _inventory;
     [SerializeField] private InteractFeedbackUI _feedbackUI;
 
-    [Header("脱出イベント")]
+    [Header("脱出時の追加イベント（任意）")]
     [SerializeField] private UnityEvent _onExit;
+
+    // SerializeField が未設定なら FindFirstObjectByType でキャッシュして取得
+    private EnemyAnalyzer      Analyzer   => _enemyAnalyzer ??= FindFirstObjectByType<EnemyAnalyzer>();
+    private Inventory          Inventory  => _inventory     ??= FindFirstObjectByType<Inventory>();
+    private InteractFeedbackUI FeedbackUI => _feedbackUI    ??= FindFirstObjectByType<InteractFeedbackUI>();
 
     // ---- IInteractable 実装 ----
 
-    // 常にインタラクト可能（条件チェックは OnInteract 内で行う）
     public bool CanInteract => true;
 
     public string HintText => EvaluateCondition() == ExitCondition.Ready
@@ -51,20 +57,36 @@ public class ExitDoor : MonoBehaviour, IInteractable
         if (cond == ExitCondition.Ready)
         {
             _onExit?.Invoke();
+
+            if (GameProgressManager.Instance != null)
+                GameProgressManager.Instance.LoadNextScene();
+            else
+                Debug.LogWarning("[ExitDoor] GameProgressManager が見つかりません。シーン遷移できません。");
             return;
         }
 
-        // 条件未達 → 状況に応じたメッセージを表示
-        _feedbackUI?.Show(GetMessage(cond));
+        FeedbackUI?.Show(GetMessage(cond));
     }
 
     // ---- 内部ロジック ----
 
-    /// <summary>現在の条件達成状況を返す。</summary>
+    /// <summary>
+    /// 有効な鍵種別を返す。
+    /// GameProgressManager が存在する場合はステージから自動判定するため、
+    /// 単一の HorrorScene で両ステージに対応できる。
+    /// </summary>
+    private ItemType GetEffectiveKey()
+    {
+        var stage = GameProgressManager.Instance?.CurrentStage;
+        if (stage == GameProgressManager.GameStage.Horror1) return ItemType.KeyMother;
+        if (stage == GameProgressManager.GameStage.Horror2) return ItemType.KeyFather;
+        return _requiredKey; // GameProgressManager がない場合は Inspector の設定値を使う
+    }
+
     private ExitCondition EvaluateCondition()
     {
-        bool analysisOk = _enemyAnalyzer != null && _enemyAnalyzer.IsComplete;
-        bool hasKey     = _inventory     != null && _inventory.HasItem(_requiredKey);
+        bool analysisOk = Analyzer  != null && Analyzer.IsComplete;
+        bool hasKey     = Inventory != null && Inventory.HasItem(GetEffectiveKey());
 
         if (!analysisOk && !hasKey) return ExitCondition.NeedBoth;
         if (!analysisOk)            return ExitCondition.NeedAnalysis;
@@ -72,18 +94,14 @@ public class ExitDoor : MonoBehaviour, IInteractable
         return ExitCondition.Ready;
     }
 
-    /// <summary>ExitCondition に対応するメッセージを返す。</summary>
     private static string GetMessage(ExitCondition cond) => cond switch
     {
         ExitCondition.NeedAnalysis =>
             "敵の解析が完了していません。\nカメラで敵をスキャンしてください。",
-
         ExitCondition.NeedKey =>
             "脱出に必要な鍵がありません。\n鍵を見つけてください。",
-
         ExitCondition.NeedBoth =>
             "敵の解析が完了しておらず、\n脱出に必要な鍵もありません。",
-
         _ => ""
     };
 }

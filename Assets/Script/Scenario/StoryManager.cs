@@ -1,12 +1,18 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class StoryManager : MonoBehaviour
 {
-    [SerializeField] private StoryData[] _storyDatas;
+    /// <summary>全ストーリーが終了したときに発火する。</summary>
+    public event Action OnAllStoriesComplete;
+
+    // StorySceneController.Awake() で SetStoryDatas() により必ず設定される。
+    // Inspector からの直接設定は不要（[SerializeField] を外している）。
+    private StoryData[] _storyDatas;
+
     [SerializeField] private Image _background;
     [SerializeField] private Image _characterImage;
     [SerializeField] private TextMeshProUGUI _storyText;
@@ -23,13 +29,25 @@ public class StoryManager : MonoBehaviour
 
     private void Start()
     {
-        SetStoryElement(StoryIndex, TextIndex);
-        _inputController.OnClickPerformed += AdvanceStory;
+        // データは StorySceneController.Awake() で SetStoryDatas() により設定済み。
+        // ここでは入力イベントの購読のみ行う。
+        _inputController.OnClickPerformed += OnClickReceived;
+    }
+
+    /// <summary>ストーリーデータを外部から差し替えて先頭から再生する。</summary>
+    public void SetStoryDatas(StoryData[] datas)
+    {
+        _storyDatas = datas;
+        StoryIndex  = 0;
+        TextIndex   = 0;
+        if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
+        if (_storyDatas != null && _storyDatas.Length > 0)
+            SetStoryElement(0, 0);
     }
 
     private void OnDisable()
     {
-        _inputController.OnClickPerformed -= AdvanceStory;
+        _inputController.OnClickPerformed -= OnClickReceived;
     }
 
     private void OnClickReceived()
@@ -42,6 +60,7 @@ public class StoryManager : MonoBehaviour
 
     public void AdvanceStory()
     {
+        if (_storyDatas == null || _storyDatas.Length == 0) return;
         TextIndex++;
 
         if (TextIndex < _storyDatas[StoryIndex].Stories.Count)
@@ -60,6 +79,7 @@ public class StoryManager : MonoBehaviour
             else
             {
                 Debug.Log("全ストーリー終了");
+                OnAllStoriesComplete?.Invoke();
             }
         }
     }

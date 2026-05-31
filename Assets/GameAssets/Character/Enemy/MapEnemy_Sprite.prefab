@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 8653020475214171549}
   - component: {fileID: 3437137103287239661}
   - component: {fileID: 4657410960200511867}
+  - component: {fileID: 8573397869608896876}
   - component: {fileID: 2956920703997310545}
   - component: {fileID: 7864443649624027618}
   - component: {fileID: 774548280682853366}
-  - component: {fileID: 8573397869608896876}
   - component: {fileID: -2791246849759307280}
   m_Layer: 6
   m_Name: MapEnemy_Sprite
@@ -114,50 +114,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &2956920703997310545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _chaseSpeed: 4
-  _accelerationForce: 30
-  _rotateSpeed: 10
---- !u!114 &7864443649624027618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a2df105d2192384e8d898b43c5902be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _wanderSpeed: 2
-  _rotateSpeed: 10
-  _accelerationForce: 20
-  _arrivalRadius: 1
---- !u!114 &774548280682853366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _normalSmoothing: 15
 --- !u!212 &8573397869608896876
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -213,6 +169,57 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2956920703997310545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chaseSpeed: 4
+  _accelerationForce: 30
+  _rotateSpeed: 10
+  _suspiciousSpeed: 1.5
+  _searchSpeed: 3
+  _searchDuration: 20
+  _searchRoamRadius: 4
+  _searchRepickInterval: 3
+  _feintDuration: 4
+  _feintReturnChance: 0.5
+--- !u!114 &7864443649624027618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a2df105d2192384e8d898b43c5902be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _wanderSpeed: 2
+  _rotateSpeed: 10
+  _accelerationForce: 20
+  _arrivalRadius: 1
+--- !u!114 &774548280682853366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c847ed575bb24a6428ce331b19903e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _normalSmoothing: 15
 --- !u!114 &-2791246849759307280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,9 +232,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 213bc119ce245b246abe2387555cf125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _detectRange: 2
   _sightRange: 8
   _sightHalfAngle: 35
   _eyeHeightOffset: 1.5
   _lightDetectRange: 20
   _lightDetectAngle: 60
+  _baseGainRate: 1.2
+  _lightGainMultiplier: 1.6
+  _soundGainBonus: 0.6
+  _lightBeamGainBonus: 0.6
+  _awarenessDecayRate: 0.35
+  _suspicionThreshold: 0.4

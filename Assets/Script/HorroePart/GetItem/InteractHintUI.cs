@@ -17,6 +17,10 @@ namespace HorrorGame.UI
 
         private void Awake()
         {
+            if (_playerInteractor != null)
+            {
+                DebugCustom.Log($"[HintUI] PlayerInteractorがアサインされています。購読を開始します。");
+            }
             SetHintVisible(false);
         }
 

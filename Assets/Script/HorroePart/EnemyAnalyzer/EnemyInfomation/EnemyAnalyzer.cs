@@ -9,17 +9,31 @@ using UnityEngine;
 /// </summary>
 public class EnemyAnalyzer : MonoBehaviour
 {
-    [SerializeField] private float _analyzeSpeed = 0.1f;
-    [SerializeField] private float _decaySpeed = 0f;
+    [SerializeField] private float _analyzeSpeed = 0.3f;
+    [SerializeField] private float _decaySpeed = 0.5f;
     [SerializeField] private AnalyzerUI _analyzerUI;
     [SerializeField] private AnalyzerVignetteController _vignetteController;
 
     private readonly Dictionary<int, float> _analyzePercents = new();
     private int? _currentEnemyId = null;
 
+    /// <summary>現在ターゲット中の敵の解析率。カメラを外すと 0 を返す（UI更新用）。</summary>
     public float AnalyzePercent =>
         _currentEnemyId.HasValue && _analyzePercents.TryGetValue(_currentEnemyId.Value, out var v) ? v : 0f;
-    public bool IsComplete => AnalyzePercent >= 100f;
+
+    /// <summary>
+    /// 解析完了判定。いずれかの敵が 100% に達していれば true。
+    /// カメラを外した状態でも正しく判定されるよう、辞書全体を確認する。
+    /// </summary>
+    public bool IsComplete
+    {
+        get
+        {
+            foreach (var v in _analyzePercents.Values)
+                if (v >= 100f) return true;
+            return false;
+        }
+    }
 
     private bool _enemyInRange = false;
     private bool _isAiming = false;
@@ -45,7 +59,7 @@ public class EnemyAnalyzer : MonoBehaviour
 
         float current = AnalyzePercent;
 
-        if (!IsComplete)
+        if (current < 100f)
         {
             if (_enemyInRange)
                 current = Mathf.Min(100f, current + _analyzeSpeed * Time.deltaTime);
@@ -73,5 +87,33 @@ public class EnemyAnalyzer : MonoBehaviour
         _isAiming = false;
         _analyzerUI.ResetFields();
         _vignetteController.ResetVignette();
+    }
+
+    /// <summary>指定InstanceIDの敵の解析率を返す（デバッグUI用）。</summary>
+    public float GetAnalyzePercent(int instanceId)
+        => _analyzePercents.TryGetValue(instanceId, out var v) ? v : 0f;
+
+    /// <summary>
+    /// デバッグ: 解析を強制完了させる。
+    /// ターゲット中の敵がいればその敵のみ。いなければシーン上の全敵を完了させる。
+    /// </summary>
+    public void DebugForceComplete()
+    {
+        if (_currentEnemyId.HasValue)
+        {
+            _analyzePercents[_currentEnemyId.Value] = 100f;
+            DebugCustom.Log("[Debug] 解析強制完了（現在のターゲット）");
+            return;
+        }
+
+        var enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        if (enemies.Length == 0)
+        {
+            DebugCustom.LogWarning("[Debug] 解析対象の敵が見つかりません（カメラで敵を狙ってから実行してください）");
+            return;
+        }
+        foreach (var e in enemies)
+            _analyzePercents[e.gameObject.GetInstanceID()] = 100f;
+        DebugCustom.Log($"[Debug] 解析強制完了（{enemies.Length}体）");
     }
 }

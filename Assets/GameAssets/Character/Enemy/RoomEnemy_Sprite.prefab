@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 2956920703997310545}
   - component: {fileID: 774548280682853366}
   - component: {fileID: -1084362197312838748}
+  - component: {fileID: -246102367583104725}
   m_Layer: 6
   m_Name: RoomEnemy_Sprite
   m_TagString: Untagged
@@ -244,18 +245,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sightRange: 8
-  _sightHalfAngle: 35
-  _sightLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  _eyeHeightOffset: 1.5
-  _lightDetectRange: 20
-  _lightDetectAngle: 60
-  _detectRange: 10
   _chaseSpeed: 6
   _accelerationForce: 30
   _rotateSpeed: 10
+  _suspiciousSpeed: 1.5
+  _searchSpeed: 3
+  _searchDuration: 20
+  _searchRoamRadius: 4
+  _searchRepickInterval: 3
+  _feintDuration: 4
+  _feintReturnChance: 0.5
 --- !u!114 &774548280682853366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,3 +286,26 @@ MonoBehaviour:
   _rotateSpeed: 10
   _rayDistance: 1.5
   _rayOriginOffset: 0.4
+--- !u!114 &-246102367583104725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 213bc119ce245b246abe2387555cf125, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sightRange: 8
+  _sightHalfAngle: 35
+  _eyeHeightOffset: 1.5
+  _lightDetectRange: 20
+  _lightDetectAngle: 60
+  _baseGainRate: 1.2
+  _lightGainMultiplier: 1.6
+  _soundGainBonus: 0.6
+  _lightBeamGainBonus: 0.6
+  _awarenessDecayRate: 0.35
+  _suspicionThreshold: 0.4

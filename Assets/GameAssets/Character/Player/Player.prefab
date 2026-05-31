@@ -47,7 +47,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -69,7 +69,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 100
+  far clip plane: 90
   field of view: 80
   orthographic: 0
   orthographic size: 5
@@ -182,7 +182,6 @@ GameObject:
   - component: {fileID: 7772033762108381031}
   - component: {fileID: 2863466706399598481}
   - component: {fileID: 6920147249179006219}
-  - component: {fileID: 8924519429038961751}
   - component: {fileID: 6645435732018269271}
   - component: {fileID: 8199233245505525648}
   m_Layer: 8
@@ -283,7 +282,7 @@ CapsuleCollider:
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &3939201739960958374
 CharacterController:
   m_ObjectHideFlags: 0
@@ -308,7 +307,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2542864235932074062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,29 +500,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e5b443995e58bf40ab572cfef27fa86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particleEmitRate: 2
+  _particleEmitRate: 5
   _particleLifetime: 1
   _particleSize: 0.005
   _particleColor: {r: 1, g: 0.9411765, b: 0.8235294, a: 0}
   _particleAlpha: 0.1
   _startOffset: 3
---- !u!114 &8924519429038961751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b155c19feb16bc46adc1615b6197876, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cameraTransform: {fileID: 8010184895929199707}
-  _leanDistance: 0.4
-  _leanAngle: 10
-  _leanSpeed: 8
-  _rollTarget: {fileID: 0}
 --- !u!114 &6645435732018269271
 MonoBehaviour:
   m_ObjectHideFlags: 0

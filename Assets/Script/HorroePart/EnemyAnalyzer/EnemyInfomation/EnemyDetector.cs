@@ -37,7 +37,9 @@ public class EnemyDetector : MonoBehaviour
         // エイム中の場合は敵の検知を試みる
         if (TryDetectEnemy(out RaycastHit hit))
         {
-            _analyzer.SetCurrentEnemy(hit.collider.gameObject);
+            // 子コライダーがヒットしても常にルートの EnemyController を使う
+            var root = hit.collider.GetComponentInParent<EnemyController>();
+            _analyzer.SetCurrentEnemy(root != null ? root.gameObject : hit.collider.gameObject);
             _analyzer.SetEnemyInRange(true);
         }
         else
