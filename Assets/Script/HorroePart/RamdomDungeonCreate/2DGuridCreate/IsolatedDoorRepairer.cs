@@ -1,7 +1,7 @@
 /// <summary>
-/// �Z�N�V�����ڑ�����ʘH�ƌq�����Ă��Ȃ� Door �����o���A
-/// �ŋߖT�̒ʘH�Z���֌����� A* �ŒʘH�����L����㏈���N���X�B
-/// �S Door ���K���ʘH�l�b�g���[�N�ɎQ�����邱�Ƃ�ۏ؂���B
+/// セクション接続後も通路と繋がっていない Door を検出し、
+/// 最近傍の通路セルへ向けて A* で通路を延伸する後処理クラス。
+/// 全 Door が必ず通路ネットワークに参加することを保証する。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ public class IsolatedDoorRepairer
     private GridType[,] _grid;
 
     /// <summary>
-    /// �Ǘ� Door �̕�C�����s����B
-    /// ConnectSections ���S���s�����ꍇ�ɔ����AcorridorCells ����Ȃ狭���ڑ����s����B
+    /// 孤立 Door の補修を実行する。
+    /// ConnectSections が全失敗した場合に備え、corridorCells が空なら強制接続を先行する。
     /// </summary>
     public void Repair(
         GridType[,] grid,
@@ -25,19 +25,19 @@ public class IsolatedDoorRepairer
 
         var corridorCells = CollectCorridorCells();
 
-        // ConnectSections ���S���s�����ꍇ�͗אڃZ�N�V���������Ԃɋ����ڑ����ĒʘH���m�ۂ���
+        // ConnectSections が全失敗した場合は隣接セクションを順番に強制接続して通路を確保する
         if (corridorCells.Count == 0)
         {
-            DebugCustom.LogWarning("[IsolatedDoorRepairer] corridorCells ����̂��ߋ����ڑ������s���܂�");
+            DebugCustom.LogWarning("[IsolatedDoorRepairer] corridorCells が空のため強制接続を実行します");
             for (int i = 0; i < sections.Length - 1; i++)
                 connector.ConnectTwoSections(sections[i], sections[i + 1]);
             corridorCells = CollectCorridorCells();
         }
 
-        // �����ڑ���� Corridor �������ł��Ȃ������ꍇ�̓}�b�v�ݒ肪�s���Ȃ̂Œ��f����
+        // 強制接続後も Corridor が生成できなかった場合はマップ設定が不正なので中断する
         if (corridorCells.Count == 0)
         {
-            DebugCustom.LogWarning("[IsolatedDoorRepairer] �����ڑ���� corridorCells ����ł��B�}�b�v�ݒ���m�F���Ă�������");
+            DebugCustom.LogWarning("[IsolatedDoorRepairer] 強制接続後も corridorCells が空です。マップ設定を確認してください");
             return;
         }
 
@@ -49,10 +49,10 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// �Ǘ����Ă��� Door �� 1 ��C����B
-    /// Door ��Floor�i���������j�Ɉ͂܂�Ă��邽�� A* �̋N�_�ɂł��Ȃ��B
-    /// �אڂ��� Empty �Z���i�����O�������j���N�_�ɉ��L���邱�Ƃ�
-    /// �ʘH���������������蔲�����Ɍq����B
+    /// 孤立している Door を 1 つ補修する。
+    /// Door はFloor（部屋内部）に囲まれているため A* の起点にできない。
+    /// 隣接する Empty セル（部屋外側方向）を起点に延伸することで
+    /// 通路が部屋内部をすり抜けずに繋がる。
     /// </summary>
     private void TryRepairDoor(Vector2Int doorPos, HashSet<Vector2Int> corridorCells)
     {
@@ -61,25 +61,25 @@ public class IsolatedDoorRepairer
         var exitCell = FindExitCell(doorPos);
         if (exitCell == null)
         {
-            DebugCustom.LogWarning($"[IsolatedDoorRepairer] Door {doorPos} �̊O���o���Z����������܂���");
+            DebugCustom.LogWarning($"[IsolatedDoorRepairer] Door {doorPos} の外側出口セルが見つかりません");
             return;
         }
 
         var target = FindNearestCorridorCell(exitCell.Value, corridorCells);
         if (target == null)
         {
-            DebugCustom.LogWarning($"[IsolatedDoorRepairer] �Ǘ� Door {doorPos} �̐ڑ��悪������܂���ł���");
+            DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door {doorPos} の接続先が見つかりませんでした");
             return;
         }
 
         var path = RunAStar(exitCell.Value, target.Value);
         if (path == null)
         {
-            DebugCustom.LogWarning($"[IsolatedDoorRepairer] �Ǘ� Door A* ���s: {exitCell.Value} -> {target.Value}");
+            DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door A* 失敗: {exitCell.Value} -> {target.Value}");
             return;
         }
 
-        // �o���Z���ƌo�H��ʘH�Ƃ��ď�������
+        // 出口セルと経路を通路として書き込む
         _grid[exitCell.Value.x, exitCell.Value.y] = GridType.Corridor;
         foreach (var pos in path)
         {
@@ -95,7 +95,7 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// Door �� N/E/S/W ������ Corridor ���אڂ��Ă���ΐڑ��ς݂Ɣ��肷��B
+    /// Door の N/E/S/W 方向に Corridor が隣接していれば接続済みと判定する。
     /// </summary>
     private bool IsDoorConnected(Vector2Int doorPos)
     {
@@ -109,8 +109,8 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// Door �ɗאڂ��� Empty �Z���i�����O�������̏o���j��Ԃ��B
-    /// �S���� Empty �łȂ���� null ��Ԃ��B
+    /// Door に隣接する Empty セル（部屋外側方向の出口）を返す。
+    /// 全方向 Empty でなければ null を返す。
     /// </summary>
     private Vector2Int? FindExitCell(Vector2Int doorPos)
     {
@@ -151,9 +151,9 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// A* �� start ���� end �܂ł̌o�H��Ԃ��B
-    /// Wall �ƕ��������iDoor �ȊO�� Floor�j�͒ʉߕs�B
-    /// �o�H��������Ȃ��ꍇ�� null ��Ԃ��B
+    /// A* で start から end までの経路を返す。
+    /// Wall と部屋内部（Door 以外の Floor）は通過不可。
+    /// 経路が見つからない場合は null を返す。
     /// </summary>
     private List<Vector2Int> RunAStar(Vector2Int start, Vector2Int end)
     {

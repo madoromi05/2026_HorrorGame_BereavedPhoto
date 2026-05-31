@@ -21,12 +21,12 @@ public class AnalyzerVignetteController : MonoBehaviour
     {
         if (_volume == null)
         {
-            Debug.LogError("[VignetteCtrl] _volume が Inspector で未アサインです。");
+            DebugCustom.LogError("[AnalyzerVignetteController] _volume が未設定です。", this);
             return;
         }
         if (_volume.sharedProfile == null)
         {
-            Debug.LogError("[VignetteCtrl] sharedProfile が null です。Volume に Profile を設定してください。");
+            DebugCustom.LogError("[AnalyzerVignetteController] sharedProfile が null です。Volume に Profile を設定してください。", this);
             return;
         }
 

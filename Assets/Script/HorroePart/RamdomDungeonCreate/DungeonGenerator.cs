@@ -41,6 +41,15 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Start()
     {
+        DebugCustom.ValidateFields(this,
+            (nameof(_bluePrint), _bluePrint),
+            (nameof(_roomDataBase), _roomDataBase),
+            (nameof(_corridorDataBase), _corridorDataBase),
+            (nameof(_roomParent), _roomParent),
+            (nameof(_corridorParent), _corridorParent),
+            (nameof(_enemyParent), _enemyParent),
+            (nameof(_playerTransform), _playerTransform));
+
         Generate();
     }
 

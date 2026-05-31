@@ -17,6 +17,12 @@ namespace HorrorGame.Dungeon
 
         private void Start()
         {
+            DebugCustom.ValidateFields(this,
+                (nameof(_memoUIPresenter), _memoUIPresenter),
+                (nameof(_itemAcquiredUIPresenter), _itemAcquiredUIPresenter),
+                (nameof(_playerTransform), _playerTransform),
+                (nameof(_dungeonGenerator), _dungeonGenerator));
+
             _dungeonGenerator.OnRoomPlaced += Initialize;
         }
 

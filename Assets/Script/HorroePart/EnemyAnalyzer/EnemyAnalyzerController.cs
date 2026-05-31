@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒJƒƒ‰\‚¦‚Ì“ü—Í‚ğó‚¯æ‚èA‰ğÍ‚ÌŠJnE’â~‚ÆUI‚Ì•\¦Ø‘Ö‚ğŠÇ—‚·‚éB
-/// InputPlayerController ‚Æ EnemyAnalyzer ‚Ì‹´“n‚µ–ğB
+/// ã‚«ãƒ¡ãƒ©æ§‹ãˆã®å…¥åŠ›ã‚’å—ã‘å–ã‚Šã€è§£æã®é–‹å§‹ãƒ»åœæ­¢ã¨UIã®è¡¨ç¤ºåˆ‡æ›¿ã‚’ç®¡ç†ã™ã‚‹ã€‚
+/// InputPlayerController ã¨ EnemyAnalyzer ã®æ©‹æ¸¡ã—å½¹ã€‚
 /// </summary>
 public class EnemyAnalyzerController : MonoBehaviour
 {
@@ -11,10 +11,20 @@ public class EnemyAnalyzerController : MonoBehaviour
     [SerializeField] private CanvasGroup _analyzerUIGroup;
     [SerializeField] private EnemyDetector _detector;
     [SerializeField] private HandLightController _handLightController;
-    // ƒJƒƒ‰UI‚ÌƒtƒF[ƒh‘¬“x
-    [SerializeField] private float uiFadeSpeed = 8f;
+    // ã‚«ãƒ¡ãƒ©UIã®ãƒ•ã‚§ãƒ¼ãƒ‰é€Ÿåº¦
+    [SerializeField] private float _uiFadeSpeed = 8f;
 
-    private bool m_isAiming = false;
+    private bool _isAiming = false;
+
+    private void Awake()
+    {
+        DebugCustom.ValidateFields(this,
+            (nameof(_inputController), _inputController),
+            (nameof(_analyzer), _analyzer),
+            (nameof(_analyzerUIGroup), _analyzerUIGroup),
+            (nameof(_detector), _detector),
+            (nameof(_handLightController), _handLightController));
+    }
 
     private void OnEnable()
     {
@@ -28,27 +38,27 @@ public class EnemyAnalyzerController : MonoBehaviour
 
     private void Update()
     {
-        // UI‚ğƒtƒF[ƒhƒCƒ“/ƒAƒEƒg
-        float targetAlpha = m_isAiming ? 1f : 0f;
+        // UIã‚’ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³/ã‚¢ã‚¦ãƒˆ
+        float targetAlpha = _isAiming ? 1f : 0f;
         _analyzerUIGroup.alpha = Mathf.MoveTowards(
             _analyzerUIGroup.alpha,
             targetAlpha,
-            uiFadeSpeed * Time.deltaTime
+            _uiFadeSpeed * Time.deltaTime
         );
 
-        // \‚¦‚Ä‚¢‚È‚¢‚Æ‚«‚Í‰ğÍ‚ğ~‚ß‚é
-        if (!m_isAiming)
+        // æ§‹ãˆã¦ã„ãªã„ã¨ãã¯è§£æã‚’æ­¢ã‚ã‚‹
+        if (!_isAiming)
             _analyzer.SetEnemyInRange(false);
     }
 
     private void HandleCamera(bool isAiming)
     {
-        m_isAiming = isAiming;
+        _isAiming = isAiming;
 
         _detector.SetAiming(isAiming);
         _analyzer.SetAiming(isAiming);
 
-        // \‚¦‚ğ‰ğœ‚µ‚½‚çƒŠƒZƒbƒg
+        // æ§‹ãˆã‚’è§£é™¤ã—ãŸã‚‰ãƒªã‚»ãƒƒãƒˆ
         if (isAiming)
             _handLightController.ForceOff();
         else

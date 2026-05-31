@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputPlayerController : MonoBehaviour　, InputSystem_Actions.IPlayerActions
+public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerActions
 {
     public event Action<Vector2> OnMovePerformed;
     public event Action<Vector2> OnLookPerformed;

@@ -17,6 +17,13 @@ public class EnemyDetector : MonoBehaviour
 
     private bool _isAiming = false;
 
+    private void Awake()
+    {
+        DebugCustom.ValidateFields(this,
+            (nameof(_analyzer), _analyzer),
+            (nameof(_fpsCam), _fpsCam));
+    }
+
     /// <summary>
     /// エイム状態を設定する。
     /// </summary>

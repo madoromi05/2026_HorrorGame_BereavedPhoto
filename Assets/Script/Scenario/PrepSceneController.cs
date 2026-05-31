@@ -94,6 +94,6 @@ public class PrepSceneController : MonoBehaviour
         if (GameProgressManager.Instance != null)
             GameProgressManager.Instance.LoadNextScene();
         else
-            Debug.LogWarning("[PrepSceneController] GameProgressManager not found");
+            DebugCustom.LogWarning("[PrepSceneController] GameProgressManager not found");
     }
 }

@@ -46,6 +46,13 @@ public class EnemyAnalyzer : MonoBehaviour
         _currentEnemyId = enemy != null ? (int?)enemy.GetInstanceID() : null;
     }
 
+    private void Awake()
+    {
+        DebugCustom.ValidateFields(this,
+            (nameof(_analyzerUI), _analyzerUI),
+            (nameof(_vignetteController), _vignetteController));
+    }
+
     private void Update()
     {
         if (!_isAiming) return;

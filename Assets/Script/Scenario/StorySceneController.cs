@@ -56,6 +56,6 @@ public class StorySceneController : MonoBehaviour
         if (GameProgressManager.Instance != null)
             GameProgressManager.Instance.LoadNextScene();
         else
-            Debug.LogWarning("[StorySceneController] GameProgressManager not found");
+            DebugCustom.LogWarning("[StorySceneController] GameProgressManager not found");
     }
 }

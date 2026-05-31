@@ -12,6 +12,12 @@ namespace HorrorGame.UI
     {
         [SerializeField] private TextMeshProUGUI _memoText;
 
+        private void Awake()
+        {
+            if (_memoText == null)
+                DebugCustom.LogError($"[MemoUIPresenter] _memoText が未設定です。", this);
+        }
+
         /// <summary>
         /// メモ本文を受け取りオーバーレイを表示する。MemoItemから呼ばれる。
         /// </summary>

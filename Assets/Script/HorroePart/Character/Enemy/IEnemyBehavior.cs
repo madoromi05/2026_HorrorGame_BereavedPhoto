@@ -1,21 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// �G�̜p�j�s����\���C���^�[�t�F�[�X�B
-/// RoomWanderer�i�������p�j�j�܂��� MapWanderer�i�}�b�v�S�̜p�j�j�� Prefab �ɃA�^�b�`���Ďg��������B
-/// EnemyController �͂��̃C���^�[�t�F�[�X�o�R�� Tick ���Ăяo���A�ǐՎ��͌Ăяo�����~�߂�B
-/// �ǐՏI������ OnChaseEnded �Œʒm���A�e Behavior ���K�v�ɉ����ď�Ԃ����Z�b�g����B
+/// 敵の徘徊行動を表すインターフェース。
+/// RoomWanderer（部屋内徘徊）または MapWanderer（マップ全体徘徊）を Prefab にアタッチして使い分ける。
+/// EnemyController はこのインターフェース経由で Tick を呼び出し、追跡時は呼び出しを止める。
+/// 追跡終了時は OnChaseEnded で通知し、各 Behavior が必要に応じて状態をリセットする。
 /// </summary>
 public interface IEnemyBehavior
 {
     /// <summary>
-    /// FixedUpdate �̃^�C�~���O�ŌĂяo�����p�j�����B
+    /// FixedUpdate のタイミングで呼び出される徘徊処理。
     /// </summary>
     void Tick();
 
     /// <summary>
-    /// EnemyController ���ǐՂ��I�������u�ԂɈ�x�����Ăяo�����B
-    /// �����O�ɏo���ꍇ�̋A�҃t���O���ĂȂǁA�ǐՏI����̏�ԃ��Z�b�g�Ɏg�p����B
+    /// EnemyController が追跡を終了した瞬間に一度だけ呼び出される。
+    /// 部屋外に出た場合の帰還フラグ立てなど、追跡終了後の状態リセットに使用する。
     /// </summary>
     void OnChaseEnded();
 }

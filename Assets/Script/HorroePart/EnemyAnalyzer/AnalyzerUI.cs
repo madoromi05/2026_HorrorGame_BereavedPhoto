@@ -1,8 +1,5 @@
-﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
 
 /// <summary>
 /// EnemyAnalyzer から受け取った解析率をもとに各UIパーツを更新する。
@@ -13,11 +10,13 @@ public class AnalyzerUI : MonoBehaviour
     // ---- バー ----
     [SerializeField] private Image _barFill;
 
-    // ---- フィールド開示 ----
-    [SerializeField] private float _typewriterInterval = 10f;
-
-    private int currentRevealIndex = 0;
     private bool isRevealing = false;
+
+    private void Awake()
+    {
+        if (_barFill == null)
+            DebugCustom.LogError($"[AnalyzerUI] _barFill が未設定です。", this);
+    }
 
     public void OnAnalyzeUpdate(float pct)
     {
@@ -37,27 +36,9 @@ public class AnalyzerUI : MonoBehaviour
         isRevealing = true;
     }
 
-    /// <summary>
-    /// テキストを1文字ずつ表示するタイプライター演出。
-    /// charInterval で1文字あたりの表示間隔を調整できる。
-    /// </summary>
-    private IEnumerator TypewriterReveal(TMP_Text label, string fullText)
-    {
-        label.text = "";
-        foreach (char c in fullText)
-        {
-            label.text += c;
-            yield return new WaitForSeconds(_typewriterInterval);
-        }
-
-        currentRevealIndex++;
-        isRevealing = false;
-    }
-
     public void ResetFields()
     {
         StopAllCoroutines();
-        currentRevealIndex = 0;
         isRevealing = false;
     }
 }

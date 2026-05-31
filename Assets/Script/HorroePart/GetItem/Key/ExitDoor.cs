@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// 脱出ドア（ScenarioDoor を統合した汎用版）。
 /// 以下の条件をすべて満たしたとき GameProgressManager.LoadNextScene() で次のシーンへ遷移する：
 ///   1. いずれかの EnemyAnalyzer 解析率が 100%
 ///   2. _requiredKey に対応する鍵を Inventory に持っている
@@ -26,7 +25,6 @@ public class ExitDoor : MonoBehaviour, IInteractable
     }
 
     [Header("脱出条件")]
-    [Tooltip("脱出に必要な鍵の種類。GameProgressManager が存在する場合はステージから自動判定するためこの値は無視される。")]
     [SerializeField] private ItemType _requiredKey = ItemType.KeyMother;
 
     [Header("参照（未設定の場合はシーン内から自動検索）")]
@@ -42,7 +40,6 @@ public class ExitDoor : MonoBehaviour, IInteractable
     private Inventory          Inventory  => _inventory     ??= FindFirstObjectByType<Inventory>();
     private InteractFeedbackUI FeedbackUI => _feedbackUI    ??= FindFirstObjectByType<InteractFeedbackUI>();
 
-    // InteractFeedbackUI がない場合の OnGUI フォールバック用
     private string _fallbackMessage = "";
     private float  _fallbackTimer   = 0f;
     private const float kFallbackDuration = 3f;
@@ -89,7 +86,7 @@ public class ExitDoor : MonoBehaviour, IInteractable
             if (GameProgressManager.Instance != null)
                 GameProgressManager.Instance.LoadNextScene();
             else
-                Debug.LogWarning("[ExitDoor] GameProgressManager が見つかりません。シーン遷移できません。");
+                DebugCustom.LogWarning("[ExitDoor] GameProgressManager が見つかりません。シーン遷移できません。");
             return;
         }
 
@@ -105,8 +102,6 @@ public class ExitDoor : MonoBehaviour, IInteractable
             _fallbackTimer   = kFallbackDuration;
         }
     }
-
-    // ---- 内部ロジック ----
 
     /// <summary>
     /// 有効な鍵種別を返す。
@@ -135,11 +130,11 @@ public class ExitDoor : MonoBehaviour, IInteractable
     private static string GetMessage(ExitCondition cond) => cond switch
     {
         ExitCondition.NeedAnalysis =>
-            "敵の解析が完了していません。\nカメラで敵をスキャンしてください。",
+            "まだ、変えるわけにはいかない...",
         ExitCondition.NeedKey =>
-            "脱出に必要な鍵がありません。\n鍵を見つけてください。",
+            "鍵が掛かってる...",
         ExitCondition.NeedBoth =>
-            "敵の解析が完了しておらず、\n脱出に必要な鍵もありません。",
+            "まだ、変えるわけにはいかない...",
         _ => ""
     };
 }

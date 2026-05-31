@@ -3,23 +3,23 @@ using DungeonSystem;
 using UnityEngine;
 
 /// <summary>
-/// ’Ê˜HƒZƒ‹iGridType.Corridor / Doorj‚Ìƒ[ƒ‹ƒhÀ•W‚ğƒEƒFƒCƒ|ƒCƒ“ƒg‚Æ‚µ‚Ä‡‚ÉˆÚ“®‚·‚éœpœjƒNƒ‰ƒXB
-/// EnemySpawner ‚©‚ç SetGrid ‚Å’Ê˜HÀ•WƒŠƒXƒg‚ğó‚¯æ‚èAd‚İ•t‚«’Š‘I‚ÅŸ‚Ì–Ú•W‚ğ‘I‚Ñ‘±‚¯‚éB
-/// •”‰®‚É‚Æ‚Ç‚Ü‚ç‚¸’Ê˜H‚ğ—Dæ“I‚É•à‚«‰ñ‚é‚±‚Æ‚ğ–Ú“I‚Æ‚µ‚Ä‚¢‚éB
+/// é€šè·¯ã‚»ãƒ«ï¼ˆGridType.Corridor / Doorï¼‰ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã‚’ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã¨ã—ã¦é †ã«ç§»å‹•ã™ã‚‹å¾˜å¾Šã‚¯ãƒ©ã‚¹ã€‚
+/// EnemySpawner ã‹ã‚‰ SetGrid ã§é€šè·¯åº§æ¨™ãƒªã‚¹ãƒˆã‚’å—ã‘å–ã‚Šã€é‡ã¿ä»˜ãæŠ½é¸ã§æ¬¡ã®ç›®æ¨™ã‚’é¸ã³ç¶šã‘ã‚‹ã€‚
+/// éƒ¨å±‹ã«ã¨ã©ã¾ã‚‰ãšé€šè·¯ã‚’å„ªå…ˆçš„ã«æ­©ãå›ã‚‹ã“ã¨ã‚’ç›®çš„ã¨ã—ã¦ã„ã‚‹ã€‚
 ///
-/// ƒ}ƒbƒv‘S‘Ì‚ğ„‰ñ‚µ‚â‚·‚­‚·‚é‚½‚ßˆÈ‰º‚Ì3‚Â‚Ìd‘g‚İ‚ğ‚ÂB
-/// 1. ’¼‘O‚Ìƒ^[ƒQƒbƒg‚ğœŠO‚µ‚Ä˜A‘±“¯ˆê‘I‘ğ‚ğ–h‚®B
-/// 2. ‰“‚¢ƒEƒFƒCƒ|ƒCƒ“ƒg‚Ù‚Ç‘I‚Î‚ê‚â‚·‚¢‹——£d‚İ•t‚«’Š‘I‚Å•Î‚è‚ğ—}‚¦‚éB
-/// 3. ˆê“x‘I‚ñ‚¾ƒEƒFƒCƒ|ƒCƒ“ƒg‚É kWaypointCooldown •b‚ÌƒN[ƒ‹ƒ_ƒEƒ“‚ğİ‚¯‚Ä’ZŠúŠÔ‚Ìs‚«—ˆ‚ğ–h‚®B
+/// ãƒãƒƒãƒ—å…¨ä½“ã‚’å·¡å›ã—ã‚„ã™ãã™ã‚‹ãŸã‚ä»¥ä¸‹ã®3ã¤ã®ä»•çµ„ã¿ã‚’æŒã¤ã€‚
+/// 1. ç›´å‰ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’é™¤å¤–ã—ã¦é€£ç¶šåŒä¸€é¸æŠã‚’é˜²ãã€‚
+/// 2. é ã„ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã»ã©é¸ã°ã‚Œã‚„ã™ã„è·é›¢é‡ã¿ä»˜ãæŠ½é¸ã§åã‚Šã‚’æŠ‘ãˆã‚‹ã€‚
+/// 3. ä¸€åº¦é¸ã‚“ã ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã« kWaypointCooldown ç§’ã®ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ã‚’è¨­ã‘ã¦çŸ­æœŸé–“ã®è¡Œãæ¥ã‚’é˜²ãã€‚
 ///
-/// •ÇÕ“Ë‚Í WallSlider ‚Åis•ûŒü‚ğ”½“]‚µABehavior ‘¤‚Ì ConsumeStuck ‚Å’Eo•ûŒü‚ğŒˆ’è‚·‚éB
+/// å£è¡çªæ™‚ã¯ WallSlider ã§é€²è¡Œæ–¹å‘ã‚’åè»¢ã—ã€Behavior å´ã® ConsumeStuck ã§è„±å‡ºæ–¹å‘ã‚’æ±ºå®šã™ã‚‹ã€‚
 /// </summary>
 public class MapWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float _wanderSpeed = 4f;           // œpœj’†ˆÚ“®‘¬“x
-    [SerializeField] private float _rotateSpeed = 10f;          // –Ú•W•ûŒü‚Ö‚Ì‰ñ“]‘¬“x
-    [SerializeField] private float _accelerationForce = 20f;    // ‰Á‘¬“x
-    [SerializeField] private float _arrivalRadius = 1.0f;       // “’…”»’è”¼Œa
+    [SerializeField] private float _wanderSpeed = 4f;           // å¾˜å¾Šä¸­ç§»å‹•é€Ÿåº¦
+    [SerializeField] private float _rotateSpeed = 10f;          // ç›®æ¨™æ–¹å‘ã¸ã®å›è»¢é€Ÿåº¦
+    [SerializeField] private float _accelerationForce = 20f;    // åŠ é€Ÿåº¦
+    [SerializeField] private float _arrivalRadius = 1.0f;       // åˆ°ç€åˆ¤å®šåŠå¾„
 
     private Rigidbody _rb;
     private WallSlider _wallSlider;
@@ -28,10 +28,13 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     private Vector3 _currentTarget;
     private bool _isInitialized;
 
-    // ƒEƒFƒCƒ|ƒCƒ“ƒg‚²‚Æ‚Ìc‚èƒN[ƒ‹ƒ_ƒEƒ“ŠÔB0ˆÈ‰º‚È‚ç‘Io‰Â”\
+    // ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã”ã¨ã®æ®‹ã‚Šã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³æ™‚é–“ã€‚0ä»¥ä¸‹ãªã‚‰é¸å‡ºå¯èƒ½
     private Dictionary<Vector3, float> _waypointCooldowns = new Dictionary<Vector3, float>();
 
-    // ˆê“x‘I‚ñ‚¾ƒEƒFƒCƒ|ƒCƒ“ƒg‚ğÄ‘I‹Ö~‚É‚·‚éŠúŠÔ
+    // ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³æ›´æ–°æ™‚ã®ã‚­ãƒ¼åˆ—æŒ™ãƒãƒƒãƒ•ã‚¡ï¼ˆæ¯ãƒ•ãƒ¬ãƒ¼ãƒ ã® List ç¢ºä¿ã‚’é¿ã‘ã¦ä½¿ã„å›ã™ï¼‰
+    private readonly List<Vector3> _cooldownKeyBuffer = new List<Vector3>();
+
+    // ä¸€åº¦é¸ã‚“ã ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã‚’å†é¸ç¦æ­¢ã«ã™ã‚‹æœŸé–“
     private const float kWaypointCooldown = 15f;
 
     private void Awake()
@@ -44,21 +47,25 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     {
         if (!_isInitialized) return;
 
-        // ƒN[ƒ‹ƒ_ƒEƒ“‚ğƒJƒEƒ“ƒgƒ_ƒEƒ“‚·‚é
-        var keys = new List<Vector3>(_waypointCooldowns.Keys);
-        foreach (var key in keys)
+        // ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ã‚’ã‚«ã‚¦ãƒ³ãƒˆãƒ€ã‚¦ãƒ³ã™ã‚‹
+        if (_waypointCooldowns.Count > 0)
         {
-            _waypointCooldowns[key] -= Time.fixedDeltaTime;
-            if (_waypointCooldowns[key] <= 0f)
-                _waypointCooldowns.Remove(key);
+            _cooldownKeyBuffer.Clear();
+            _cooldownKeyBuffer.AddRange(_waypointCooldowns.Keys);
+            foreach (var key in _cooldownKeyBuffer)
+            {
+                _waypointCooldowns[key] -= Time.fixedDeltaTime;
+                if (_waypointCooldowns[key] <= 0f)
+                    _waypointCooldowns.Remove(key);
+            }
         }
     }
 
     /// <summary>
-    /// ƒOƒŠƒbƒh‚ğó‚¯æ‚èACorridorEDoor ƒZƒ‹‚ÌƒEƒFƒCƒ|ƒCƒ“ƒg XZ À•WƒŠƒXƒg‚ğ\’z‚·‚éB
-    /// Door ‚Í Corridor ‚Æ•”‰®‚Ì‹«ŠEƒZƒ‹‚Å‚ ‚èAŒo˜Hã‚ÅƒEƒFƒCƒ|ƒCƒ“ƒg‚ğ•ª’f‚³‚¹‚¸
-    /// —×Ú‚µ‚½Ÿ‚Ì–Ú•W‚ğ–Úw‚¹‚éoŒû˜H‚Æ‚µ‚ÄŠÜ‚ß‚éB
-    /// EnemySpawner ‚ª Instantiate Œã‚ÉŒÄ‚Ño‚·‚±‚ÆB
+    /// ã‚°ãƒªãƒƒãƒ‰ã‚’å—ã‘å–ã‚Šã€Corridorãƒ»Door ã‚»ãƒ«ã®ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆ XZ åº§æ¨™ãƒªã‚¹ãƒˆã‚’æ§‹ç¯‰ã™ã‚‹ã€‚
+    /// Door ã¯ Corridor ã¨éƒ¨å±‹ã®å¢ƒç•Œã‚»ãƒ«ã§ã‚ã‚Šã€çµŒè·¯ä¸Šã§ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã‚’åˆ†æ–­ã•ã›ãš
+    /// éš£æ¥ã—ãŸæ¬¡ã®ç›®æ¨™ã‚’ç›®æŒ‡ã›ã‚‹å‡ºå£è·¯ã¨ã—ã¦å«ã‚ã‚‹ã€‚
+    /// EnemySpawner ãŒ Instantiate å¾Œã«å‘¼ã³å‡ºã™ã“ã¨ã€‚
     /// </summary>
     public void SetGrid(GridType[,] grid, float gridSize)
     {
@@ -82,7 +89,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
 
         if (_corridorWaypoints.Count == 0)
         {
-            DebugCustom.LogWarning("[MapWanderer] ’Ê˜HƒZƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½Bœpœj‚ğ’â~‚µ‚Ü‚·B");
+            DebugCustom.LogWarning("[MapWanderer] é€šè·¯ã‚»ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚å¾˜å¾Šã‚’åœæ­¢ã—ã¾ã™ã€‚");
             return;
         }
 
@@ -91,8 +98,8 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// MapWanderer ‚Í•”‰®”ÍˆÍ‚ğ‚½‚È‚¢‚½‚ß’ÇÕI—¹‚É“Á•Ê‚Èˆ—‚Í•s—vB
-    /// IEnemyBehavior ‚ÌŒ_–ñ‚ğ–‚½‚·‚½‚ß‚É‹óÀ‘•‚Æ‚µ‚Ä’è‹`‚·‚éB
+    /// MapWanderer ã¯éƒ¨å±‹ç¯„å›²ã‚’æŒãŸãªã„ãŸã‚è¿½è·¡çµ‚äº†æ™‚ã«ç‰¹åˆ¥ãªå‡¦ç†ã¯ä¸è¦ã€‚
+    /// IEnemyBehavior ã®å¥‘ç´„ã‚’æº€ãŸã™ãŸã‚ã«ç©ºå®Ÿè£…ã¨ã—ã¦å®šç¾©ã™ã‚‹ã€‚
     /// </summary>
     public void OnChaseEnded() { }
 
@@ -100,9 +107,9 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     {
         if (!_isInitialized) return;
 
-        // Šp‹l‚Ü‚èi2•Ç‚É‹²‚Ü‚ê‚Ä‘¬“xƒ[ƒ‚ªŒp‘±j‚ğŒŸo‚µ‚½‚ç•Ç–@üŠî€‚Å’EoƒEƒFƒCƒ|ƒCƒ“ƒg‚ğ‘I‚ÔB
-        // ’Pƒ‚ÈÄ’Š‘I‚Å‚Í‹l‚Ü‚Á‚½•Ç•ûŒü‚ÌƒEƒFƒCƒ|ƒCƒ“ƒg‚ª‘I‚Î‚ê‚ÄU‚èqƒ‹[ƒv‚É‚È‚é‚½‚ßA
-        // •Ç‚©‚ç—£‚ê‚é•ûŒüi–@üj‚É‹ß‚¢‘¤‚ÌƒEƒFƒCƒ|ƒCƒ“ƒg‚Éi‚Á‚Ä‘Io‚·‚éB
+        // è§’è©°ã¾ã‚Šï¼ˆ2å£ã«æŒŸã¾ã‚Œã¦é€Ÿåº¦ã‚¼ãƒ­ãŒç¶™ç¶šï¼‰ã‚’æ¤œå‡ºã—ãŸã‚‰å£æ³•ç·šåŸºæº–ã§è„±å‡ºã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã‚’é¸ã¶ã€‚
+        // å˜ç´”ãªå†æŠ½é¸ã§ã¯è©°ã¾ã£ãŸå£æ–¹å‘ã®ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆãŒé¸ã°ã‚Œã¦æŒ¯ã‚Šå­ãƒ«ãƒ¼ãƒ—ã«ãªã‚‹ãŸã‚ã€
+        // å£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ï¼ˆæ³•ç·šï¼‰ã«è¿‘ã„å´ã®ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã«çµã£ã¦é¸å‡ºã™ã‚‹ã€‚
         if (_wallSlider != null && _wallSlider.ConsumeStuck(out var escapeNormal))
             _currentTarget = PickEscapeTarget(escapeNormal);
 
@@ -119,11 +126,11 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// ƒ}ƒbƒv‘S‘Ì‚ğ„‰ñ‚µ‚â‚·‚­‚·‚é‚½‚ß‚Ìd‚İ•t‚«’Š‘IB
-    /// ˆÈ‰º‚Ì—Dæ‡ˆÊ‚ÅŒó•â‚ği‚è‚İA‹——£‚É”ä—á‚µ‚½d‚İ‚Åƒ‰ƒ“ƒ_ƒ€‘Io‚·‚éB
-    /// 1. ƒN[ƒ‹ƒ_ƒEƒ“’†‚Å‚È‚¢A‚©‚Â’¼‘O‚Ìƒ^[ƒQƒbƒg‚Å‚È‚¢ƒEƒFƒCƒ|ƒCƒ“ƒg
-    /// 2. ƒN[ƒ‹ƒ_ƒEƒ“’†‚Ì‚İi‘SŒó•â‚ªƒN[ƒ‹ƒ_ƒEƒ“’†‚Ìê‡‚ÌƒtƒH[ƒ‹ƒoƒbƒNj
-    /// ‹——£‚ª‰“‚¢‚Ù‚Çd‚İ‚ª‘å‚«‚­‚È‚é‚½‚ßA‹ßê‚Ì‰—ˆ‚Å‚Í‚È‚­ƒ}ƒbƒv‘S‘Ì‚Ö‚ÌˆÚ“®‚ª‘£‚³‚ê‚éB
+    /// ãƒãƒƒãƒ—å…¨ä½“ã‚’å·¡å›ã—ã‚„ã™ãã™ã‚‹ãŸã‚ã®é‡ã¿ä»˜ãæŠ½é¸ã€‚
+    /// ä»¥ä¸‹ã®å„ªå…ˆé †ä½ã§å€™è£œã‚’çµã‚Šè¾¼ã¿ã€è·é›¢ã«æ¯”ä¾‹ã—ãŸé‡ã¿ã§ãƒ©ãƒ³ãƒ€ãƒ é¸å‡ºã™ã‚‹ã€‚
+    /// 1. ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ä¸­ã§ãªã„ã€ã‹ã¤ç›´å‰ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã§ãªã„ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆ
+    /// 2. ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ä¸­ã®ã¿ï¼ˆå…¨å€™è£œãŒã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ä¸­ã®å ´åˆã®ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼‰
+    /// è·é›¢ãŒé ã„ã»ã©é‡ã¿ãŒå¤§ãããªã‚‹ãŸã‚ã€è¿‘å ´ã®å¾€æ¥ã§ã¯ãªããƒãƒƒãƒ—å…¨ä½“ã¸ã®ç§»å‹•ãŒä¿ƒã•ã‚Œã‚‹ã€‚
     /// </summary>
     private Vector3 PickWeightedWaypoint()
     {
@@ -135,7 +142,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
             candidates.Add(wp);
         }
 
-        // ‘SŒó•â‚ªƒN[ƒ‹ƒ_ƒEƒ“’†‚Ìê‡‚Í’¼‘Oƒ^[ƒQƒbƒgˆÈŠO‚©‚ç‘I‚Ô
+        // å…¨å€™è£œãŒã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ä¸­ã®å ´åˆã¯ç›´å‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä»¥å¤–ã‹ã‚‰é¸ã¶
         if (candidates.Count == 0)
         {
             foreach (var wp in _corridorWaypoints)
@@ -145,7 +152,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
             }
         }
 
-        // ‚»‚ê‚Å‚àŒó•â‚ª‚È‚¯‚ê‚ÎiƒEƒFƒCƒ|ƒCƒ“ƒg‚ª1‚Â‚µ‚©‚È‚¢jŠ®‘Sƒ‰ƒ“ƒ_ƒ€
+        // ãã‚Œã§ã‚‚å€™è£œãŒãªã‘ã‚Œã°ï¼ˆã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆãŒ1ã¤ã—ã‹ãªã„ï¼‰å®Œå…¨ãƒ©ãƒ³ãƒ€ãƒ 
         if (candidates.Count == 0)
             return _corridorWaypoints[Random.Range(0, _corridorWaypoints.Count)];
 
@@ -155,8 +162,8 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// Œó•âƒŠƒXƒg‚©‚çŒ»İˆÊ’u‚Æ‚Ì‹——£‚É”ä—á‚µ‚½d‚İ‚Åƒ‰ƒ“ƒ_ƒ€‘Io‚·‚éB
-    /// ‰“‚¢ƒEƒFƒCƒ|ƒCƒ“ƒg‚Ù‚Ç‘I‚Î‚ê‚â‚·‚­‚È‚èAƒ}ƒbƒv‘S‘Ì‚Ö‚Ì•ªU‚ğ‘£‚·B
+    /// å€™è£œãƒªã‚¹ãƒˆã‹ã‚‰ç¾åœ¨ä½ç½®ã¨ã®è·é›¢ã«æ¯”ä¾‹ã—ãŸé‡ã¿ã§ãƒ©ãƒ³ãƒ€ãƒ é¸å‡ºã™ã‚‹ã€‚
+    /// é ã„ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã»ã©é¸ã°ã‚Œã‚„ã™ããªã‚Šã€ãƒãƒƒãƒ—å…¨ä½“ã¸ã®åˆ†æ•£ã‚’ä¿ƒã™ã€‚
     /// </summary>
     private Vector3 WeightedSelectByDistance(List<Vector3> candidates)
     {
@@ -177,9 +184,9 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// Šp‹l‚Ü‚è’Eoê—p‚ÌƒEƒFƒCƒ|ƒCƒ“ƒg‘IoB
-    /// •Ç–@ü•ûŒüi•Ç‚©‚ç—£‚ê‚é•ûŒüj‘¤‚É‚ ‚éƒEƒFƒCƒ|ƒCƒ“ƒg‚Ì‚İ‚ğŒó•â‚É‚µ‚Äd‚İ•t‚«’Š‘I‚·‚éB
-    /// Œó•â‚ª0Œ‚Ìê‡‚Í’Êí‚Ìd‚İ•t‚«’Š‘I‚ÉƒtƒH[ƒ‹ƒoƒbƒN‚·‚éB
+    /// è§’è©°ã¾ã‚Šè„±å‡ºæ™‚å°‚ç”¨ã®ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆé¸å‡ºã€‚
+    /// å£æ³•ç·šæ–¹å‘ï¼ˆå£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ï¼‰å´ã«ã‚ã‚‹ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã®ã¿ã‚’å€™è£œã«ã—ã¦é‡ã¿ä»˜ãæŠ½é¸ã™ã‚‹ã€‚
+    /// å€™è£œãŒ0ä»¶ã®å ´åˆã¯é€šå¸¸ã®é‡ã¿ä»˜ãæŠ½é¸ã«ãƒ•ã‚©ãƒ¼ãƒ«ãƒãƒƒã‚¯ã™ã‚‹ã€‚
     /// </summary>
     private Vector3 PickEscapeTarget(Vector3 wallNormal)
     {
@@ -200,9 +207,9 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// WallSlider ‚Å•Ç‚É“–‚½‚Á‚½ê‡‚Íis•ûŒü‚ğ”½“]‚µ‚Ä‚©‚ç AddForce ‚ÅˆÚ“®‚·‚éB
-    /// velocity ‚Ì’¼Ú‘ã“ü‚Í AddForce ‚ÌŒ‹‰Ê‚Æ•Ç‚Ì”½”­—Í‚ªŠ±Â‚·‚é‚½‚ßˆêØs‚í‚È‚¢B
-    /// ‘¬“x·‚É AddForce ‚Ì—Ê‚ğŠ|‚¯‚é‚±‚Æ‚ÅŠÔÚ“I‚É§Œä‚·‚éB
+    /// WallSlider ã§å£ã«å½“ãŸã£ãŸå ´åˆã¯é€²è¡Œæ–¹å‘ã‚’åè»¢ã—ã¦ã‹ã‚‰ AddForce ã§ç§»å‹•ã™ã‚‹ã€‚
+    /// velocity ã®ç›´æ¥ä»£å…¥ã¯ AddForce ã®çµæœã¨å£ã®åç™ºåŠ›ãŒå¹²æ¸‰ã™ã‚‹ãŸã‚ä¸€åˆ‡è¡Œã‚ãªã„ã€‚
+    /// é€Ÿåº¦å·®ã« AddForce ã®é‡ã‚’æ›ã‘ã‚‹ã“ã¨ã§é–“æ¥çš„ã«åˆ¶å¾¡ã™ã‚‹ã€‚
     /// </summary>
     private void MoveTowardTarget()
     {
@@ -224,7 +231,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
         var velDiff = targetVel - currentVel;
 
-        // –Ú•W‘¬“x‚ğ’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ğ‚©‚¯‚È‚¢ivelocity ‚ğ’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ğ–h‚®j
+        // ç›®æ¨™é€Ÿåº¦ã‚’è¶…ãˆã¦ã„ã‚‹æ–¹å‘ã«ã¯ Force ã‚’ã‹ã‘ãªã„ï¼ˆvelocity ã‚’ç›´æ¥è§¦ã‚‰ãšã«éå‰°åŠ é€Ÿã‚’é˜²ãï¼‰
         if (Vector3.Dot(velDiff, slideDir) > 0f)
             _rb.AddForce(velDiff * _accelerationForce, ForceMode.Force);
     }

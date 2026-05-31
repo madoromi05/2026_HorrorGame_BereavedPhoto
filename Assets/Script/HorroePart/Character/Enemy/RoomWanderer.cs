@@ -1,25 +1,25 @@
 using UnityEngine;
 
 /// <summary>
-/// Š„‚è“–‚Ä‚ç‚ê‚½•”‰®‚Ì“à•”‚Ì‚İ‚ğœpœj‚·‚éƒNƒ‰ƒXB
-/// ’Êí‚Í AABB “à‚ğƒ‰ƒ“ƒ_ƒ€œpœj‚µA•”‰®ŠO‚Éo‚½ê‡‚Í•”‰®’†S‚Ö‹AŠÒ‚·‚éB
+/// å‰²ã‚Šå½“ã¦ã‚‰ã‚ŒãŸéƒ¨å±‹ã®å†…éƒ¨ã®ã¿ã‚’å¾˜å¾Šã™ã‚‹ã‚¯ãƒ©ã‚¹ã€‚
+/// é€šå¸¸ã¯ AABB å†…ã‚’ãƒ©ãƒ³ãƒ€ãƒ å¾˜å¾Šã—ã€éƒ¨å±‹å¤–ã«å‡ºãŸå ´åˆã¯éƒ¨å±‹ä¸­å¿ƒã¸å¸°é‚„ã™ã‚‹ã€‚
 ///
-/// ’ÇÕiChasej’†‚Í Tick() ‚ªŒÄ‚Î‚ê‚È‚¢‚½‚ßA’ÇÕ‚ª AABB ‚ğ’´‚¦‚½ê‡‚É
-/// Tick() ÄŠJ‚É IsOutsideBounds() ‚ğ”»’è‚µ‚Ä‹AŠÒƒEƒFƒCƒ|ƒCƒ“ƒg‚ÖØ‚è‘Ö‚¦‚éB
+/// è¿½è·¡ï¼ˆChaseï¼‰ä¸­ã¯ Tick() ãŒå‘¼ã°ã‚Œãªã„ãŸã‚ã€è¿½è·¡ãŒ AABB ã‚’è¶…ãˆãŸå ´åˆã«
+/// Tick() å†é–‹æ™‚ã« IsOutsideBounds() ã‚’åˆ¤å®šã—ã¦å¸°é‚„ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆã¸åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
 ///
-/// •ÇÕ“Ë‚Ì’â~‚ğ–h‚®‚½‚ß WallSlider ‚ÅˆÚ“®•ûŒü‚ğ•Ç–Ê‚É‰ˆ‚¤‚æ‚¤•â³‚·‚éB
-/// Šp‹l‚Ü‚èi2•Ç‚É‹²‚Ü‚ê‚ÄŠ®‘S’â~j‚Í WallSlider.IsStuck ‚ÅŒŸo‚µA‹­§“I‚É•ûŒü‚ğÄ’Š‘I‚·‚éB
+/// å£è¡çªæ™‚ã®åœæ­¢ã‚’é˜²ããŸã‚ WallSlider ã§ç§»å‹•æ–¹å‘ã‚’å£é¢ã«æ²¿ã†ã‚ˆã†è£œæ­£ã™ã‚‹ã€‚
+/// è§’è©°ã¾ã‚Šï¼ˆ2å£ã«æŒŸã¾ã‚Œã¦å®Œå…¨åœæ­¢ï¼‰ã¯ WallSlider.IsStuck ã§æ¤œå‡ºã—ã€å¼·åˆ¶çš„ã«æ–¹å‘ã‚’å†æŠ½é¸ã™ã‚‹ã€‚
 /// </summary>
 public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 {
-    [SerializeField] private float _wanderSpeed = 2f;           // œpœj’†ˆÚ“®‘¬“x
-    [SerializeField] private float _wanderInterval = 3f;        // V‚µ‚¢•ûŒü‚ğ‘I‚ÔŠÔŠu
-    [SerializeField] private float _accelerationForce = 20f;    // ‰Á‘¬“x
-    [SerializeField] private float _rotateSpeed = 10f;          // –Ú•W•ûŒü‚Ö‚Ì‰ñ“]‘¬“x
+    [SerializeField] private float _wanderSpeed = 2f;           // å¾˜å¾Šä¸­ç§»å‹•é€Ÿåº¦
+    [SerializeField] private float _wanderInterval = 3f;        // æ–°ã—ã„æ–¹å‘ã‚’é¸ã¶é–“éš”
+    [SerializeField] private float _accelerationForce = 20f;    // åŠ é€Ÿåº¦
+    [SerializeField] private float _rotateSpeed = 10f;          // ç›®æ¨™æ–¹å‘ã¸ã®å›è»¢é€Ÿåº¦
 
-    [Header("•Ç‰ñ”ğ Raycast")]
-    [SerializeField] private float _rayDistance = 1.5f;         // •Ç‰ñ”ğ—p‚ÌƒŒƒCƒLƒƒƒXƒg‹——£
-    [SerializeField] private float _rayOriginOffset = 0.4f;     // ƒŒƒCƒLƒƒƒXƒg‚Ì”­ËˆÊ’uƒIƒtƒZƒbƒg
+    [Header("å£å›é¿ Raycast")]
+    [SerializeField] private float _rayDistance = 1.5f;         // å£å›é¿ç”¨ã®ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆè·é›¢
+    [SerializeField] private float _rayOriginOffset = 0.4f;     // ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã®ç™ºå°„ä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
     private Rigidbody _rb;
     private WallSlider _wallSlider;
     private Vector3 _wanderDirection;
@@ -33,10 +33,10 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 
     private const float kReturnArrivalRadius = 0.5f;
 
-    // ‹} Uƒ^[ƒ“‚ğ–h‚®‚½‚ßAV•ûŒü‚ÌŒó•âŠp“x‚ğŒ»İ•ûŒü‚©‚ç }‚±‚ÌŠp“xˆÈ“à‚É§ŒÀ‚·‚é
+    // æ€¥ Uã‚¿ãƒ¼ãƒ³ã‚’é˜²ããŸã‚ã€æ–°æ–¹å‘ã®å€™è£œè§’åº¦ã‚’ç¾åœ¨æ–¹å‘ã‹ã‚‰ Â±ã“ã®è§’åº¦ä»¥å†…ã«åˆ¶é™ã™ã‚‹
     private const float kMaxDirectionChangeAngle = 140f;
 
-    // Šp‹l‚Ü‚è’Eo‚Í•Ç–@ü•ûŒü‚ğ’†S‚É‚±‚ÌŠp“xˆÈ“à‚Å’Š‘I‚µAU‚èqƒ‹[ƒv‚ğ–h‚®
+    // è§’è©°ã¾ã‚Šè„±å‡ºæ™‚ã¯å£æ³•ç·šæ–¹å‘ã‚’ä¸­å¿ƒã«ã“ã®è§’åº¦ä»¥å†…ã§æŠ½é¸ã—ã€æŒ¯ã‚Šå­ãƒ«ãƒ¼ãƒ—ã‚’é˜²ã
     private const float kEscapeAngleRange = 60f;
 
     private void Awake()
@@ -47,8 +47,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// •”‰®‚ÌˆÚ“®‰Â”\”ÍˆÍ‚ğ WorldSpace AABB ‚Åó‚¯æ‚éB
-    /// EnemySpawner ‚ª Instantiate Œã‚ÉŒÄ‚Ño‚·‚±‚ÆB
+    /// éƒ¨å±‹ã®ç§»å‹•å¯èƒ½ç¯„å›²ã‚’ WorldSpace AABB ã§å—ã‘å–ã‚‹ã€‚
+    /// EnemySpawner ãŒ Instantiate å¾Œã«å‘¼ã³å‡ºã™ã“ã¨ã€‚
     /// </summary>
     public void SetRoomBounds(Bounds bounds)
     {
@@ -58,8 +58,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// EnemyController ‚ª’ÇÕ‚ğI—¹‚µ‚½uŠÔ‚ÉŒÄ‚Ño‚³‚ê‚éB
-    /// •”‰®ŠO‚É‚¢‚éê‡‚Í‘¦À‚É‹AŠÒƒtƒ‰ƒO‚ğ—§‚Ä‚éB
+    /// EnemyController ãŒè¿½è·¡ã‚’çµ‚äº†ã—ãŸç¬é–“ã«å‘¼ã³å‡ºã•ã‚Œã‚‹ã€‚
+    /// éƒ¨å±‹å¤–ã«ã„ã‚‹å ´åˆã¯å³åº§ã«å¸°é‚„ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹ã€‚
     /// </summary>
     public void OnChaseEnded()
     {
@@ -69,9 +69,9 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 
     public void Tick()
     {
-        // Šp‹l‚Ü‚èi2•Ç‚É‹²‚Ü‚ê‚Ä‘¬“xƒ[ƒ‚ªŒp‘±j‚ğŒŸo‚µ‚½‚ç•Ç–@üŠî€‚Å’Eo•ûŒü‚ğ’Š‘I‚·‚éB
-        // ’Êí‚Ì PickNewDirectioni}140‹j‚Å‚Í‹l‚Ü‚Á‚½•ûŒü‚ÉÄ‚ÑŒü‚©‚¤‰Â”\«‚ª‚‚¢‚½‚ßA
-        // •Ç‚©‚ç—£‚ê‚é•ûŒüi–@üj‚ğ’†S‚É }60‹ ‚Éi‚Á‚½ê—p’Š‘I‚ÅU‚èqƒ‹[ƒv‚ğ–h‚®B
+        // è§’è©°ã¾ã‚Šï¼ˆ2å£ã«æŒŸã¾ã‚Œã¦é€Ÿåº¦ã‚¼ãƒ­ãŒç¶™ç¶šï¼‰ã‚’æ¤œå‡ºã—ãŸã‚‰å£æ³•ç·šåŸºæº–ã§è„±å‡ºæ–¹å‘ã‚’æŠ½é¸ã™ã‚‹ã€‚
+        // é€šå¸¸ã® PickNewDirectionï¼ˆÂ±140Â°ï¼‰ã§ã¯è©°ã¾ã£ãŸæ–¹å‘ã«å†ã³å‘ã‹ã†å¯èƒ½æ€§ãŒé«˜ã„ãŸã‚ã€
+        // å£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ï¼ˆæ³•ç·šï¼‰ã‚’ä¸­å¿ƒã« Â±60Â° ã«çµã£ãŸå°‚ç”¨æŠ½é¸ã§æŒ¯ã‚Šå­ãƒ«ãƒ¼ãƒ—ã‚’é˜²ãã€‚
         if (_wallSlider != null && _wallSlider.ConsumeStuck(out var escapeNormal))
             PickEscapeDirection(escapeNormal);
 
@@ -90,7 +90,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         WanderInsideBounds();
     }
 
-    // ‹AŠÒˆ—
+    // å¸°é‚„å‡¦ç†
 
     private bool IsOutsideBounds()
     {
@@ -116,7 +116,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         ApplyMovement(direction.normalized);
     }
 
-    // œpœjˆ—
+    // å¾˜å¾Šå‡¦ç†
 
     private void WanderInsideBounds()
     {
@@ -167,8 +167,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// Œ»İ‚Ìis•ûŒü‚©‚ç }kMaxDirectionChangeAngle ˆÈ“à‚ÌŠp“x‚ÅV‚µ‚¢•ûŒü‚ğ‘I‚ÔB
-    /// Š®‘Sƒ‰ƒ“ƒ_ƒ€‚É‚·‚é‚Æ‹} Uƒ^[ƒ“‚ª•p”­‚µ‚Ä“®‚«‚ª•s©‘R‚É‚È‚é‚½‚ß”ÍˆÍ‚ğ§ŒÀ‚µ‚Ä‚¢‚éB
+    /// ç¾åœ¨ã®é€²è¡Œæ–¹å‘ã‹ã‚‰ Â±kMaxDirectionChangeAngle ä»¥å†…ã®è§’åº¦ã§æ–°ã—ã„æ–¹å‘ã‚’é¸ã¶ã€‚
+    /// å®Œå…¨ãƒ©ãƒ³ãƒ€ãƒ ã«ã™ã‚‹ã¨æ€¥ Uã‚¿ãƒ¼ãƒ³ãŒé »ç™ºã—ã¦å‹•ããŒä¸è‡ªç„¶ã«ãªã‚‹ãŸã‚ç¯„å›²ã‚’åˆ¶é™ã—ã¦ã„ã‚‹ã€‚
     /// </summary>
     private void PickNewDirection()
     {
@@ -180,9 +180,9 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// Šp‹l‚Ü‚èê—p‚Ì’Eo•ûŒü’Š‘IB•Ç–@üi•Ç‚©‚ç—£‚ê‚é•ûŒüj‚ğ’†S‚É }kEscapeAngleRange ˆÈ“à‚Å‘I‚ÔB
-    /// ’Êí‚Ì PickNewDirection ‚æ‚èŠp“x”ÍˆÍ‚ğ‘å•‚Éi‚é‚±‚Æ‚ÅA
-    /// ’¼‘O‚É‹l‚Ü‚Á‚Ä‚¢‚½•Ç•ûŒü‚ÖÄ‚ÑŒü‚©‚¤U‚èqƒ‹[ƒv‚ğ–h‚®B
+    /// è§’è©°ã¾ã‚Šæ™‚å°‚ç”¨ã®è„±å‡ºæ–¹å‘æŠ½é¸ã€‚å£æ³•ç·šï¼ˆå£ã‹ã‚‰é›¢ã‚Œã‚‹æ–¹å‘ï¼‰ã‚’ä¸­å¿ƒã« Â±kEscapeAngleRange ä»¥å†…ã§é¸ã¶ã€‚
+    /// é€šå¸¸ã® PickNewDirection ã‚ˆã‚Šè§’åº¦ç¯„å›²ã‚’å¤§å¹…ã«çµã‚‹ã“ã¨ã§ã€
+    /// ç›´å‰ã«è©°ã¾ã£ã¦ã„ãŸå£æ–¹å‘ã¸å†ã³å‘ã‹ã†æŒ¯ã‚Šå­ãƒ«ãƒ¼ãƒ—ã‚’é˜²ãã€‚
     /// </summary>
     private void PickEscapeDirection(Vector3 wallNormal)
     {
@@ -194,9 +194,9 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// WallSlider ‚Å•Ç–Ê‚É‰ˆ‚¤‚æ‚¤•â³‚µ‚Ä‚©‚ç AddForce ‚ÅˆÚ“®‚·‚éB
-    /// velocity ‚Ì’¼Ú‘ã“ü‚Í AddForce ‚ÌŒ‹‰Ê‚Æ•Ç‚Ì”½”­—Í‚ªŠ±Â‚·‚é‚½‚ßˆêØs‚í‚È‚¢B
-    /// ‘¬“x·‚É AddForce ‚Ì—Ê‚ğŠ|‚¯‚é‚±‚Æ‚ÅŠÔÚ“I‚É§Œä‚·‚éB
+    /// WallSlider ã§å£é¢ã«æ²¿ã†ã‚ˆã†è£œæ­£ã—ã¦ã‹ã‚‰ AddForce ã§ç§»å‹•ã™ã‚‹ã€‚
+    /// velocity ã®ç›´æ¥ä»£å…¥ã¯ AddForce ã®çµæœã¨å£ã®åç™ºåŠ›ãŒå¹²æ¸‰ã™ã‚‹ãŸã‚ä¸€åˆ‡è¡Œã‚ãªã„ã€‚
+    /// é€Ÿåº¦å·®ã« AddForce ã®é‡ã‚’æ›ã‘ã‚‹ã“ã¨ã§é–“æ¥çš„ã«åˆ¶å¾¡ã™ã‚‹ã€‚
     /// </summary>
     private void ApplyMovement(Vector3 direction)
     {
@@ -215,7 +215,7 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
         var currentVel = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z);
         var diff = targetVel - currentVel;
 
-        // –Ú•W‘¬“x‚ğ’´‚¦‚Ä‚¢‚é•ûŒü‚É‚Í Force ‚ğ‚©‚¯‚È‚¢ivelocity ‚ğ’¼ÚG‚ç‚¸‚É‰ßè‰Á‘¬‚ğ–h‚®j
+        // ç›®æ¨™é€Ÿåº¦ã‚’è¶…ãˆã¦ã„ã‚‹æ–¹å‘ã«ã¯ Force ã‚’ã‹ã‘ãªã„ï¼ˆvelocity ã‚’ç›´æ¥è§¦ã‚‰ãšã«éå‰°åŠ é€Ÿã‚’é˜²ãï¼‰
         if (Vector3.Dot(diff, slideDir) > 0f)
             _rb.AddForce(diff * _accelerationForce, ForceMode.Force);
     }

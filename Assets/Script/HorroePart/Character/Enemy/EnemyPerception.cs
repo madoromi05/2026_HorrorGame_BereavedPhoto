@@ -167,9 +167,4 @@ public class EnemyPerception : MonoBehaviour
         if (flatDir.sqrMagnitude > 0.0001f)
             LastStimulusDirection = flatDir;
     }
-
-    /// <summary>
-    /// 後方互換：警戒度が満タン（完全発見）かどうか。
-    /// </summary>
-    public bool IsPlayerDetected() => AwarenessLevel >= 1f;
 }

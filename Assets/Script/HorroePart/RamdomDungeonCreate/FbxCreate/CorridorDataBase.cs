@@ -1,5 +1,5 @@
 /// <summary>
-/// CorridorType‚É‘Î‰‚·‚é’Ê˜HPrefab‚ÌDB
+/// CorridorTypeã«å¯¾å¿œã™ã‚‹é€šè·¯Prefabã®DB
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -11,11 +11,11 @@ public class CorridorDataBase : ScriptableObject
     [System.Serializable]
     public class CorridorEntry
     {
-        public CorridorType CorridorType;   // ’Ê˜H‚ÌŒ`óí•Ê
-        public GameObject CorridorPrefab;   // ‘Î‰‚·‚é’Ê˜H‚ÌPrefab
+        public CorridorType CorridorType;   // é€šè·¯ã®å½¢çŠ¶ç¨®åˆ¥
+        public GameObject CorridorPrefab;   // å¯¾å¿œã™ã‚‹é€šè·¯ã®Prefab
     }
 
-    // ’Ê˜HŒ`ó‚ÆPrefab‚Ì‘Î‰ƒŠƒXƒg
+    // é€šè·¯å½¢çŠ¶ã¨Prefabã®å¯¾å¿œãƒªã‚¹ãƒˆ
     [SerializeField] private CorridorEntry[] _entries;
     private Dictionary<CorridorType, GameObject> _prefabMap;
 
@@ -33,7 +33,7 @@ public class CorridorDataBase : ScriptableObject
         if (_prefabMap.TryGetValue(corridorType, out var prefab))
             return prefab;
 
-        DebugCustom.LogWarning($"CorridorDataBase: {corridorType} ‚É‘Î‰‚·‚é Prefab ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+        DebugCustom.LogWarning($"CorridorDataBase: {corridorType} ã«å¯¾å¿œã™ã‚‹ Prefab ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
         return null;
     }
 }

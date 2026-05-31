@@ -5,8 +5,8 @@ using UnityEngine;
 namespace HorrorGame.Player
 {
     /// <summary>
-    /// ƒJƒƒ‰‘O•û‚ÉRay‚ğ”ò‚Î‚µ‚ÄIInteractable‚ğŒŸo‚µA
-    /// ƒCƒ“ƒ^ƒ‰ƒNƒgƒL[‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚É‘ÎÛ‚Ì‘€ì‚ğs‚¤B
+    /// ã‚«ãƒ¡ãƒ©å‰æ–¹ã«Rayã‚’é£›ã°ã—ã¦IInteractableã‚’æ¤œå‡ºã—ã€
+    /// ã‚¤ãƒ³ã‚¿ãƒ©ã‚¯ãƒˆã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã¨ãã«å¯¾è±¡ã®æ“ä½œã‚’è¡Œã†ã€‚
     /// </summary>
     public class PlayerInteractor : MonoBehaviour
     {
@@ -19,6 +19,13 @@ namespace HorrorGame.Player
         private IInteractable _currentTarget;
         private float _elapsedTime;
         private const float kDetectInterval = 0.1f;
+
+        private void Awake()
+        {
+            DebugCustom.ValidateFields(this,
+                (nameof(_interactCamera), _interactCamera),
+                (nameof(_inputController), _inputController));
+        }
 
         private void OnEnable()
         {
@@ -40,8 +47,8 @@ namespace HorrorGame.Player
         }
 
         /// <summary>
-        /// ‘O•û‚ÉRay‚ğ”ò‚Î‚µ‚Ä’¼‘O‚ÌIInteractable‚ğŒŸo‚·‚éB
-        /// •Ï‰»‚ª‚ ‚Á‚½‚Æ‚«‚Ì‚İ OnFocus/OnLoseFocus ‚ğ”­‰ÎB
+        /// å‰æ–¹ã«Rayã‚’é£›ã°ã—ã¦ç›´å‰ã®IInteractableã‚’æ¤œå‡ºã™ã‚‹ã€‚
+        /// å¤‰åŒ–ãŒã‚ã£ãŸã¨ãã®ã¿ OnFocus/OnLoseFocus ã‚’ç™ºç«ã€‚
         /// </summary>
         private void DetectTarget()
         {

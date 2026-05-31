@@ -1,7 +1,7 @@
 /// <summary>
-/// �Z�N�V�����Ԃ� A* �Őڑ�����ʘH�����N���X�B
-/// MST�i�ŏ��S��؁j�ɂ��S�Z�N�V�����ڑ��ƁA�ǉ�����̐�����S������B
-/// �O���b�h�̏������݂͍s�����A�Z�N�V�����̐����E�����z�u�ɂ͊֗^���Ȃ��B
+/// セクション間を A* で接続する通路生成クラス。
+/// MST（最小全域木）による全セクション接続と、追加分岐の生成を担当する。
+/// グリッドの書き込みは行うが、セクションの生成・部屋配置には関与しない。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ public class SectionConnector
     private int _corridorWidth;
 
     /// <summary>
-    /// MST �őS�Z�N�V������ڑ��������ƁA�ǉ�����𐶐�����B
+    /// MST で全セクションを接続したあと、追加分岐を生成する。
     /// </summary>
     public void Connect(
     GridType[,] grid,
@@ -36,7 +36,7 @@ public class SectionConnector
     }
 
 
-    // Prim �@�ɋ߂��ŏ��S��؂ŃZ�N�V���������Ԃɐڑ�����
+    // Prim 法に近い最小全域木でセクションを順番に接続する
     private void ConnectAllSections()
     {
         var connected = new HashSet<SectionData> { _sections[0] };
@@ -95,8 +95,8 @@ public class SectionConnector
     }
 
     /// <summary>
-    /// 2 �Z�N�V�����Ԃ� A* �Őڑ����A�o�H��̃Z���� Corridor �Ƃ��ď������ށB
-    /// ������ Door / Floor / Corridor �Z���͏㏑�����Ȃ��B
+    /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む。
+    /// 既存の Door / Floor / Corridor セルは上書きしない。
     /// </summary>
     public void ConnectTwoSections(SectionData from, SectionData to)
     {
@@ -106,7 +106,7 @@ public class SectionConnector
         var path = RunAStar(startPos, endPos);
         if (path == null)
         {
-            DebugCustom.LogWarning($"[SectionConnector] A* ���s: {startPos} -> {endPos}");
+            DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");
             return;
         }
 
@@ -126,8 +126,8 @@ public class SectionConnector
     }
 
     /// <summary>
-    /// �o�H�̊e�Z������ _corridorWidth �͈̔́i�����`�j�� Corridor �ɓh��B
-    /// Door / Floor / Wall �͕ی삵�ď㏑�����Ȃ��B
+    /// 経路の各セルから _corridorWidth の範囲（正方形）を Corridor に塗る。
+    /// Door / Floor / Wall は保護して上書きしない。
     /// </summary>
     private void ExpandPath(List<Vector2Int> corridorPath, List<Vector2Int> newlyPainted)
     {
@@ -139,18 +139,18 @@ public class SectionConnector
             var center = corridorPath[i];
             if (!paintedSet.Contains(center)) continue;
 
-            // �O��̃Z���Ƃ̍�������i�s���������߁A�����������肷��B
-            // �o�H�̒[�͗אڃZ���� 1 �����Ȃ����߁A�O��ǂ��炩���p����B
+            // 前後のセルとの差分から進行方向を求め、垂直軸を決定する。
+            // 経路の端は隣接セルが 1 つしかないため、前後どちらかを代用する。
             var prev = (i > 0) ? corridorPath[i - 1] : corridorPath[i + 1];
             var next = (i < corridorPath.Count - 1) ? corridorPath[i + 1] : corridorPath[i - 1];
             var dir = next - prev;
 
-            // �i�s������ X �������i�����j�Ȃ琂���� Y ���AY �������i��k�j�Ȃ琂���� X ��
+            // 進行方向が X 軸方向（東西）なら垂直は Y 軸、Y 軸方向（南北）なら垂直は X 軸
             var perp = (dir.x != 0)
                 ? new Vector2Int(0, 1)
                 : new Vector2Int(1, 0);
 
-            // ���������� extraWidth �Z���ǉ�����i�o�H�{�� + extraWidth = CorridorWidth�j
+            // 垂直方向へ extraWidth セル追加する（経路本体 + extraWidth = CorridorWidth）
             for (int w = 1; w <= extraWidth; w++)
             {
                 PaintCell(center + perp * w);
@@ -168,8 +168,8 @@ public class SectionConnector
         _grid[pos.x, pos.y] = GridType.Corridor;
     }
 
-    // �ΏۃZ�N�V�����̐ڑ��_��Ԃ��B
-    // ��������Ȃ瑊��̒��S�ɍł��߂� Door�A�����Ȃ��Ȃ� PathPoint ���g���B
+    // 対象セクションの接続点を返す。
+    // 部屋ありなら相手の中心に最も近い Door、部屋なしなら PathPoint を使う。
     private Vector2Int GetConnectionPoint(SectionData section, SectionData target)
     {
         var targetCenter = target.GridPosition + target.GridSize / 2;
@@ -184,7 +184,7 @@ public class SectionConnector
     {
         if (positions == null || positions.Count == 0)
         {
-            DebugCustom.LogWarning("[SectionConnector] FindNearest: DoorPositions ����ł��BRoomGridData ���m�F���Ă��������B");
+            DebugCustom.LogWarning("[SectionConnector] FindNearest: DoorPositions が空です。RoomGridData を確認してください。");
             return target;
         }
 
@@ -203,10 +203,10 @@ public class SectionConnector
     }
 
     /// <summary>
-    /// A* �� start ���� end �܂ł̌o�H��Ԃ��B
-    /// Wall �ƕ��������iDoor �ȊO�� Floor�j�͒ʉߕs�B
-    /// Door / Corridor �͈ړ��R�X�g��Ⴍ���A�����ʘH�ւ̍�����D�悷��B
-    /// �o�H��������Ȃ��ꍇ�� null ��Ԃ��B
+    /// A* で start から end までの経路を返す。
+    /// Wall と部屋内部（Door 以外の Floor）は通過不可。
+    /// Door / Corridor は移動コストを低くし、既存通路への合流を優先する。
+    /// 経路が見つからない場合は null を返す。
     /// </summary>
     private List<Vector2Int> RunAStar(Vector2Int start, Vector2Int end)
     {
@@ -241,7 +241,7 @@ public class SectionConnector
 
                 var cellType = _grid[neighbor.x, neighbor.y];
                 if (cellType == GridType.Wall) continue;
-                // ���������� Door �o�R�ł̂ݐڑ�������
+                // 部屋内部は Door 経由でのみ接続させる
                 if (cellType == GridType.Floor) continue;
 
                 float moveCost = cellType switch

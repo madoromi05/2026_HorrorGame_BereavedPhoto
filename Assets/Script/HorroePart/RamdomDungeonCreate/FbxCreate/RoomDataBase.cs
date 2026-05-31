@@ -1,5 +1,5 @@
 /// <summary>
-/// RoomType‚É‘Î‰‚·‚é•”‰®Prefab‚ÌDB
+/// RoomTypeã«å¯¾å¿œã™ã‚‹éƒ¨å±‹Prefabã®DB
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ public class RoomDataBase : ScriptableObject
 
     private void OnEnable()
     {
-        // ƒLƒƒƒbƒVƒ…‚Ì\’z
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®æ§‹ç¯‰
         _entryMap = new Dictionary<RoomType, RoomEntry>(_entries.Length);
         foreach (var entry in _entries)
             _entryMap[entry.RoomType] = entry;
@@ -43,19 +43,19 @@ public class RoomDataBase : ScriptableObject
         if (_entryMap.TryGetValue(roomType, out var entry))
             return entry.Prefab;
 
-        DebugCustom.LogWarning($"RoomDataBase: {roomType}‚É‘Î‰‚·‚éPrefab‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+        DebugCustom.LogWarning($"RoomDataBase: {roomType}ã«å¯¾å¿œã™ã‚‹PrefabãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
         return null;
     }
 
     /// <summary>
-    /// w’èRoomType‚ÌRoomGridData‚ğƒ‰ƒ“ƒ_ƒ€‚É•Ô‚·B
-    /// RoomGridDatas‚ª‹ó‚Ìê‡‚Ínull‚ğ•Ô‚·B
+    /// æŒ‡å®šRoomTypeã®RoomGridDataã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«è¿”ã™ã€‚
+    /// RoomGridDatasãŒç©ºã®å ´åˆã¯nullã‚’è¿”ã™ã€‚
     /// </summary>
     public RoomGridData GetRandomRoomGridData(RoomType roomType)
     {
         if (!_entryMap.TryGetValue(roomType, out var entry))
         {
-            DebugCustom.LogWarning($"RoomDataBase: {roomType} ‚É‘Î‰‚·‚é RoomGridData ‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            DebugCustom.LogWarning($"RoomDataBase: {roomType} ã«å¯¾å¿œã™ã‚‹ RoomGridData ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
             return null;
         }
         if (entry.RoomGridDatas.Length == 0) return null;
@@ -63,7 +63,7 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// w’èRoomType‚ÌÅ‘å¶¬”‚ğ•Ô‚·B0‚ÍãŒÀ‚È‚µ‚ğˆÓ–¡‚·‚éB
+    /// æŒ‡å®šRoomTypeã®æœ€å¤§ç”Ÿæˆæ•°ã‚’è¿”ã™ã€‚0ã¯ä¸Šé™ãªã—ã‚’æ„å‘³ã™ã‚‹ã€‚
     /// </summary>
     public int GetMaxCount(RoomType roomType)
     {
@@ -71,7 +71,7 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// w’èRoomType‚Ì“GƒGƒ“ƒgƒŠˆê——‚ğ•Ô‚·B–¢İ’è‚Ìê‡‚Í‹ó”z—ñ‚ğ•Ô‚·B
+    /// æŒ‡å®šRoomTypeã®æ•µã‚¨ãƒ³ãƒˆãƒªä¸€è¦§ã‚’è¿”ã™ã€‚æœªè¨­å®šã®å ´åˆã¯ç©ºé…åˆ—ã‚’è¿”ã™ã€‚
     /// </summary>
     public EnemyEntry[] GetEnemyEntries(RoomType roomType)
     {

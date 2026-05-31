@@ -27,6 +27,16 @@ public class StoryManager : MonoBehaviour
     private Coroutine _typingCoroutine;
     private bool _isTyping = false;
 
+    private void Awake()
+    {
+        DebugCustom.ValidateFields(this,
+            (nameof(_background), _background),
+            (nameof(_characterImage), _characterImage),
+            (nameof(_storyText), _storyText),
+            (nameof(_characterName), _characterName),
+            (nameof(_inputController), _inputController));
+    }
+
     private void Start()
     {
         // データは StorySceneController.Awake() で SetStoryDatas() により設定済み。
@@ -78,7 +88,7 @@ public class StoryManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("全ストーリー終了");
+                DebugCustom.Log("全ストーリー終了");
                 OnAllStoriesComplete?.Invoke();
             }
         }

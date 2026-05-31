@@ -18,6 +18,9 @@ public class PlayerCamera : MonoBehaviour
     private void Awake()
     {
         _inputCallbackController = GetComponent<InputPlayerController>();
+
+        if (_cameraTransform == null)
+            DebugCustom.LogError($"[PlayerCamera] _cameraTransform が未設定です。", this);
     }
 
     private void OnEnable()

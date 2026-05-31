@@ -8,7 +8,7 @@ public class InputScenarioController : MonoBehaviour, InputSystem_Actions.IScene
 
     public event Action OnClickPerformed;
 
-    //---------- —LŒø‰» ----------
+    //---------- æœ‰åŠ¹åŒ– ----------
     private void OnEnable()
     {
         if (_inputActions == null)
@@ -19,16 +19,16 @@ public class InputScenarioController : MonoBehaviour, InputSystem_Actions.IScene
         _inputActions.Scenerio.Enable();
     }
 
-    //---------- –³Œø‰» ----------
+    //---------- ç„¡åŠ¹åŒ– ----------
     private void OnDisable()
     {
         _inputActions?.Scenerio.Disable();
     }
 
-    //---------- ƒR[ƒ‹ƒoƒbƒNÀ‘• ----------
+    //---------- ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å®Ÿè£… ----------
     public void OnCancel(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        // Scenario ãƒ‘ãƒ¼ãƒˆã§ã¯ Cancel ã‚’æ‰±ã‚ãªã„ï¼ˆæœªä½¿ç”¨ï¼‰
     }
 
     public void OnClick(InputAction.CallbackContext context)

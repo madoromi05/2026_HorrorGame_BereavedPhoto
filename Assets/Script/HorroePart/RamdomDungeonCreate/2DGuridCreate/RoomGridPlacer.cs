@@ -1,6 +1,6 @@
 /// <summary>
-/// SectionData �����Ƃɕ����E�p�X�|�C���g���O���b�h�֏������ރN���X�B
-/// �O���b�h�ւ̏������݂ƁA��H�����K�v�Ƃ���ڑ����̐����݂̂�S������B
+/// SectionData をもとに部屋・パスポイントをグリッドへ書き込むクラス。
+/// グリッドへの書き込みと、後工程が必要とする接続情報の生成のみを担当する。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using UnityEngine;
 public class RoomGridPlacer
 {
     /// <summary>
-    /// �S�Z�N�V�������O���b�h�ɏ������݁A�ڑ�����Ԃ��B
+    /// 全セクションをグリッドに書き込み、接続情報を返す。
     /// </summary>
     public void Place(
         GridType[,] grid,
@@ -30,8 +30,8 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// RoomGridData �̃Z�������O���b�h�ɏ������ށB
-    /// �Z�N�V�������Ń����_���I�t�Z�b�g��ݒ肵�A�ǂƂ̊Ԃ� 1 �Z���̃}�[�W�����m�ۂ���B
+    /// RoomGridData のセル情報をグリッドに書き込む。
+    /// セクション内でランダムオフセットを設定し、壁との間に 1 セルのマージンを確保する。
     /// </summary>
     private void PlaceRoomGrid(
         GridType[,] grid,
@@ -41,7 +41,7 @@ public class RoomGridPlacer
         var roomData = section.RoomGridData;
         var doorPositions = new List<Vector2Int>();
 
-        // �������Z�N�V�����[�ɒ���t���Ȃ��悤 1 �Z���ȏ�̗]�����m�ۂ���
+        // 部屋がセクション端に張り付かないよう 1 セル以上の余白を確保する
         int spaceX = section.GridSize.x - roomData.GridSize.x;
         int spaceY = section.GridSize.y - roomData.GridSize.y;
         int offsetX = spaceX >= 2 ? Random.Range(1, spaceX) : 0;
@@ -67,8 +67,8 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// ���[�J�����W�̃Z���^�C�v�� RoomGridData �����������B
-    /// �D�揇��: Door > Wall > PlayerPosition > Floor
+    /// ローカル座標のセルタイプを RoomGridData から解決する。
+    /// 優先順位: Door > Wall > PlayerPosition > Floor
     /// </summary>
     private GridType ResolveCellType(RoomGridData roomData, Vector2Int localPos)
     {
@@ -81,7 +81,7 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// �����������Ȃ��Z�N�V�����̒��S�_��ʘH�ڑ��̋N�_�Ƃ��ēo�^����B
+    /// 部屋を持たないセクションの中心点を通路接続の起点として登録する。
     /// </summary>
     private void PlacePath(SectionData section, Dictionary<SectionData, Vector2Int> pathPointMap)
     {

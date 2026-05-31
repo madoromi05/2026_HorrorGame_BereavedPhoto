@@ -23,7 +23,12 @@ namespace HorrorGame.UI
 
         private void Awake()
         {
-            _canvasGroup.alpha = 0f;
+            DebugCustom.ValidateFields(this,
+                (nameof(_messageText), _messageText),
+                (nameof(_canvasGroup), _canvasGroup));
+
+            if (_canvasGroup != null)
+                _canvasGroup.alpha = 0f;
         }
 
         /// <summary>メッセージを表示する。表示中に呼ばれた場合はリセットして再表示する。</summary>

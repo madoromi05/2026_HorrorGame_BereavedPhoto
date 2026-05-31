@@ -5,16 +5,22 @@ using HorrorGame.Item;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// ƒAƒCƒeƒ€æ“¾‚ÉƒAƒCƒeƒ€–¼‚Æà–¾•¶‚ğƒI[ƒo[ƒŒƒC•\¦‚·‚éUIƒNƒ‰ƒXB
-    /// Canvas”z‰º‚Ìƒpƒlƒ‹‚ÉƒAƒ^ƒbƒ`‚µAItemPickup‚©‚çShow()‚ğŒÄ‚ÔB
+    /// ã‚¢ã‚¤ãƒ†ãƒ å–å¾—æ™‚ã«ã‚¢ã‚¤ãƒ†ãƒ åã¨èª¬æ˜æ–‡ã‚’ã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤è¡¨ç¤ºã™ã‚‹UIã‚¯ãƒ©ã‚¹ã€‚
+    /// Canvasé…ä¸‹ã®ãƒ‘ãƒãƒ«ã«ã‚¢ã‚¿ãƒƒãƒã—ã€ItemPickupã‹ã‚‰Show()ã‚’å‘¼ã¶ã€‚
     /// </summary>
     public class ItemAcquiredUIPresenter : RevealUIPresenterBase
     {
         [SerializeField] private TextMeshProUGUI itemNameText;
         // [SerializeField] private TextMeshProUGUI itemDescriptionText;
 
+        private void Awake()
+        {
+            if (itemNameText == null)
+                DebugCustom.LogError($"[ItemAcquiredUIPresenter] itemNameText ãŒæœªè¨­å®šã§ã™ã€‚", this);
+        }
+
         /// <summary>
-        /// ƒAƒCƒeƒ€ƒf[ƒ^‚ğó‚¯æ‚èƒI[ƒo[ƒŒƒC‚ğ•\¦‚·‚éBItemPickup‚©‚çŒÄ‚Î‚ê‚éB
+        /// ã‚¢ã‚¤ãƒ†ãƒ ãƒ‡ãƒ¼ã‚¿ã‚’å—ã‘å–ã‚Šã‚ªãƒ¼ãƒãƒ¼ãƒ¬ã‚¤ã‚’è¡¨ç¤ºã™ã‚‹ã€‚ItemPickupã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚
         /// </summary>
         public void Show(ItemData itemData)
         {

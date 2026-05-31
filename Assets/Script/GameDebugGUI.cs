@@ -222,7 +222,7 @@ public class GameDebugGUI : MonoBehaviour
             GUILayout.Space(4);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("▶ 次へ進む"))  { mgr.LoadNextScene(); }
-            if (GUILayout.Button("↺ リセット")) { mgr.ResetProgress(); Debug.Log("[Debug] 進行リセット"); }
+            if (GUILayout.Button("↺ リセット")) { mgr.ResetProgress(); DebugCustom.Log("[Debug] 進行リセット"); }
             GUILayout.EndHorizontal();
         }
 
@@ -414,7 +414,7 @@ public class GameDebugGUI : MonoBehaviour
         if (GUILayout.Button("解析100%完了"))
         {
             if (_analyzer != null) _analyzer.DebugForceComplete();
-            else Debug.LogWarning("[Debug] EnemyAnalyzer not found");
+            else DebugCustom.LogWarning("[Debug] EnemyAnalyzer not found");
         }
         if (GUILayout.Button("鍵 全取得"))
         {
@@ -423,7 +423,7 @@ public class GameDebugGUI : MonoBehaviour
                 foreach (ItemType t in System.Enum.GetValues(typeof(ItemType)))
                     _inventory.DebugAddItem(t);
             }
-            else Debug.LogWarning("[Debug] Inventory not found");
+            else DebugCustom.LogWarning("[Debug] Inventory not found");
         }
         GUILayout.EndHorizontal();
 
@@ -438,7 +438,7 @@ public class GameDebugGUI : MonoBehaviour
             if (GUILayout.Button("進行リセット"))
             {
                 mgr.ResetProgress();
-                Debug.Log("[Debug] 進行リセット");
+                DebugCustom.Log("[Debug] 進行リセット");
             }
             GUILayout.EndHorizontal();
         }

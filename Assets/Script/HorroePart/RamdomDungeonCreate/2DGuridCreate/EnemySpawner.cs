@@ -1,8 +1,8 @@
 /// <summary>
-/// RoomDataBase‚Ìİ’è‚É]‚¢AŠeƒZƒNƒVƒ‡ƒ“‚É“G‚ğ”z’u‚·‚éB
-/// SectionPlacer‚©‚ç“G¶¬Ó–±‚ğ•ª—£‚µ‚½ƒNƒ‰ƒXB
-/// Player‚ÌTransform‚ÍPlaceŒÄ‚Ño‚µ‚É“n‚·‚±‚Æ‚ÅA
-/// •”‰®”z’u‚ÆƒvƒŒƒCƒ„[¶¬‚ÌŠ®—¹‚ğ‘Ò‚Á‚Ä‚©‚ç“G‚ğ¶¬‚Å‚«‚éB
+/// RoomDataBaseã®è¨­å®šã«å¾“ã„ã€å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã«æ•µã‚’é…ç½®ã™ã‚‹ã€‚
+/// SectionPlacerã‹ã‚‰æ•µç”Ÿæˆè²¬å‹™ã‚’åˆ†é›¢ã—ãŸã‚¯ãƒ©ã‚¹ã€‚
+/// Playerã®Transformã¯Placeå‘¼ã³å‡ºã—æ™‚ã«æ¸¡ã™ã“ã¨ã§ã€
+/// éƒ¨å±‹é…ç½®ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç”Ÿæˆã®å®Œäº†ã‚’å¾…ã£ã¦ã‹ã‚‰æ•µã‚’ç”Ÿæˆã§ãã‚‹ã€‚
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -21,10 +21,10 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// ‘SƒZƒNƒVƒ‡ƒ“‚ğ‘–¸‚µARoomDataBase‚Ìİ’è‚É]‚Á‚Ä“G‚ğ¶¬‚·‚éB
-    /// playerTransform‚ªnull‚Ìê‡‚Í’ÇÕ‚È‚µ‚Å¶¬‚·‚éB
-    /// grid‚ÍMapWanderer‚ÌƒEƒFƒCƒ|ƒCƒ“ƒg\’z‚Ég—p‚·‚éB
-    /// enemyLookDebug‚ªtrue‚Ì‚Æ‚«¶¬‚µ‚½“G‚ÉEnemyDebugVisualizer‚ğ•t—^‚·‚éB
+    /// å…¨ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’èµ°æŸ»ã—ã€RoomDataBaseã®è¨­å®šã«å¾“ã£ã¦æ•µã‚’ç”Ÿæˆã™ã‚‹ã€‚
+    /// playerTransformãŒnullã®å ´åˆã¯è¿½è·¡ãªã—ã§ç”Ÿæˆã™ã‚‹ã€‚
+    /// gridã¯MapWandererã®ã‚¦ã‚§ã‚¤ãƒã‚¤ãƒ³ãƒˆæ§‹ç¯‰ã«ä½¿ç”¨ã™ã‚‹ã€‚
+    /// enemyLookDebugãŒtrueã®ã¨ãç”Ÿæˆã—ãŸæ•µã«EnemyDebugVisualizerã‚’ä»˜ä¸ã™ã‚‹ã€‚
     /// </summary>
     public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid, bool enemyLookDebug = false)
     {
@@ -51,9 +51,18 @@ public class EnemySpawner
     {
         var roomBounds = CalcRoomBounds(section);
 
+        var roomCenter = CalcRoomCenterWorldPosition(section);
+
         for (int i = 0; i < entry.SpawnCount; i++)
         {
-            var worldPos = CalcRoomCenterWorldPosition(section);
+            // è¤‡æ•°ä½“ã‚¹ãƒãƒ¼ãƒ³æ™‚ã«åŒä¸€åº§æ¨™ã¸é‡ãªã‚‰ãªã„ã‚ˆã†å°‘ã—æ•£ã‚‰ã™
+            var worldPos = roomCenter;
+            if (entry.SpawnCount > 1)
+            {
+                var offset = Random.insideUnitCircle * _gridSize * 0.5f;
+                worldPos += new Vector3(offset.x, 0f, offset.y);
+            }
+
             var instance = Object.Instantiate(entry.EnemyPrefab, worldPos, Quaternion.identity, enemyParent);
             instance.name = $"Enemy_{section.Role}_{section.GridPosition}_{i}";
 
@@ -69,16 +78,16 @@ public class EnemySpawner
     }
 
     /// <summary>
-    /// ƒZƒNƒVƒ‡ƒ“‚ÌRoomGridData‚ÌDoorŠO‰‚ğ‚à‚Æ‚É•”‰®‚ÌAABB‚ğZo‚·‚éB
-    /// Door‚ª–¢İ’è‚Ìê‡‚ÍRoomGridSize‚ğ‚»‚Ì‚Ü‚Üg‚¤B
+    /// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®RoomGridDataã®Doorå¤–ç¸ã‚’ã‚‚ã¨ã«éƒ¨å±‹ã®AABBã‚’ç®—å‡ºã™ã‚‹ã€‚
+    /// DoorãŒæœªè¨­å®šã®å ´åˆã¯RoomGridSizeã‚’ãã®ã¾ã¾ä½¿ã†ã€‚
     /// </summary>
     private Bounds CalcRoomBounds(SectionData section)
     {
         var roomData = section.RoomGridData;
         var origin = section.RoomGridPosition;
 
-        // DoorÀ•W‚ª‚ ‚éê‡‚ÍDoor‚Ì“à‘¤ƒMƒŠƒMƒŠ‚ğAABB‚Æ‚µ‚Äg—p‚·‚é
-        // iDoor‚ğ“¥‚Ü‚¸‚Éˆø‚«•Ô‚·‚±‚Æ‚Åu•”‰®‚©‚ço‚È‚¢v‚ğÀŒ»‚·‚éj
+        // Dooråº§æ¨™ãŒã‚ã‚‹å ´åˆã¯Doorã®å†…å´ã‚®ãƒªã‚®ãƒªã‚’AABBã¨ã—ã¦ä½¿ç”¨ã™ã‚‹
+        // ï¼ˆDoorã‚’è¸ã¾ãšã«å¼•ãè¿”ã™ã“ã¨ã§ã€Œéƒ¨å±‹ã‹ã‚‰å‡ºãªã„ã€ã‚’å®Ÿç¾ã™ã‚‹ï¼‰
         if (roomData.DoorPositions != null && roomData.DoorPositions.Count > 0)
         {
             var min = new Vector2Int(int.MaxValue, int.MaxValue);
@@ -107,7 +116,7 @@ public class EnemySpawner
             return bounds;
         }
 
-        // Door‚È‚µFRoomGridSize‚ğAABB‚Æ‚µ‚Äg—p
+        // Doorãªã—ï¼šRoomGridSizeã‚’AABBã¨ã—ã¦ä½¿ç”¨
         var fallbackMin = new Vector3(origin.x * _gridSize, -10f, origin.y * _gridSize);
         var fallbackMax = new Vector3(
             (origin.x + roomData.GridSize.x) * _gridSize,

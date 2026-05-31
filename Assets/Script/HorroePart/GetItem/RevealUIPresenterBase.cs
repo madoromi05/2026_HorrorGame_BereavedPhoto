@@ -38,6 +38,12 @@ namespace HorrorGame.UI
 
         private void OnEnable()
         {
+            DebugCustom.ValidateFields(this,
+                (nameof(_overlayPanel), _overlayPanel),
+                (nameof(_revealImage), _revealImage),
+                (nameof(_inputController), _inputController),
+                (nameof(_holdProgressImage), _holdProgressImage));
+
             _inputController.OnInteractHeld += OnInteractHeld;
             _inputController.OnInteractReleased += OnInteractReleased;
         }

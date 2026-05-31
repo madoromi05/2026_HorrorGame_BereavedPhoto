@@ -8,20 +8,8 @@ using TMPro;
 /// </summary>
 public class TitleSceneController : MonoBehaviour
 {
-    [Header("コンティニューが有効かの判定")]
-    [Tooltip("この Stage 以降をコンティニューとして扱う")]
-    [SerializeField] private GameProgressManager.GameStage _continueMinStage
-        = GameProgressManager.GameStage.Horror1;
-
     [Header("アルバム")]
     [SerializeField] private AlbumController _albumController;
-
-    private void Start()
-    {
-        var mgr = GameProgressManager.Instance;
-
-        bool canContinue = mgr != null && (int)mgr.CurrentStage >= (int)_continueMinStage;
-    }
 
     public void OnNewGame()
     {

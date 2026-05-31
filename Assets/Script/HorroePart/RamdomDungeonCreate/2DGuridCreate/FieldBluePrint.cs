@@ -1,17 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// ƒ}ƒbƒv‘S‘Ì‚ÌİŒv}
+/// ãƒãƒƒãƒ—å…¨ä½“ã®è¨­è¨ˆå›³
 /// </summary>
 [CreateAssetMenu(fileName = "FieldBluePrint", menuName = "Dungeon/FieldBluePrint")]
 public class FieldBluePrint : ScriptableObject
 {
-    public float OneGridSize = 5f;      // 1ƒOƒŠƒbƒh‚ÌÀÛ‚ÌƒTƒCƒYiƒ†ƒjƒeƒB‚Ìƒ[ƒ‹ƒh’PˆÊj
+    public float OneGridSize = 5f;      // 1ã‚°ãƒªãƒƒãƒ‰ã®å®Ÿéš›ã®ã‚µã‚¤ã‚ºï¼ˆãƒ¦ãƒ‹ãƒ†ã‚£ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰å˜ä½ï¼‰
 
-    public Vector2Int MapSize;           // ƒ}ƒbƒv‘S‘Ì‚ÌƒOƒŠƒbƒhƒTƒCƒY
-    public Vector2Int SectionDivide;     // ƒZƒNƒVƒ‡ƒ“•ªŠ„”
+    public Vector2Int MapSize;           // ãƒãƒƒãƒ—å…¨ä½“ã®ã‚°ãƒªãƒƒãƒ‰ã‚µã‚¤ã‚º
+    public Vector2Int SectionDivide;     // ã‚»ã‚¯ã‚·ãƒ§ãƒ³åˆ†å‰²æ•°
 
-    // ‘SSectionÚ‘±Œã‚É’Ç‰Á‚·‚éƒ‰ƒ“ƒ_ƒ€’Ê˜H‚Ì–{””ÍˆÍ
+    // å…¨Sectionæ¥ç¶šå¾Œã«è¿½åŠ ã™ã‚‹ãƒ©ãƒ³ãƒ€ãƒ é€šè·¯ã®æœ¬æ•°ç¯„å›²
     public int MinExtraBranchNum;
     public int MaxExtraBranchNum;
 

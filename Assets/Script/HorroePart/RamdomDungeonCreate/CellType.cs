@@ -1,6 +1,6 @@
 namespace DungeonSystem
 {
-    //•”‰®A‰½‚à‚È‚¢êŠ‚ÌƒOƒŠƒbƒhƒ^ƒCƒv
+    //éƒ¨å±‹ã€ä½•ã‚‚ãªã„å ´æ‰€ã®ã‚°ãƒªãƒƒãƒ‰ã‚¿ã‚¤ãƒ—
     public enum GridType
     {
         Empty,
@@ -11,7 +11,7 @@ namespace DungeonSystem
         PlayerPosition,
     }
 
-    //’Ê˜H‚ÌƒOƒŠƒbƒhƒ^ƒCƒv
+    //é€šè·¯ã®ã‚°ãƒªãƒƒãƒ‰ã‚¿ã‚¤ãƒ—
     public enum CorridorType
     {
         Straight,
@@ -21,7 +21,7 @@ namespace DungeonSystem
         DeadEnd,
     }
 
-    //•”‰®‚Ìí—Ş
+    //éƒ¨å±‹ã®ç¨®é¡
     public enum RoomType
     {
         Start,

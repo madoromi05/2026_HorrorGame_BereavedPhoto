@@ -21,6 +21,10 @@ namespace HorrorGame.UI
             {
                 DebugCustom.Log($"[HintUI] PlayerInteractorがアサインされています。購読を開始します。");
             }
+
+            if (_hintText == null)
+                DebugCustom.LogError($"[InteractHintUI] _hintText が未設定です。", this);
+
             SetHintVisible(false);
         }
 
