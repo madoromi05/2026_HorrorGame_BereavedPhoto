@@ -46,6 +46,8 @@ namespace HorrorGame.UI
         /// </summary>
         private void HandleFocusChanged(string hint)
         {
+            if (_suppressed) return;
+
             if (string.IsNullOrEmpty(hint))
             {
                 SetHintVisible(false);
@@ -54,6 +56,19 @@ namespace HorrorGame.UI
             DebugCustom.Log($"[HintUI] フォーカスが変わりました。ヒント: {hint}");
             _hintText.text = hint;
             SetHintVisible(true);
+        }
+
+        private bool _suppressed = false;
+
+        /// <summary>
+        /// UI表示中など、ヒントを強制非表示にしたいときに呼ぶ。
+        /// true にすると OnFocusChanged を無視して非表示を維持する。
+        /// </summary>
+        public void SetSuppressed(bool suppressed)
+        {
+            _suppressed = suppressed;
+            if (suppressed)
+                SetHintVisible(false);
         }
 
         private void SetHintVisible(bool visible)

@@ -16,6 +16,7 @@ namespace HorrorGame.UI
         [SerializeField] protected InputPlayerController _inputController;
         [SerializeField] protected Image _holdProgressImage;
         [SerializeField] protected GameObject _playerLight;
+        [SerializeField] private InteractHintUI _interactHintUI;
 
         protected bool _isShowing = false;
 
@@ -85,6 +86,7 @@ namespace HorrorGame.UI
             _overlayPanel.SetActive(true);
             _isShowing = true;
             _inputController.SetPlayerInputEnabled(false);
+            _interactHintUI?.SetSuppressed(true);
 
             if (_playerLight != null)
                 _playerLight.SetActive(false);
@@ -102,6 +104,7 @@ namespace HorrorGame.UI
             _holdProgressImage.fillAmount = 0f;
             _holdProgressImage.gameObject.SetActive(false);
             _inputController.SetPlayerInputEnabled(true);
+            _interactHintUI?.SetSuppressed(false);
         }
 
         /// <summary>

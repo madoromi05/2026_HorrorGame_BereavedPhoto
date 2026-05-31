@@ -42,6 +42,34 @@ public class ExitDoor : MonoBehaviour, IInteractable
     private Inventory          Inventory  => _inventory     ??= FindFirstObjectByType<Inventory>();
     private InteractFeedbackUI FeedbackUI => _feedbackUI    ??= FindFirstObjectByType<InteractFeedbackUI>();
 
+    // InteractFeedbackUI がない場合の OnGUI フォールバック用
+    private string _fallbackMessage = "";
+    private float  _fallbackTimer   = 0f;
+    private const float kFallbackDuration = 3f;
+
+    private void Update()
+    {
+        if (_fallbackTimer > 0f)
+            _fallbackTimer -= Time.deltaTime;
+    }
+
+    private void OnGUI()
+    {
+        if (_fallbackTimer <= 0f || string.IsNullOrEmpty(_fallbackMessage)) return;
+
+        var style = new GUIStyle(GUI.skin.box)
+        {
+            fontSize  = 22,
+            alignment = TextAnchor.MiddleCenter,
+            wordWrap  = true,
+        };
+        style.normal.textColor = Color.white;
+
+        float w = 480f, h = 100f;
+        GUI.Box(new Rect((Screen.width - w) * 0.5f, Screen.height * 0.65f, w, h),
+                _fallbackMessage, style);
+    }
+
     // ---- IInteractable 実装 ----
 
     public bool CanInteract => true;
@@ -65,7 +93,17 @@ public class ExitDoor : MonoBehaviour, IInteractable
             return;
         }
 
-        FeedbackUI?.Show(GetMessage(cond));
+        var message = GetMessage(cond);
+        if (FeedbackUI != null)
+        {
+            FeedbackUI.Show(message);
+        }
+        else
+        {
+            // テストシーン用フォールバック: OnGUI で画面中央下部に表示
+            _fallbackMessage = message;
+            _fallbackTimer   = kFallbackDuration;
+        }
     }
 
     // ---- 内部ロジック ----

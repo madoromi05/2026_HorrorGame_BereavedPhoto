@@ -27,11 +27,20 @@ namespace HorrorGame.Interaction
             _inventory = inventory;
         }
 
+        private void Start()
+        {
+            // ItemInitializer 経由で Init() されない場合（シーン直置き等）のフォールバック
+            if (_uiPresenter == null)
+                _uiPresenter = FindFirstObjectByType<MemoUIPresenter>();
+            if (_inventory == null)
+                _inventory = FindFirstObjectByType<Inventory>();
+        }
+
         public void OnInteract()
         {
             if (_uiPresenter == null)
             {
-                DebugCustom.LogWarning("[MemoItem] MemoUIPresenter が未設定です。");
+                DebugCustom.LogWarning("[MemoItem] MemoUIPresenter がシーン内に見つかりません。");
                 return;
             }
 

@@ -123,6 +123,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _requiredKey: 0
+  _enemyAnalyzer: {fileID: 0}
+  _inventory: {fileID: 0}
+  _feedbackUI: {fileID: 0}
+  _onExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &8115544593466827457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,8 +141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aeb32d38335ff342bbe960d94396681, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyAnalyzer: {fileID: 0}
   _requiredKey: 0
+  _enemyAnalyzer: {fileID: 0}
   _inventory: {fileID: 0}
   _feedbackUI: {fileID: 0}
   _onExit:
