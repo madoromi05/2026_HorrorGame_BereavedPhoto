@@ -47,3 +47,6 @@ MonoBehaviour:
   - {x: 3, y: 4}
   - {x: 1, y: 4}
   PlayerPositions: []
+  EnemyNavSubdivision: 8
+  EnemyNavWallCells: []
+  RoomPrefab: {fileID: 4544807805352437314, guid: 0425adad1dbb306449151c378ff49c9d, type: 3}

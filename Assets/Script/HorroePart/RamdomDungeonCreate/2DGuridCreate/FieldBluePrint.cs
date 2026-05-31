@@ -16,4 +16,8 @@ public class FieldBluePrint : ScriptableObject
     public int MaxExtraBranchNum;
 
     [Range(1, 3)] public int CorridorWidth;
+
+    [Header("Enemy Navigation")]
+    // 1ダンジョンセルをナビセル何分割するか（大きいほど細かい経路探索、負荷も増加）
+    [Range(1, 10)] public int EnemyNavSubdivision = 5;
 }

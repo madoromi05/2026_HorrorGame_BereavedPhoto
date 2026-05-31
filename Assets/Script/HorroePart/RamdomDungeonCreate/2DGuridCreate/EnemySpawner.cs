@@ -3,6 +3,9 @@
 /// SectionPlacerから敵生成責務を分離したクラス。
 /// PlayerのTransformはPlace呼び出し時に渡すことで、
 /// 部屋配置とプレイヤー生成の完了を待ってから敵を生成できる。
+///
+/// Place() 内でダンジョングリッドとセクション情報から DungeonPathfinder を1つ生成し、
+/// 全ての敵インスタンスに共有することでメモリと計算コストを節約する。
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -12,22 +15,28 @@ public class EnemySpawner
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
     private readonly float _enemySpawnOffsetY;
+    private readonly int _navSubdivision;
 
-    public EnemySpawner(RoomDataBase roomDataBase, float gridSize, float enemySpawnOffsetY)
+    public EnemySpawner(RoomDataBase roomDataBase, float gridSize, float enemySpawnOffsetY, int navSubdivision)
     {
-        _roomDataBase = roomDataBase;
-        _gridSize = gridSize;
+        _roomDataBase     = roomDataBase;
+        _gridSize         = gridSize;
         _enemySpawnOffsetY = enemySpawnOffsetY;
+        _navSubdivision   = navSubdivision;
     }
 
     /// <summary>
     /// 全セクションを走査し、RoomDataBaseの設定に従って敵を生成する。
     /// playerTransformがnullの場合は追跡なしで生成する。
-    /// gridはMapWandererのウェイポイント構築に使用する。
-    /// enemyLookDebugがtrueのとき生成した敵にEnemyDebugVisualizerを付与する。
     /// </summary>
     public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid, bool enemyLookDebug = false)
     {
+        // ナビグリッドとパスファインダーをここで1回だけ構築し全敵に共有する
+        var walkable    = EnemyNavGridBuilder.Build(grid, _gridSize, _navSubdivision, sections);
+        float navCellSize = EnemyNavGridBuilder.GetNavCellSize(_gridSize, _navSubdivision);
+        var pathfinder  = new DungeonPathfinder();
+        pathfinder.SetNavGrid(walkable, navCellSize);
+
         foreach (var section in sections)
         {
             if (section.RoomGridData == null) continue;
@@ -36,7 +45,7 @@ public class EnemySpawner
             foreach (var entry in enemyEntries)
             {
                 if (entry.EnemyPrefab == null) continue;
-                SpawnEnemies(section, entry, enemyParent, playerTransform, grid, enemyLookDebug);
+                SpawnEnemies(section, entry, enemyParent, playerTransform, grid, pathfinder, enemyLookDebug);
             }
         }
     }
@@ -47,15 +56,14 @@ public class EnemySpawner
         Transform enemyParent,
         Transform playerTransform,
         GridType[,] grid,
+        DungeonPathfinder pathfinder,
         bool enemyLookDebug)
     {
-        var roomBounds = CalcRoomBounds(section);
-
-        var roomCenter = CalcRoomCenterWorldPosition(section);
+        var roomBounds  = CalcRoomBounds(section);
+        var roomCenter  = CalcRoomCenterWorldPosition(section);
 
         for (int i = 0; i < entry.SpawnCount; i++)
         {
-            // 複数体スポーン時に同一座標へ重ならないよう少し散らす
             var worldPos = roomCenter;
             if (entry.SpawnCount > 1)
             {
@@ -67,27 +75,24 @@ public class EnemySpawner
             instance.name = $"Enemy_{section.Role}_{section.GridPosition}_{i}";
 
             if (instance.TryGetComponent<EnemyController>(out var controller))
+            {
                 controller.SetPlayer(playerTransform);
+                controller.SetPathfinder(pathfinder);
+            }
 
             if (instance.TryGetComponent<RoomWanderer>(out var roomWanderer))
                 roomWanderer.SetRoomBounds(roomBounds);
 
             if (instance.TryGetComponent<MapWanderer>(out var mapWanderer))
-                mapWanderer.SetGrid(grid, _gridSize);
+                mapWanderer.SetGrid(grid, _gridSize, pathfinder);
         }
     }
 
-    /// <summary>
-    /// セクションのRoomGridDataのDoor外縁をもとに部屋のAABBを算出する。
-    /// Doorが未設定の場合はRoomGridSizeをそのまま使う。
-    /// </summary>
     private Bounds CalcRoomBounds(SectionData section)
     {
         var roomData = section.RoomGridData;
-        var origin = section.RoomGridPosition;
+        var origin   = section.RoomGridPosition;
 
-        // Door座標がある場合はDoorの内側ギリギリをAABBとして使用する
-        // （Doorを踏まずに引き返すことで「部屋から出ない」を実現する）
         if (roomData.DoorPositions != null && roomData.DoorPositions.Count > 0)
         {
             var min = new Vector2Int(int.MaxValue, int.MaxValue);
@@ -101,26 +106,16 @@ public class EnemySpawner
                 if (door.y > max.y) max.y = door.y;
             }
 
-            var worldMin = new Vector3(
-                (origin.x + min.x) * _gridSize,
-                -10f,
-                (origin.y + min.y) * _gridSize
-            );
-            var worldMax = new Vector3(
-                (origin.x + max.x + 1) * _gridSize,
-                10f,
-                (origin.y + max.y + 1) * _gridSize
-            );
-            var bounds = new Bounds();
+            var worldMin = new Vector3((origin.x + min.x) * _gridSize, -10f, (origin.y + min.y) * _gridSize);
+            var worldMax = new Vector3((origin.x + max.x + 1) * _gridSize, 10f, (origin.y + max.y + 1) * _gridSize);
+            var bounds   = new Bounds();
             bounds.SetMinMax(worldMin, worldMax);
             return bounds;
         }
 
-        // Doorなし：RoomGridSizeをAABBとして使用
         var fallbackMin = new Vector3(origin.x * _gridSize, -10f, origin.y * _gridSize);
         var fallbackMax = new Vector3(
-            (origin.x + roomData.GridSize.x) * _gridSize,
-            10f,
+            (origin.x + roomData.GridSize.x) * _gridSize, 10f,
             (origin.y + roomData.GridSize.y) * _gridSize
         );
         var fallback = new Bounds();

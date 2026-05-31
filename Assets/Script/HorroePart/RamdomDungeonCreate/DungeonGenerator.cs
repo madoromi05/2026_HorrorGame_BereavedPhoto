@@ -60,7 +60,7 @@ public class DungeonGenerator : MonoBehaviour
     public void Generate()
     {
         var gridBuilder = new DungeonGridBuilder();
-        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
+        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY, _bluePrint.EnemyNavSubdivision);
         var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 

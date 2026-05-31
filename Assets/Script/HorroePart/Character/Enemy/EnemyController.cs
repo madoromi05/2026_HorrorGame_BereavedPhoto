@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -20,8 +21,16 @@ public class EnemyController : MonoBehaviour
 {
     public enum AIState { Patrol, Suspicious, Chase, Search, Feint }
 
-    [Header("追跡")]
+    [Header("起動距離")]
+    // この距離以内にプレイヤーが入ったときだけAI処理を実行する（遠方では処理をスキップ）
+    [SerializeField] private float _activationRadius = 20f;
+
+    [Header("追跡（複合方式）")]
     [SerializeField] private float _chaseSpeed = 6f;
+    // この距離以内はA*を使わず直進追跡に切り替える
+    [SerializeField] private float _directChaseRadius = 6f;
+    // A*パスを再計算する間隔（秒）
+    [SerializeField] private float _chasePathUpdateInterval = 0.6f;
     [SerializeField] private float _accelerationForce = 30f;
 
     [Header("回転")]
@@ -50,6 +59,7 @@ public class EnemyController : MonoBehaviour
     private Transform _player;
     private IEnemyBehavior _wanderBehavior;
     private GameOverHandler _gameOverHandler;
+    private DungeonPathfinder _pathfinder;
 
     private AIState _state = AIState.Patrol;
 
@@ -59,6 +69,21 @@ public class EnemyController : MonoBehaviour
     private float _searchTimer;
     private float _searchRepickTimer;
     private float _currentRoamRadius;
+
+    // 捜索パスフォロー
+    private List<Vector3> _searchPath  = new List<Vector3>();
+    private int _searchPathIndex;
+
+    // 警戒パスフォロー
+    private List<Vector3> _suspiciousPath      = new List<Vector3>();
+    private int _suspiciousPathIndex;
+    private Vector3 _suspiciousLastTarget      = Vector3.positiveInfinity;
+
+    // 追跡パスフォロー（A*+直進複合）
+    private List<Vector3> _chasePath      = new List<Vector3>();
+    private int _chasePathIndex;
+    private Vector3 _chasePathTarget      = Vector3.positiveInfinity;
+    private float _chasePathUpdateTimer;
 
     // フェイント（立ち去り）ランタイム
     private float _feintTimer;
@@ -105,9 +130,23 @@ public class EnemyController : MonoBehaviour
             DebugCustom.LogWarning($"[EnemyController] GameOverHandlerが見つかりません: {_player.name}");
     }
 
+    /// <summary>
+    /// EnemySpawner が生成した共有パスファインダーを注入する。
+    /// Patrol・Suspicious・Search・Chase 状態でのA*経路探索を有効にする。
+    /// </summary>
+    public void SetPathfinder(DungeonPathfinder pathfinder)
+    {
+        _pathfinder = pathfinder;
+    }
+
     private void FixedUpdate()
     {
         if (_player == null) return;
+
+        // プレイヤーが起動距離より遠い場合はAI処理全体をスキップする
+        var dx = _player.position.x - transform.position.x;
+        var dz = _player.position.z - transform.position.z;
+        if (dx * dx + dz * dz > _activationRadius * _activationRadius) return;
 
         if (_detector == null)
         {
@@ -139,6 +178,7 @@ public class EnemyController : MonoBehaviour
 
     /// <summary>
     /// 警戒状態。最後の刺激方向へ振り向きながら、最後に見た地点へゆっくり寄って確認する。
+    /// 目標地点までのパスをA*で計算し、壁を迂回して移動する。
     /// 警戒度が満タンになれば追跡、閾値を下回れば巡回へ戻る。
     /// </summary>
     private void TickSuspicious(float awareness)
@@ -150,11 +190,38 @@ public class EnemyController : MonoBehaviour
             ? _detector.LastKnownPosition
             : transform.position + _detector.LastStimulusDirection;
 
-        Vector3 dir = Flatten(target - transform.position);
-        if (dir.magnitude > kArrivalRadius)
-            ApplyMovement(dir.normalized, _suspiciousSpeed);
+        // 目標が大きく変わった場合はパスを再計算する（毎フレームの再計算を避ける）
+        if ((target - _suspiciousLastTarget).sqrMagnitude > 4f)
+        {
+            _suspiciousLastTarget = target;
+            _suspiciousPath = _pathfinder != null
+                ? _pathfinder.FindPath(transform.position, target, transform.position.y)
+                : new List<Vector3> { target };
+            _suspiciousPathIndex = 0;
+        }
+
+        // パスノードを辿って移動する
+        if (_suspiciousPathIndex < _suspiciousPath.Count)
+        {
+            var node = _suspiciousPath[_suspiciousPathIndex];
+            var dir  = Flatten(node - transform.position);
+            if (dir.magnitude <= kArrivalRadius)
+            {
+                _suspiciousPathIndex++;
+                if (_suspiciousPathIndex >= _suspiciousPath.Count)
+                {
+                    RotateToward(_detector.LastStimulusDirection);
+                    return;
+                }
+                dir = Flatten(_suspiciousPath[_suspiciousPathIndex] - transform.position);
+            }
+            if (dir.sqrMagnitude > 0.001f)
+                ApplyMovement(dir.normalized, _suspiciousSpeed);
+        }
         else
-            RotateToward(_detector.LastStimulusDirection);  // 到達済みならその場で振り向いて探す
+        {
+            RotateToward(_detector.LastStimulusDirection);
+        }
     }
 
     private void TickChase(float awareness)
@@ -164,7 +231,7 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// 見失い後の捜索。Stage1=最後に見た地点へ直行、Stage2=その周辺を半径を広げながらうろつく。
+    /// 見失い後の捜索。最後に見た地点周辺をA*パスで壁を迂回しながらうろつく。
     /// 時間切れで Feint へ。途中で再発見すれば追跡へ復帰。
     /// </summary>
     private void TickSearch(float awareness)
@@ -176,14 +243,26 @@ public class EnemyController : MonoBehaviour
 
         _searchRepickTimer -= Time.fixedDeltaTime;
 
-        Vector3 dir = Flatten(_searchPoint - transform.position);
-        if (dir.magnitude <= kArrivalRadius || _searchRepickTimer <= 0f)
+        // 現在のパスノードへ到達したら次へ進める
+        if (_searchPathIndex < _searchPath.Count)
         {
-            PickSearchPoint();
-            dir = Flatten(_searchPoint - transform.position);
+            var node = _searchPath[_searchPathIndex];
+            if (Flatten(node - transform.position).magnitude <= kArrivalRadius)
+                _searchPathIndex++;
         }
 
-        ApplyMovement(dir.normalized, _searchSpeed);
+        // パスを辿り終えた、またはタイマー切れで次の捜索地点へ
+        if (_searchPathIndex >= _searchPath.Count || _searchRepickTimer <= 0f)
+        {
+            PickSearchPoint();
+        }
+
+        if (_searchPathIndex < _searchPath.Count)
+        {
+            var dir = Flatten(_searchPath[_searchPathIndex] - transform.position);
+            if (dir.sqrMagnitude > 0.001f)
+                ApplyMovement(dir.normalized, _searchSpeed);
+        }
     }
 
     /// <summary>
@@ -217,21 +296,27 @@ public class EnemyController : MonoBehaviour
 
     private void BeginSearch()
     {
-        _searchCenter = _detector.HasLastKnown ? _detector.LastKnownPosition : transform.position;
-        _searchTimer = _searchDuration;
+        _searchCenter      = _detector.HasLastKnown ? _detector.LastKnownPosition : transform.position;
+        _searchTimer       = _searchDuration;
         _searchRepickTimer = 0f;
-        _currentRoamRadius = _searchRoamRadius * 0.5f;  // 最初は狭く、徐々に拡大
-        _searchPoint = _searchCenter;
-        _state = AIState.Search;
+        _currentRoamRadius = _searchRoamRadius * 0.5f;
+        _searchPoint       = _searchCenter;
+        _searchPath        = new List<Vector3> { _searchPoint };
+        _searchPathIndex   = 0;
+        _state             = AIState.Search;
     }
 
     private void PickSearchPoint()
     {
-        // うろつく半径を段階的に拡大して隣接探索を表現する
         _currentRoamRadius = Mathf.Min(_currentRoamRadius + 0.5f, _searchRoamRadius);
         Vector2 r = Random.insideUnitCircle * _currentRoamRadius;
-        _searchPoint = new Vector3(_searchCenter.x + r.x, transform.position.y, _searchCenter.z + r.y);
+        _searchPoint       = new Vector3(_searchCenter.x + r.x, transform.position.y, _searchCenter.z + r.y);
         _searchRepickTimer = _searchRepickInterval;
+
+        _searchPath = _pathfinder != null && _pathfinder.IsInitialized
+            ? _pathfinder.FindPath(transform.position, _searchPoint, transform.position.y)
+            : new List<Vector3> { _searchPoint };
+        _searchPathIndex = 0;
     }
 
     private void BeginFeint()
@@ -252,10 +337,56 @@ public class EnemyController : MonoBehaviour
 
     // ---------------- 移動 ----------------
 
+    /// <summary>
+    /// 複合追跡：プレイヤーが近距離なら直進、遠距離なら A* パスに沿って追跡する。
+    /// A* パスは _chasePathUpdateInterval 秒ごと、またはプレイヤーが大きく移動したときに再計算する。
+    /// </summary>
     private void Chase()
     {
-        var direction = Flatten(_player.position - transform.position).normalized;
-        ApplyMovement(direction, _chaseSpeed);
+        var toPlayer = Flatten(_player.position - transform.position);
+        float distSq = toPlayer.sqrMagnitude;
+
+        // 直進追跡範囲内ならA*は使わず直進する
+        if (distSq <= _directChaseRadius * _directChaseRadius)
+        {
+            if (toPlayer.sqrMagnitude > 0.001f)
+                ApplyMovement(toPlayer.normalized, _chaseSpeed);
+            return;
+        }
+
+        // パスの再計算判定（時間経過 or プレイヤーが一定以上移動）
+        _chasePathUpdateTimer -= Time.fixedDeltaTime;
+        bool playerMoved = (_player.position - _chasePathTarget).sqrMagnitude > 9f;
+        if (_chasePathUpdateTimer <= 0f || playerMoved || _chasePath.Count == 0)
+        {
+            _chasePathTarget      = _player.position;
+            _chasePath            = _pathfinder != null
+                ? _pathfinder.FindPath(transform.position, _player.position, transform.position.y)
+                : new List<Vector3> { _player.position };
+            _chasePathIndex       = 0;
+            _chasePathUpdateTimer = _chasePathUpdateInterval;
+        }
+
+        // 現在のパスノードへ到達したら次へ進める
+        while (_chasePathIndex < _chasePath.Count)
+        {
+            var node = _chasePath[_chasePathIndex];
+            if (Flatten(node - transform.position).sqrMagnitude > kArrivalRadius * kArrivalRadius) break;
+            _chasePathIndex++;
+        }
+
+        if (_chasePathIndex < _chasePath.Count)
+        {
+            var dir = Flatten(_chasePath[_chasePathIndex] - transform.position);
+            if (dir.sqrMagnitude > 0.001f)
+                ApplyMovement(dir.normalized, _chaseSpeed);
+        }
+        else
+        {
+            // パスを辿りきった場合は直進フォールバック
+            if (toPlayer.sqrMagnitude > 0.001f)
+                ApplyMovement(toPlayer.normalized, _chaseSpeed);
+        }
     }
 
     /// <summary>

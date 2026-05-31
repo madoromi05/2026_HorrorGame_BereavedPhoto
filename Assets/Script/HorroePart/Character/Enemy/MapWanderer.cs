@@ -2,17 +2,19 @@ using System.Collections.Generic;
 using DungeonSystem;
 using UnityEngine;
 
+
 /// <summary>
 /// 通路セル（GridType.Corridor / Door）のワールド座標をウェイポイントとして順に移動する徘徊クラス。
-/// EnemySpawner から SetGrid で通路座標リストを受け取り、重み付き抽選で次の目標を選び続ける。
-/// 部屋にとどまらず通路を優先的に歩き回ることを目的としている。
+/// EnemySpawner から SetGrid で通路座標リストとグリッドを受け取り、A* 経路探索で壁を迂回しながら
+/// 重み付き抽選で選んだウェイポイントへ移動する。
 ///
 /// マップ全体を巡回しやすくするため以下の3つの仕組みを持つ。
 /// 1. 直前のターゲットを除外して連続同一選択を防ぐ。
 /// 2. 遠いウェイポイントほど選ばれやすい距離重み付き抽選で偏りを抑える。
 /// 3. 一度選んだウェイポイントに kWaypointCooldown 秒のクールダウンを設けて短期間の行き来を防ぐ。
 ///
-/// 壁衝突時は WallSlider で進行方向を反転し、Behavior 側の ConsumeStuck で脱出方向を決定する。
+/// 移動は DungeonPathfinder で生成した中継ウェイポイント列をノード単位で追従するため、
+/// 入り組んだ通路でも壁詰まりが発生しない。
 /// </summary>
 public class MapWanderer : MonoBehaviour, IEnemyBehavior
 {
@@ -23,10 +25,15 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
 
     private Rigidbody _rb;
     private WallSlider _wallSlider;
+    private DungeonPathfinder _pathfinder;
 
     private List<Vector3> _corridorWaypoints = new List<Vector3>();
     private Vector3 _currentTarget;
     private bool _isInitialized;
+
+    // A* で求めた中継ウェイポイント列と現在追従中のインデックス
+    private List<Vector3> _currentPath  = new List<Vector3>();
+    private int _pathNodeIndex;
 
     // ウェイポイントごとの残りクールダウン時間。0以下なら選出可能
     private Dictionary<Vector3, float> _waypointCooldowns = new Dictionary<Vector3, float>();
@@ -62,13 +69,13 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// グリッドを受け取り、Corridor・Door セルのウェイポイント XZ 座標リストを構築する。
-    /// Door は Corridor と部屋の境界セルであり、経路上でウェイポイントを分断させず
-    /// 隣接した次の目標を目指せる出口路として含める。
+    /// グリッドとEnemySpawnerが構築した共有パスファインダーを受け取り初期化する。
+    /// Corridor・Door セルのウェイポイント座標リストを構築し、最初のパスを計算する。
     /// EnemySpawner が Instantiate 後に呼び出すこと。
     /// </summary>
-    public void SetGrid(GridType[,] grid, float gridSize)
+    public void SetGrid(GridType[,] grid, float gridSize, DungeonPathfinder pathfinder)
     {
+        _pathfinder = pathfinder;
         _corridorWaypoints.Clear();
         _waypointCooldowns.Clear();
 
@@ -94,35 +101,59 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         }
 
         _currentTarget = PickWeightedWaypoint();
+        ComputePath(_currentTarget);
         _isInitialized = true;
     }
 
     /// <summary>
-    /// MapWanderer は部屋範囲を持たないため追跡終了時に特別な処理は不要。
-    /// IEnemyBehavior の契約を満たすために空実装として定義する。
+    /// 追跡終了後は追跡中に移動した位置から新しいウェイポイントへ向かうパスを再計算する。
     /// </summary>
-    public void OnChaseEnded() { }
+    public void OnChaseEnded()
+    {
+        if (!_isInitialized) return;
+        _currentTarget = PickWeightedWaypoint();
+        ComputePath(_currentTarget);
+    }
 
     public void Tick()
     {
         if (!_isInitialized) return;
 
-        // 角詰まり（2壁に挟まれて速度ゼロが継続）を検出したら壁法線基準で脱出ウェイポイントを選ぶ。
-        // 単純な再抽選では詰まった壁方向のウェイポイントが選ばれて振り子ループになるため、
-        // 壁から離れる方向（法線）に近い側のウェイポイントに絞って選出する。
+        // 角詰まり検出時は壁から離れる方向のウェイポイントへパスを再計算する
         if (_wallSlider != null && _wallSlider.ConsumeStuck(out var escapeNormal))
+        {
             _currentTarget = PickEscapeTarget(escapeNormal);
+            ComputePath(_currentTarget);
+        }
 
-        if (IsArrived())
+        // 現在のパスノードに到達したら次へ進める
+        while (_pathNodeIndex < _currentPath.Count)
+        {
+            var node = _currentPath[_pathNodeIndex];
+            var dx = node.x - transform.position.x;
+            var dz = node.z - transform.position.z;
+            if (dx * dx + dz * dz > _arrivalRadius * _arrivalRadius) break;
+            _pathNodeIndex++;
+        }
+
+        // パスを全て辿り終えたら次のウェイポイントを選んでパスを再計算する
+        if (_pathNodeIndex >= _currentPath.Count)
+        {
             _currentTarget = PickWeightedWaypoint();
+            ComputePath(_currentTarget);
+        }
 
-        MoveTowardTarget();
+        // 現在のパスノードへ向かって移動する
+        if (_pathNodeIndex < _currentPath.Count)
+            MoveToward(_currentPath[_pathNodeIndex]);
     }
 
-    private bool IsArrived()
+    private void ComputePath(Vector3 target)
     {
-        var diff = _currentTarget - transform.position;
-        return diff.x * diff.x + diff.z * diff.z <= _arrivalRadius * _arrivalRadius;
+        _currentPath   = _pathfinder != null
+            ? _pathfinder.FindPath(transform.position, target, transform.position.y)
+            : new List<Vector3> { target };
+        _pathNodeIndex = 0;
     }
 
     /// <summary>
@@ -207,13 +238,12 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     }
 
     /// <summary>
-    /// WallSlider で壁に当たった場合は進行方向を反転してから AddForce で移動する。
-    /// velocity の直接代入は AddForce の結果と壁の反発力が干渉するため一切行わない。
-    /// 速度差に AddForce の量を掛けることで間接的に制御する。
+    /// 指定したワールド座標へ向かって AddForce で移動する。
+    /// WallSlider で壁面に沿うよう補正し、velocity の直接代入は行わない。
     /// </summary>
-    private void MoveTowardTarget()
+    private void MoveToward(Vector3 target)
     {
-        var diff = _currentTarget - transform.position;
+        var diff = target - transform.position;
         var direction = new Vector3(diff.x, 0f, diff.z).normalized;
 
         if (direction == Vector3.zero) return;
