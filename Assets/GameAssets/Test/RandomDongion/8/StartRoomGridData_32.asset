@@ -46,5 +46,16 @@ MonoBehaviour:
   - {x: 3, y: 1}
   PlayerPositions: []
   EnemyNavSubdivision: 8
-  EnemyNavWallCells: []
+  EnemyNavWallCells:
+  - {x: 22, y: 10}
+  - {x: 23, y: 10}
+  - {x: 22, y: 11}
+  - {x: 23, y: 11}
+  - {x: 10, y: 15}
+  - {x: 11, y: 15}
+  - {x: 10, y: 16}
+  - {x: 11, y: 16}
   RoomPrefab: {fileID: 3469361202669048594, guid: da597aee6697c4349be1157826cfecaf, type: 3}
+  NavCheckYMin: 1
+  NavCheckYMax: 3
+  NavCheckXZScale: 0.85

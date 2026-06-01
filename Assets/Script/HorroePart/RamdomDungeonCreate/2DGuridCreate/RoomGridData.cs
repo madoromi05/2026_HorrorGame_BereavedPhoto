@@ -2,15 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 部屋のグリッドデータ。
-/// GridSize内の各セルはInspectorのGUIで Floor / Door / Wall を設定する。
-/// Floor = 通行可能な室内セル
-/// Door  = 壁の開口部（通路との接続点）
-/// Wall  = 通行不可の壁セル（FBXの壁メッシュと一致させること）
-///
-/// EnemyNavWallCells は EnemyNavSubdivision で細分化したナビグリッド上の
-/// 移動不可セル位置（部屋ローカル座標）。FieldBluePrint.EnemyNavSubdivision と
-/// 値を合わせておくこと。
+/// 1 部屋分のグリッドデータ。Inspector で各セルに Floor / Door / Wall / Player を割り当て、
+/// 敵ナビゲーション用のブロックセルリストと Auto-fill パラメータを保持する。
+/// セルはリストへの有無で種別を表現しており、Floor はいずれにも含まれない状態を意味する。
 /// </summary>
 [CreateAssetMenu(fileName = "RoomGridData", menuName = "Dungeon/RoomGridData")]
 public class RoomGridData : ScriptableObject
@@ -21,12 +15,27 @@ public class RoomGridData : ScriptableObject
     public List<Vector2Int> PlayerPositions = new List<Vector2Int>();
 
     [Header("Enemy Navigation")]
-    // FieldBluePrint.EnemyNavSubdivision と合わせること（エディタ表示・保存に使用）
+    // FieldBluePrint.EnemyNavSubdivision と値を合わせること。
+    // 変更時は EnemyNavWallCells の内容が無効になるためエディタ側でクリアされる。
     [Range(1, 10)] public int EnemyNavSubdivision = 5;
-    // 敵移動不可ナビセルの位置（部屋ローカルナビ座標、0〜GridSize*EnemyNavSubdivision-1）
+
+    // ナビセル座標は (0, 0) 〜 (GridSize * EnemyNavSubdivision - 1) の範囲。
     public List<Vector2Int> EnemyNavWallCells = new List<Vector2Int>();
 
     [Header("Auto-fill (Editor Only)")]
-    // Auto-fillボタンでコライダーを走査するためのプレハブ参照（エディタ専用）
     public GameObject RoomPrefab;
+
+    [Header("Auto-fill 検知ボックス設定")]
+    // 床面（Y=0）や低い障害物を誤検知しないよう、下限は床より少し上に設定する。
+    [Tooltip("コライダー検知ボックスの Y 最小値")]
+    public float NavCheckYMin = 1f;
+
+    // 天井コライダーを誤検知しないよう、上限は天井より低めに設定する。
+    [Tooltip("コライダー検知ボックスの Y 最大値")]
+    public float NavCheckYMax = 3f;
+
+    // 1.0 にするとセル境界上の薄い壁も拾いやすくなるが、隣接セルへの誤検知が増える。
+    [Tooltip("ナビセル XZ 方向の検知サイズ係数 (0.5〜1.0)")]
+    [Range(0.5f, 1.0f)]
+    public float NavCheckXZScale = 0.85f;
 }
