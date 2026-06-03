@@ -21,7 +21,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     [SerializeField] private float _wanderSpeed = 4f;           // 徘徊中移動速度
     [SerializeField] private float _rotateSpeed = 10f;          // 目標方向への回転速度
     [SerializeField] private float _accelerationForce = 20f;    // 加速度
-    [SerializeField] private float _arrivalRadius = 1.0f;       // 到着判定半径
+    [SerializeField] private float _arrivalRadius = 1.5f;       // 到着判定半径
 
     private Rigidbody _rb;
     private WallSlider _wallSlider;
@@ -34,6 +34,11 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     // A* で求めた中継ウェイポイント列と現在追従中のインデックス
     private List<Vector3> _currentPath  = new List<Vector3>();
     private int _pathNodeIndex;
+
+    private int _stuckCount;
+    private float _stuckDecayTimer;
+    private const float kStuckDecayDuration = 5f;
+    private const int kTeleportStuckThreshold = 3;
 
     // ウェイポイントごとの残りクールダウン時間。0以下なら選出可能
     private Dictionary<Vector3, float> _waypointCooldowns = new Dictionary<Vector3, float>();
@@ -53,6 +58,13 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     private void FixedUpdate()
     {
         if (!_isInitialized) return;
+
+        if (_stuckDecayTimer > 0f)
+        {
+            _stuckDecayTimer -= Time.fixedDeltaTime;
+            if (_stuckDecayTimer <= 0f)
+                _stuckCount = 0;
+        }
 
         // クールダウンをカウントダウンする
         if (_waypointCooldowns.Count > 0)
@@ -124,16 +136,58 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         {
             _currentTarget = PickEscapeTarget(escapeNormal);
             ComputePath(_currentTarget);
+
+            _rb.linearVelocity = new Vector3(0f, _rb.linearVelocity.y, 0f);
+
+            _stuckDecayTimer = kStuckDecayDuration;
+            _stuckCount++;
+
+            if (_stuckCount >= kTeleportStuckThreshold)
+            {
+                _stuckCount = 0;
+                _wallSlider.TryTeleportEscape(_rb, ~(1 << gameObject.layer));
+            }
+            else
+            {
+                _rb.AddForce(escapeNormal * _accelerationForce * 2f, ForceMode.Impulse);
+            }
         }
 
-        // 現在のパスノードに到達したら次へ進める
+        // 現在のパスノードに到達したか、あるいはスキップできるか判定して次へ進める
         while (_pathNodeIndex < _currentPath.Count)
         {
             var node = _currentPath[_pathNodeIndex];
             var dx = node.x - transform.position.x;
             var dz = node.z - transform.position.z;
-            if (dx * dx + dz * dz > _arrivalRadius * _arrivalRadius) break;
-            _pathNodeIndex++;
+
+            // 距離が到着判定以内ならクリア
+            if (dx * dx + dz * dz <= _arrivalRadius * _arrivalRadius)
+            {
+                _pathNodeIndex++;
+                continue;
+            }
+
+            // 角に配置されたノードへ無理に近づいて引っかかるのを防ぐため、
+            // 「さらに次のノード」へ直接視線が通るなら、現在のノードをスキップする。
+            if (_pathNodeIndex < _currentPath.Count - 1)
+            {
+                var nextNode = _currentPath[_pathNodeIndex + 1];
+                var origin = transform.position + Vector3.up * 1f;
+                var target = nextNode + Vector3.up * 1f;
+                var dir = target - origin;
+
+                // 自身（敵）のレイヤーを無視して壁との間をレイキャスト
+                int layerMask = ~(1 << gameObject.layer);
+
+                // 次のノードへの直線上に障害物がなければ、現在のノードをスキップ
+                if (!Physics.Raycast(origin, dir.normalized, dir.magnitude, layerMask))
+                {
+                    _pathNodeIndex++;
+                    continue;
+                }
+            }
+
+            break;
         }
 
         // パスを全て辿り終えたら次のウェイポイントを選んでパスを再計算する

@@ -20,6 +20,8 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
     [Header("壁回避 Raycast")]
     [SerializeField] private float _rayDistance = 1.5f;         // 壁回避用のレイキャスト距離
     [SerializeField] private float _rayOriginOffset = 0.4f;     // レイキャストの発射位置オフセット
+    [SerializeField] private float _sphereRadius = 0.5f;        // キャラの半径
+
     private Rigidbody _rb;
     private WallSlider _wallSlider;
     private Vector3 _wanderDirection;
@@ -30,6 +32,11 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 
     private bool _isReturning;
     private Vector3 _returnTarget;
+
+    private int _stuckCount;
+    private float _stuckDecayTimer;
+    private const float kStuckDecayDuration = 5f;
+    private const int kTeleportStuckThreshold = 3;
 
     private const float kReturnArrivalRadius = 0.5f;
 
@@ -69,11 +76,32 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 
     public void Tick()
     {
-        // 角詰まり（2壁に挟まれて速度ゼロが継続）を検出したら壁法線基準で脱出方向を抽選する。
-        // 通常の PickNewDirection（±140°）では詰まった方向に再び向かう可能性が高いため、
-        // 壁から離れる方向（法線）を中心に ±60° に絞った専用抽選で振り子ループを防ぐ。
+        if (_stuckDecayTimer > 0f)
+        {
+            _stuckDecayTimer -= Time.fixedDeltaTime;
+            if (_stuckDecayTimer <= 0f)
+                _stuckCount = 0;
+        }
+
         if (_wallSlider != null && _wallSlider.ConsumeStuck(out var escapeNormal))
-            PickEscapeDirection(escapeNormal);
+        {
+            _rb.linearVelocity = new Vector3(0f, _rb.linearVelocity.y, 0f);
+
+            _stuckDecayTimer = kStuckDecayDuration;
+            _stuckCount++;
+
+            if (_stuckCount >= kTeleportStuckThreshold)
+            {
+                _stuckCount = 0;
+                _wallSlider.TryTeleportEscape(_rb, ~(1 << gameObject.layer));
+                PickEscapeDirection(escapeNormal);
+            }
+            else
+            {
+                _rb.AddForce(escapeNormal * _accelerationForce * 3f, ForceMode.Impulse);
+                PickEscapeDirection(escapeNormal);
+            }
+        }
 
         if (!_boundsInitialized)
         {
@@ -125,9 +153,9 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
             PickNewDirection();
 
         var rayOrigin = transform.position + _wanderDirection * _rayOriginOffset;
-        if (Physics.Raycast(rayOrigin, _wanderDirection, _rayDistance))
+        if (Physics.SphereCast(rayOrigin, _sphereRadius, _wanderDirection, out var hit, _rayDistance))
         {
-            PickNewDirection();
+            PickEscapeDirection(hit.normal);
             ApplyMovement(_wanderDirection);
             return;
         }
@@ -147,8 +175,10 @@ public class RoomWanderer : MonoBehaviour, IEnemyBehavior
             PickNewDirection();
 
         var rayOrigin = transform.position + _wanderDirection * _rayOriginOffset;
-        if (Physics.Raycast(rayOrigin, _wanderDirection, _rayDistance))
-            PickNewDirection();
+        if (Physics.SphereCast(rayOrigin, _sphereRadius, _wanderDirection, out var hit, _rayDistance))
+        {
+            PickEscapeDirection(hit.normal);
+        }
 
         ApplyMovement(_wanderDirection);
     }

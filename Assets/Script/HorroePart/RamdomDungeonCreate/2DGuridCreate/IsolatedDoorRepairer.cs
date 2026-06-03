@@ -173,8 +173,17 @@ public class IsolatedDoorRepairer
 
         var neighbors = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
+        int iterationCount = 0;
+        const int kMaxIterations = 100;
+
         while (openSet.Count > 0)
         {
+            if (++iterationCount > kMaxIterations)
+            {
+                DebugCustom.LogWarning($"[IsolatedDoorRepairer] A*探索が上限({kMaxIterations}回)に達したため強制中断しました。Start:{start} End:{end}");
+                break;
+            }
+
             var (_, current) = openSet.Min;
             openSet.Remove(openSet.Min);
 

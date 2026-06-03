@@ -112,4 +112,24 @@ public class EnemyAnalyzer : MonoBehaviour
     /// >指定InstanceIDの敵の解析率を返す
     public float GetAnalyzePercent(int instanceId)
         => _analyzePercents.TryGetValue(instanceId, out var v) ? v : 0f;
+    public void DebugForceComplete()
+    {
+        if (_currentEnemyId.HasValue)
+        {
+            _analyzePercents[_currentEnemyId.Value] = 100f;
+            DebugCustom.Log("[Debug] 解析強制完了（現在のターゲット）");
+            return;
+        }
+
+        var enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        if (enemies.Length == 0)
+        {
+            DebugCustom.LogWarning("[Debug] 解析対象の敵が見つかりません（カメラで敵を狙ってから実行してください）");
+            return;
+        }
+        foreach (var e in enemies)
+            _analyzePercents[e.gameObject.GetInstanceID()] = 100f;
+        DebugCustom.Log($"[Debug] 解析強制完了（{enemies.Length}体）");
+    }
+
 }

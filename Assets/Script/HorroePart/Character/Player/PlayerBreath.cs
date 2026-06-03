@@ -23,13 +23,13 @@ public class PlayerBreath : MonoBehaviour
     private float _breath;
     private float _gaspTimer;
 
-    /// <summary>現在、息を止めているか。</summary>
+    /// 現在、息を止めているか。
     public bool IsHoldingBreath { get; private set; }
 
-    /// <summary>ゲージ切れによるあえぎ（息切れ）中か。</summary>
+    ///ゲージ切れによるあえぎ（息切れ）中か。
     public bool IsGasping => _gaspTimer > 0f;
 
-    /// <summary>あえぎ中に適用する足音半径。</summary>
+    /// あえぎ中に適用する足音半径。
     public float GaspNoiseRadius => _gaspNoiseRadius;
 
     private void Awake()

@@ -182,7 +182,6 @@ GameObject:
   - component: {fileID: 7772033762108381031}
   - component: {fileID: 2863466706399598481}
   - component: {fileID: 6920147249179006219}
-  - component: {fileID: 6645435732018269271}
   - component: {fileID: 8199233245505525648}
   m_Layer: 8
   m_Name: Player
@@ -501,27 +500,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particleEmitRate: 3
-  _particleLifetime: 5
+  _particleLifetime: 3
   _particleSize: 0.005
   _particleColor: {r: 1, g: 0.9411765, b: 0.8235294, a: 0}
   _particleAlpha: 0.1
   _startOffset: 3
---- !u!114 &6645435732018269271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e58cbb3471261f4eaf9d038f9ced7df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _breathMax: 4
-  _breathRegenRate: 1.5
-  _gaspDuration: 1.2
-  _gaspNoiseRadius: 8
 --- !u!114 &8199233245505525648
 MonoBehaviour:
   m_ObjectHideFlags: 0

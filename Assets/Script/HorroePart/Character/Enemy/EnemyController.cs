@@ -90,6 +90,12 @@ public class EnemyController : MonoBehaviour
     private Vector3 _feintDirection;
     private bool _feintWillReturn;
 
+    // スタックエスカレーション
+    private int _stuckCount;
+    private float _stuckDecayTimer;
+    private const float kStuckDecayDuration = 5f;
+    private const int kTeleportStuckThreshold = 3;
+
     private const float kArrivalRadius = 1f;
 
     /// <summary>現在のAI状態（デバッグ/将来のHUD用）。</summary>
@@ -141,15 +147,40 @@ public class EnemyController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_player == null) return;
+        if (_player == null)
+        {
+            Debug.LogWarning($"[EnemyController] {gameObject.name}: _player が設定されていません。SetPlayer() が呼ばれているか確認してください。");
+            return;
+        }
 
-        // プレイヤーが起動距離より遠い場合はAI処理全体をスキップする
+        // プレイヤーが起動距離より遠い場合は巡回のみ継続してAI検知処理をスキップする
         var dx = _player.position.x - transform.position.x;
         var dz = _player.position.z - transform.position.z;
-        if (dx * dx + dz * dz > _activationRadius * _activationRadius) return;
+        if (dx * dx + dz * dz > _activationRadius * _activationRadius)
+        {
+            if (_state == AIState.Patrol)
+                _wanderBehavior?.Tick();
+            return;
+        }
+
+        if (_stuckDecayTimer > 0f)
+        {
+            _stuckDecayTimer -= Time.fixedDeltaTime;
+            if (_stuckDecayTimer <= 0f)
+                _stuckCount = 0;
+        }
+
+        if (_state != AIState.Patrol && _wallSlider != null && _wallSlider.ConsumeStuck(out var escapeNormal))
+        {
+            HandleStuck(escapeNormal);
+        }
 
         if (_detector == null)
         {
+            if (_wanderBehavior == null)
+            {
+                Debug.LogWarning($"[EnemyController] {gameObject.name}: _detector も _wanderBehavior も存在しないため、移動できません。");
+            }
             _wanderBehavior?.Tick();
             return;
         }
@@ -168,6 +199,36 @@ public class EnemyController : MonoBehaviour
     }
 
     // ---------------- 各状態の処理 ----------------
+
+
+    private void HandleStuck(Vector3 escapeNormal)
+    {
+        // 全ステートのパスをリセットして次フレームに再計算させる
+        _chasePathUpdateTimer = 0f;
+        _chasePath.Clear();
+        _suspiciousPath.Clear();
+        _suspiciousLastTarget = Vector3.positiveInfinity;
+        _searchPath.Clear();
+        _searchPathIndex = 0;
+        _searchRepickTimer = 0f;
+
+        // XZ 速度をゼロにしてから脱出力を与えることで壁の反力と相殺されるのを防ぐ
+        _rb.linearVelocity = new Vector3(0f, _rb.linearVelocity.y, 0f);
+
+        _stuckDecayTimer = kStuckDecayDuration;
+        _stuckCount++;
+
+        if (_stuckCount >= kTeleportStuckThreshold)
+        {
+            // 繰り返しスタックした場合は壁のない位置までテレポートする（最終手段）
+            _stuckCount = 0;
+            _wallSlider.TryTeleportEscape(_rb, ~(1 << gameObject.layer));
+        }
+        else
+        {
+            _rb.AddForce(escapeNormal * _accelerationForce * 3f, ForceMode.Impulse);
+        }
+    }
 
     private void TickPatrol(float awareness)
     {

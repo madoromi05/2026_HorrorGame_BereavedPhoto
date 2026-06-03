@@ -147,12 +147,21 @@ public class DungeonPathfinder
         var queue   = new Queue<Vector2Int>();
         queue.Enqueue(cell);
 
+        int iterationCount = 0;
+        const int kMaxSearch = 1000;
+
         while (queue.Count > 0)
         {
+            if (++iterationCount > kMaxSearch)
+            {
+                DebugCustom.LogWarning($"[DungeonPathfinder] NearestWalkableが上限に達しました。Start: {cell}");
+                break;
+            }
             var c = queue.Dequeue();
             foreach (var d in kDirs)
             {
                 var n = c + d;
+                if (n.x < 0 || n.x >= _width || n.y < 0 || n.y >= _height) continue;
                 if (visited.Contains(n)) continue;
                 visited.Add(n);
                 if (IsWalkable(n)) return n;

@@ -2,10 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// 壁に接触したときの法線を保持し、移動方向を壁面に合うよう補正するクラス。
-/// 複数の接触点の法線を合成して最大値で合算し、最大絶対値で合わせる。
-/// 角（2壁の合わせ目）で法線がゼロになる場合に前フレームの法線を保持する。
-/// OnCollisionExit の後に OnCollisionStay が発火するチャタリングを想定するため、
-/// Exit 時は即座セットせず kExitCooldownDuration 秒の猶予時間が経ってからリセットする。
 /// </summary>
 public class WallSlider : MonoBehaviour
 {
@@ -20,7 +16,7 @@ public class WallSlider : MonoBehaviour
     private float _exitCooldown;
 
     private const float kStuckSpeedThreshold = 0.05f;
-    private const float kStuckDurationThreshold = 0.5f;
+    private const float kStuckDurationThreshold = 0.2f;
     private const float kExitCooldownDuration = 0.1f;
 
     private Rigidbody _rb;
@@ -60,8 +56,12 @@ public class WallSlider : MonoBehaviour
         _wallNormal = Vector3.Slerp(_wallNormal, compositeNormal, _normalSmoothing * Time.fixedDeltaTime);
         _isTouchingWall = true;
 
-        _wallContactDuration += Time.fixedDeltaTime;
         _xzSpeed = new Vector3(_rb.linearVelocity.x, 0f, _rb.linearVelocity.z).magnitude;
+        // 壁に触れていても移動中なら詰まりカウントをリセットする（移動中の接触を詰まりとして誤検知しない）
+        if (_xzSpeed <= kStuckSpeedThreshold)
+            _wallContactDuration += Time.fixedDeltaTime;
+        else
+            _wallContactDuration = 0f;
 
         if (_wallContactDuration >= kStuckDurationThreshold && _xzSpeed <= kStuckSpeedThreshold)
         {
@@ -93,17 +93,14 @@ public class WallSlider : MonoBehaviour
     /// </summary>
     private static Vector3 CompositeNormal(Collision col)
     {
-        float maxX = 0f;
-        float maxZ = 0f;
+        Vector3 sum = Vector3.zero;
 
         foreach (var contact in col.contacts)
         {
-            var n = contact.normal;
-            if (Mathf.Abs(n.x) > Mathf.Abs(maxX)) maxX = n.x;
-            if (Mathf.Abs(n.z) > Mathf.Abs(maxZ)) maxZ = n.z;
+            sum += contact.normal;
         }
 
-        return new Vector3(maxX, 0f, maxZ).normalized;
+        return new Vector3(sum.x, 0f, sum.z).normalized;
     }
 
     /// <summary>
@@ -124,7 +121,35 @@ public class WallSlider : MonoBehaviour
         return slid;
     }
 
-    public bool IsTouchingWall => _isTouchingWall;
+
+    /// <summary>
+    /// 脱出方向（壁法線）へ向かって壁のないセルまでテレポートする。
+    /// Physics.CheckSphere で壁内でない候補を 1m 刻みで探し、見つかればそこへ MovePosition する。
+    /// excludeLayerMask には自身のレイヤーを除外したマスクを渡すこと。
+    /// </summary>
+    public void TryTeleportEscape(Rigidbody rb, int excludeLayerMask)
+    {
+        if (_wallNormal == Vector3.zero) return;
+
+        var origin = rb.position;
+        for (float dist = 1f; dist <= 3f; dist += 0.5f)
+        {
+            var candidate = new Vector3(
+                origin.x + _wallNormal.x * dist,
+                origin.y,
+                origin.z + _wallNormal.z * dist);
+            if (!Physics.CheckSphere(candidate, 0.4f, excludeLayerMask))
+            {
+                rb.MovePosition(candidate);
+                return;
+            }
+        }
+        // すべての候補が壁内の場合は 1.5m 先に強制移動する
+        rb.MovePosition(new Vector3(
+            origin.x + _wallNormal.x * 1.5f,
+            origin.y,
+            origin.z + _wallNormal.z * 1.5f));
+    }
 
     /// <summary>
     /// 角詰まり（壁接触かつ一定時間 XZ 速度がほぼゼロ）を検出したら true を返し、

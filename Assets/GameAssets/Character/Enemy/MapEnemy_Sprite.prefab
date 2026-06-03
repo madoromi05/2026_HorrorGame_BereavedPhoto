@@ -181,7 +181,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _activationRadius: 20
   _chaseSpeed: 4
+  _directChaseRadius: 6
+  _chasePathUpdateInterval: 0.6
   _accelerationForce: 30
   _rotateSpeed: 10
   _suspiciousSpeed: 1.5
@@ -206,7 +209,7 @@ MonoBehaviour:
   _wanderSpeed: 2
   _rotateSpeed: 10
   _accelerationForce: 20
-  _arrivalRadius: 1
+  _arrivalRadius: 1.5
 --- !u!114 &774548280682853366
 MonoBehaviour:
   m_ObjectHideFlags: 0
