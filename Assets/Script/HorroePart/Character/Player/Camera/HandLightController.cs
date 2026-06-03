@@ -39,6 +39,7 @@ public class HandLightController : MonoBehaviour
         {
             _mainLightComponent = handLight.GetComponent<Light>();
         }
+        handLight?.SetActive(false);
     }
 
     private void OnEnable()

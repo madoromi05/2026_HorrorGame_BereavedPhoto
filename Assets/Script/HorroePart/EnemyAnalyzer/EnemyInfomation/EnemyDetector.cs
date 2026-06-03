@@ -14,14 +14,26 @@ public class EnemyDetector : MonoBehaviour
     [SerializeField] private float _detectRange = 2.0f;      // SphereCastの半径（検知の当たり判定の太さ）
     [SerializeField] private float _detectDistance = 30.0f;  // 最大検知距離
     [SerializeField] private LayerMask _enemyLayer;          // 検知対象とする敵のレイヤー
-
+    
     private bool _isAiming = false;
-
+    private int _raycastMask;
     private void Awake()
     {
         DebugCustom.ValidateFields(this,
             (nameof(_analyzer), _analyzer),
+
             (nameof(_fpsCam), _fpsCam));
+        // Physics.DefaultRaycastLayers から "Player" レイヤーを除外したマスクを計算
+        int playerLayer = LayerMask.NameToLayer("Player");
+        if (playerLayer != -1)
+        {
+            _raycastMask = Physics.DefaultRaycastLayers & ~(1 << playerLayer);
+        }
+        else
+        {
+            DebugCustom.LogWarning("[EnemyDetector] 'Player' レイヤーが存在しません。デフォルトのマスクを使用します。");
+            _raycastMask = Physics.DefaultRaycastLayers;
+        }
     }
 
     /// <summary>
@@ -63,13 +75,32 @@ public class EnemyDetector : MonoBehaviour
     private bool TryDetectEnemy(out RaycastHit hit)
     {
         Ray ray = new Ray(_fpsCam.transform.position, _fpsCam.transform.forward);
-        return Physics.SphereCast(
-            ray,
-            _detectRange,
-            out hit,
-            _detectDistance,
-            _enemyLayer
-        );
+
+        // まずSphereCastで敵を検知する
+        if (Physics.SphereCast(ray, _detectRange, out hit, _detectDistance, _enemyLayer))
+        {
+            // カメラから敵のヒット位置へ細いRayを飛ばす
+            Vector3 origin = _fpsCam.transform.position;
+            Vector3 direction = hit.point - origin;
+            float distance = direction.magnitude;
+
+            // 計算済みの _raycastMask を使用し、Playerレイヤーを無視する
+            if (Physics.Raycast(origin, direction.normalized, out RaycastHit sightHit, distance, _raycastMask, QueryTriggerInteraction.Ignore))
+            {
+                var targetEnemy = hit.collider.GetComponentInParent<EnemyController>();
+                var blockingEnemy = sightHit.collider.GetComponentInParent<EnemyController>();
+
+                // Raycastが当たった物体が「敵ではない（壁など）」または「別の敵」だった場合は、遮蔽されているとみなす
+                if (blockingEnemy == null || blockingEnemy != targetEnemy)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

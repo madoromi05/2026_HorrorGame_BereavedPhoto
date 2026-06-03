@@ -411,11 +411,6 @@ public class GameDebugGUI : MonoBehaviour
         SectionHeader("デバッグ操作");
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("解析100%完了"))
-        {
-            if (_analyzer != null) _analyzer.DebugForceComplete();
-            else DebugCustom.LogWarning("[Debug] EnemyAnalyzer not found");
-        }
         if (GUILayout.Button("鍵 全取得"))
         {
             if (_inventory != null)

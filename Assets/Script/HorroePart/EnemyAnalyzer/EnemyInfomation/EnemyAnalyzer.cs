@@ -61,32 +61,45 @@ public class EnemyAnalyzer : MonoBehaviour
         {
             _analyzerUI.OnAnalyzeUpdate(0f);
             _vignetteController.UpdateVignette(0f);
+            _analyzerUI.SetAnalyzingState(false);
+            _analyzerUI.SetCompleteState(false);
             return;
         }
 
         float current = AnalyzePercent;
+        bool isComplete = current >= 100f;
+        bool isAnalyzing = false;
 
-        if (current < 100f)
+        if (!isComplete)
         {
             if (_enemyInRange)
+            {
                 current = Mathf.Min(100f, current + _analyzeSpeed * Time.deltaTime);
+                isAnalyzing = true;
+            }
             else if (_decaySpeed > 0f)
+            {
                 current = Mathf.Max(0f, current - _decaySpeed * Time.deltaTime);
+            }
 
             _analyzePercents[_currentEnemyId.Value] = current;
+            isComplete = current >= 100f;
         }
 
         _analyzerUI.OnAnalyzeUpdate(current);
         _vignetteController.UpdateVignette(current);
+
+        _analyzerUI.SetCompleteState(isComplete);
+        _analyzerUI.SetAnalyzingState(isAnalyzing && !isComplete);
     }
 
-    /// <summary>敵が解析範囲内にいるかどうかを外部から通知する。</summary>
+    /// 敵が解析範囲内にいるかどうかを外部から通知する。
     public void SetEnemyInRange(bool inRange)
     {
         _enemyInRange = inRange;
     }
 
-    /// <summary>エイムを外したときの状態リセット。敵ごとの解析率は保持される。</summary>
+    /// エイムを外したときの状態リセット。敵ごとの解析率は保持される。
     public void Reset()
     {
         _currentEnemyId = null;
@@ -96,31 +109,7 @@ public class EnemyAnalyzer : MonoBehaviour
         _vignetteController.ResetVignette();
     }
 
-    /// <summary>指定InstanceIDの敵の解析率を返す（デバッグUI用）。</summary>
+    /// >指定InstanceIDの敵の解析率を返す
     public float GetAnalyzePercent(int instanceId)
         => _analyzePercents.TryGetValue(instanceId, out var v) ? v : 0f;
-
-    /// <summary>
-    /// デバッグ: 解析を強制完了させる。
-    /// ターゲット中の敵がいればその敵のみ。いなければシーン上の全敵を完了させる。
-    /// </summary>
-    public void DebugForceComplete()
-    {
-        if (_currentEnemyId.HasValue)
-        {
-            _analyzePercents[_currentEnemyId.Value] = 100f;
-            DebugCustom.Log("[Debug] 解析強制完了（現在のターゲット）");
-            return;
-        }
-
-        var enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
-        if (enemies.Length == 0)
-        {
-            DebugCustom.LogWarning("[Debug] 解析対象の敵が見つかりません（カメラで敵を狙ってから実行してください）");
-            return;
-        }
-        foreach (var e in enemies)
-            _analyzePercents[e.gameObject.GetInstanceID()] = 100f;
-        DebugCustom.Log($"[Debug] 解析強制完了（{enemies.Length}体）");
-    }
 }

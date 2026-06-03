@@ -10,7 +10,7 @@ public class LightBeamEffect : MonoBehaviour
 {
     [Header("ビームエフェクト設定")]
     [SerializeField] private float _particleEmitRate = 20f;              // 1秒あたりの放出数
-    [SerializeField] private float _particleLifetime = 1.5f;             // パーティクルの生存時間（秒）
+    [SerializeField] private float _particleLifetime = 3.5f;             // パーティクルの生存時間（秒）
     [SerializeField] private float _particleSize = 0.04f;                // パーティクルの大きさ
     [SerializeField] private Color _particleColor = Color.white;          // パーティクルの色
     [SerializeField, Range(0f, 1f)] private float _particleAlpha = 0.2f; // 透明度（0=透明, 1=不透明）
@@ -23,6 +23,7 @@ public class LightBeamEffect : MonoBehaviour
     private void Awake()
     {
         _lightController = GetComponent<HandLightController>();
+
     }
 
     private void Start()
