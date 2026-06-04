@@ -11,6 +11,8 @@ public class TitleSceneController : MonoBehaviour
     [Header("アルバム")]
     [SerializeField] private AlbumController _albumController;
 
+    [Header("オプション")]
+    [SerializeField] private OptionController _optionController;
     public void OnNewGame()
     {
         var mgr = GameProgressManager.Instance;
@@ -31,5 +33,10 @@ public class TitleSceneController : MonoBehaviour
     public void OnAlbum()
     {
         _albumController?.OpenAlbum();
+    }
+
+    public void OnOption()
+    {
+        _optionController?.OpenOption();
     }
 }

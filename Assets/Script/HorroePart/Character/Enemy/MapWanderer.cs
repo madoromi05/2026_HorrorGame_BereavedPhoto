@@ -20,7 +20,13 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
 
     private Dictionary<Vector3, float> _waypointCooldowns = new Dictionary<Vector3, float>();
     private readonly List<Vector3>     _cooldownKeyBuffer = new List<Vector3>();
-    private const float kWaypointCooldown = 15f;
+    private const float kWaypointCooldown = 30f;
+
+    // スタック検出
+    private Vector3 _lastStuckCheckPos;
+    private float   _stuckCheckTimer;
+    private const float kStuckCheckInterval = 3f;
+    private const float kStuckMoveThreshold = 0.3f;
 
     private void Awake()
     {
@@ -74,21 +80,39 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
 
     public void OnChaseEnded()
     {
-        _currentTarget = PickWeightedWaypoint();
-        _agent.SetDestination(_currentTarget);
+        _stuckCheckTimer   = kStuckCheckInterval;
+        _lastStuckCheckPos = transform.position;
+        PickAndSetNext();
     }
 
     public void Tick()
     {
-        if ( _agent == null) return;
+        if (_agent == null) return;
 
         _agent.speed = _wanderSpeed;
 
-        if (!_agent.pathPending && _agent.remainingDistance < _arrivalRadius)
+        // スタック検出：一定時間ほとんど動いていなければ強制的に次へ
+        _stuckCheckTimer -= Time.deltaTime;
+        if (_stuckCheckTimer <= 0f)
         {
-            _currentTarget = PickWeightedWaypoint();
-            _agent.SetDestination(_currentTarget);
+            float moved = Vector3.Distance(transform.position, _lastStuckCheckPos);
+            bool stuck = _agent.hasPath && moved < kStuckMoveThreshold;
+            _lastStuckCheckPos = transform.position;
+            _stuckCheckTimer = kStuckCheckInterval;
+            if (stuck) { PickAndSetNext(); return; }
         }
+
+        // hasPath チェックを加えることで「パス未確立時の remainingDistance==0」誤発火を防ぐ
+        bool arrived    = _agent.hasPath  && !_agent.pathPending && _agent.remainingDistance < _arrivalRadius;
+        bool pathFailed = !_agent.hasPath && !_agent.pathPending;
+        if (arrived || pathFailed)
+            PickAndSetNext();
+    }
+
+    private void PickAndSetNext()
+    {
+        _currentTarget = PickWeightedWaypoint();
+        _agent.SetDestination(_currentTarget);
     }
 
     // ---------------- ウェイポイント抽選 ----------------
@@ -124,15 +148,17 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
 
     private Vector3 WeightedSelectByDistance(List<Vector3> candidates)
     {
+        // sqrMagnitude（距離の2乗）にすることで、遠い地点が圧倒的に選ばれやすくなる
+        // （例：10ユニット先 vs 2ユニット先 → magnitude だと5倍、sqr だと25倍の差）
         float totalWeight = 0f;
         foreach (var wp in candidates)
-            totalWeight += (wp - transform.position).magnitude;
+            totalWeight += (wp - transform.position).sqrMagnitude;
 
         float threshold  = Random.Range(0f, totalWeight);
         float cumulative = 0f;
         foreach (var wp in candidates)
         {
-            cumulative += (wp - transform.position).magnitude;
+            cumulative += (wp - transform.position).sqrMagnitude;
             if (cumulative >= threshold) return wp;
         }
         return candidates[candidates.Count - 1];
