@@ -35,7 +35,7 @@ public class SectionPlacer
     /// 敵配置をプレイヤー生成後に行うのは、EnemyControllerへPlayerTransformを注入するため。
     /// gridはEnemySpawner経由でMapWandererのウェイポイント構築に使用する。
     /// </summary>
-    public void Place(SectionData[] sections, Transform roomParent, Transform enemyParent, GridType[,] grid, bool enemyLookDebug = false)
+    public void Place(SectionData[] sections, Transform roomParent, Transform enemyParent, GridType[,] grid)
     {
         Transform playerTransform = null;
 
@@ -49,7 +49,7 @@ public class SectionPlacer
                 playerTransform = PlayerTransform(section);
         }
 
-        _enemySpawner.Place(sections, enemyParent, playerTransform, grid, enemyLookDebug);
+        _enemySpawner.Place(sections, enemyParent, playerTransform, grid);
     }
 
     private void PlaceRoom(SectionData section, Transform roomParent)

@@ -1,42 +1,30 @@
 /// <summary>
-/// RoomDataBaseの設定に従い、各セクションに敵を配置する。
-/// SectionPlacerから敵生成責務を分離したクラス。
+/// RoomDataBase の設定に従い、各セクションに敵を配置する。
+/// SectionPlacer から敵生成責務を分離したクラス。
 /// PlayerのTransformはPlace呼び出し時に渡すことで、
 /// 部屋配置とプレイヤー生成の完了を待ってから敵を生成できる。
 ///
-/// Place() 内でダンジョングリッドとセクション情報から DungeonPathfinder を1つ生成し、
-/// 全ての敵インスタンスに共有することでメモリと計算コストを節約する。
+/// NavMesh 移動への移行に伴い、EnemyNavGridBuilder / DungeonPathfinder は不要になった。
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemySpawner
 {
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
     private readonly float _enemySpawnOffsetY;
-    private readonly int _navSubdivision;
 
-    public EnemySpawner(RoomDataBase roomDataBase, float gridSize, float enemySpawnOffsetY, int navSubdivision)
+    public EnemySpawner(RoomDataBase roomDataBase, float gridSize, float enemySpawnOffsetY)
     {
-        _roomDataBase     = roomDataBase;
-        _gridSize         = gridSize;
+        _roomDataBase      = roomDataBase;
+        _gridSize          = gridSize;
         _enemySpawnOffsetY = enemySpawnOffsetY;
-        _navSubdivision   = navSubdivision;
     }
 
-    /// <summary>
-    /// 全セクションを走査し、RoomDataBaseの設定に従って敵を生成する。
-    /// playerTransformがnullの場合は追跡なしで生成する。
-    /// </summary>
-    public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid, bool enemyLookDebug = false)
+    public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid)
     {
-        // ナビグリッドとパスファインダーをここで1回だけ構築し全敵に共有する
-        var walkable    = EnemyNavGridBuilder.Build(grid, _gridSize, _navSubdivision, sections);
-        float navCellSize = EnemyNavGridBuilder.GetNavCellSize(_gridSize, _navSubdivision);
-        var pathfinder  = new DungeonPathfinder();
-        pathfinder.SetNavGrid(walkable, navCellSize);
-
         foreach (var section in sections)
         {
             if (section.RoomGridData == null) continue;
@@ -45,7 +33,7 @@ public class EnemySpawner
             foreach (var entry in enemyEntries)
             {
                 if (entry.EnemyPrefab == null) continue;
-                SpawnEnemies(section, entry, enemyParent, playerTransform, grid, pathfinder, enemyLookDebug);
+                SpawnEnemies(section, entry, enemyParent, playerTransform, grid);
             }
         }
     }
@@ -55,12 +43,10 @@ public class EnemySpawner
         RoomDataBase.EnemyEntry entry,
         Transform enemyParent,
         Transform playerTransform,
-        GridType[,] grid,
-        DungeonPathfinder pathfinder,
-        bool enemyLookDebug)
+        GridType[,] grid)
     {
-        var roomBounds  = CalcRoomBounds(section);
-        var roomCenter  = CalcRoomCenterWorldPosition(section);
+        var roomBounds = CalcRoomBounds(section);
+        var roomCenter = CalcRoomCenterWorldPosition(section);
 
         for (int i = 0; i < entry.SpawnCount; i++)
         {
@@ -75,16 +61,17 @@ public class EnemySpawner
             instance.name = $"Enemy_{section.Role}_{section.GridPosition}_{i}";
 
             if (instance.TryGetComponent<EnemyController>(out var controller))
-            {
                 controller.SetPlayer(playerTransform);
-                controller.SetPathfinder(pathfinder);
-            }
+
+            // NavMeshAgent の baseOffset で Y 高さを制御する（Rigidbody の FreezePositionY の代替）
+            if (instance.TryGetComponent<NavMeshAgent>(out var agent))
+                agent.baseOffset = _enemySpawnOffsetY;
 
             if (instance.TryGetComponent<RoomWanderer>(out var roomWanderer))
                 roomWanderer.SetRoomBounds(roomBounds);
 
             if (instance.TryGetComponent<MapWanderer>(out var mapWanderer))
-                mapWanderer.SetGrid(grid, _gridSize, pathfinder);
+                mapWanderer.SetGrid(grid, _gridSize);
         }
     }
 

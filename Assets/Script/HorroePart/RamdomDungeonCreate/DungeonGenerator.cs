@@ -2,10 +2,12 @@
 /// ダンジョン生成の起点となるMonoBehaviour。
 /// GridBuilder・SectionPlacer・CorridorPlacerを順に呼び出し、
 /// グリッド構築 → 部屋配置 → 通路配置の流れを制御する。
+/// NavMesh はダンジョン全体を配置し終えた後にランタイムでベイクする。
 /// </summary>
 using DungeonSystem;
 using HorrorGame.UI;
 using System;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class DungeonGenerator : MonoBehaviour
@@ -22,10 +24,14 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private float _playerSpawnOffsetY = 0f;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
 
+    [Header("NavMesh")]
+    [Tooltip("この GameObject にアタッチした NavMeshSurface を指定する。" +
+             "部屋・廊下を全て配置した後にランタイムでベイクし単一の NavMesh を生成する。")]
+    [SerializeField] private NavMeshSurface _navMeshSurface;
+
     [Header("Debug")]
     [SerializeField] private bool _isDebugMode;
     [SerializeField] private Transform _debugParent;
-    [SerializeField] private bool _isEnemyLookDebug;
 
     // Plasyerの位置をItemInitializerが知る必要があるため必要
     public event Action<Transform> OnRoomPlaced;
@@ -59,15 +65,20 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     public void Generate()
     {
-        var gridBuilder = new DungeonGridBuilder();
-        var enemySpawner = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY, _bluePrint.EnemyNavSubdivision);
-        var sectionPlacer = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
+        var gridBuilder    = new DungeonGridBuilder();
+        var enemySpawner   = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
+        var sectionPlacer  = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
 
-        sectionPlacer.Place(sections, _roomParent, _enemyParent, grid, _isDebugMode && _isEnemyLookDebug);
+        sectionPlacer.Place(sections, _roomParent, _enemyParent, grid);
         corridorPlacer.Place(grid, _corridorParent);
+
+        // 部屋・廊下を全て配置した後に NavMesh をランタイムベイクする。
+        // 単一サーフェスでダンジョン全体を覆うため、プレハブ間の隙間は生じない。
+        _navMeshSurface?.BuildNavMesh();
+
         OnRoomPlaced?.Invoke(_roomParent);
 
         if (_isDebugMode && _debugParent != null)

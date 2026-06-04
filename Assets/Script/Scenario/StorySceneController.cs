@@ -19,6 +19,7 @@ public class StorySceneController : MonoBehaviour
     [SerializeField] private StoryData[] _epilogueStories;
 
     private StoryManager _storyManager;
+    private AsyncOperation _preloadOp;
 
     private void Awake()
     {
@@ -44,6 +45,10 @@ public class StorySceneController : MonoBehaviour
     private void Start()
     {
         _storyManager.OnAllStoriesComplete += OnAllComplete;
+
+        // ストーリー再生中に次シーンをバックグラウンドでプリロードしておく
+        if (GameProgressManager.Instance != null)
+            _preloadOp = GameProgressManager.Instance.PreloadNextScene();
     }
 
     private void OnDestroy()
@@ -54,7 +59,7 @@ public class StorySceneController : MonoBehaviour
     private void OnAllComplete()
     {
         if (GameProgressManager.Instance != null)
-            GameProgressManager.Instance.LoadNextScene();
+            GameProgressManager.Instance.ActivatePreloadedScene(_preloadOp);
         else
             DebugCustom.LogWarning("[StorySceneController] GameProgressManager not found");
     }

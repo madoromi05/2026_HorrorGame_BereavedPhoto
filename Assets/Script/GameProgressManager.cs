@@ -102,16 +102,8 @@ public class GameProgressManager : MonoBehaviour
     /// </summary>
     public void LoadNextScene()
     {
-        // アルバムページ解放（各ステージの完了タイミング）
-        switch (CurrentStage)
-        {
-            case GameStage.Prologue:  UnlockAlbumPage(0); break; // 表紙
-            case GameStage.Horror1:   UnlockAlbumPage(1); break; // 母のページ
-            case GameStage.Horror2:   UnlockAlbumPage(2); break; // 父のページ
-            case GameStage.Epilogue:  UnlockAlbumPage(3); break; // 終章ページ
-        }
+        UnlockCurrentStageAlbumPage();
 
-        // エピローグ完了 → タイトルへ戻る
         if (CurrentStage == GameStage.Epilogue)
         {
             CurrentStage = GameStage.Title;
@@ -121,6 +113,53 @@ public class GameProgressManager : MonoBehaviour
 
         AdvanceStage();
         SceneManager.LoadScene(GetSceneForStage(CurrentStage));
+    }
+
+    /// <summary>
+    /// 次シーンをバックグラウンドでプリロードする。allowSceneActivation = false のため
+    /// ActivatePreloadedScene() が呼ばれるまでシーンは切り替わらない。
+    /// ストーリー・準備パートの開始時に呼び出し、終了時に ActivatePreloadedScene() で切り替える。
+    /// </summary>
+    public AsyncOperation PreloadNextScene()
+    {
+        var nextSceneName = CurrentStage == GameStage.Epilogue
+            ? SceneTitleName
+            : GetSceneForStage((GameStage)Mathf.Min((int)CurrentStage + 1,
+                System.Enum.GetValues(typeof(GameStage)).Length - 1));
+
+        var op = SceneManager.LoadSceneAsync(nextSceneName);
+        op.allowSceneActivation = false;
+        return op;
+    }
+
+    /// <summary>
+    /// プリロード済みの AsyncOperation を有効化し、ステージを進める。
+    /// op が null の場合は通常の LoadNextScene() にフォールバックする。
+    /// </summary>
+    public void ActivatePreloadedScene(AsyncOperation op)
+    {
+        UnlockCurrentStageAlbumPage();
+
+        if (CurrentStage == GameStage.Epilogue)
+            CurrentStage = GameStage.Title;
+        else
+            AdvanceStage();
+
+        if (op != null)
+            op.allowSceneActivation = true;
+        else
+            SceneManager.LoadScene(GetSceneForStage(CurrentStage));
+    }
+
+    private void UnlockCurrentStageAlbumPage()
+    {
+        switch (CurrentStage)
+        {
+            case GameStage.Prologue:  UnlockAlbumPage(0); break; // 表紙
+            case GameStage.Horror1:   UnlockAlbumPage(1); break; // 母のページ
+            case GameStage.Horror2:   UnlockAlbumPage(2); break; // 父のページ
+            case GameStage.Epilogue:  UnlockAlbumPage(3); break; // 終章ページ
+        }
     }
 
     /// <summary>デバッグ用：ステージを直接指定して遷移する。</summary>
