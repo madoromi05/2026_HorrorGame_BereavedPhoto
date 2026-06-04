@@ -68,9 +68,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.5
+  near clip plane: 0.01
   far clip plane: 80
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -183,6 +183,7 @@ GameObject:
   - component: {fileID: 2863466706399598481}
   - component: {fileID: 6920147249179006219}
   - component: {fileID: 8199233245505525648}
+  - component: {fileID: 6771247173611200905}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -517,6 +518,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 719c146a30d92d04bb6ebe719d86435a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6771247173611200905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2569421474114986601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60b5d3d2670d86a4faceebe645974db2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cameraTransform: {fileID: 8010184895929199707}
+  _transitionDuration: 0.35
+  _hideLookSensitivity: 0.1
+  _colliderCheckDist: 0.25
 --- !u!1 &3248879358088908694
 GameObject:
   m_ObjectHideFlags: 0

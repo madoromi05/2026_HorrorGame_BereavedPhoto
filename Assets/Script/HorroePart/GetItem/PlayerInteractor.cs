@@ -20,6 +20,9 @@ namespace HorrorGame.Player
         private float _elapsedTime;
         private const float kDetectInterval = 0.1f;
 
+        // 外部から強制表示するヒント（null = 通常検出に戻る）
+        private string _forcedHint;
+
         private void Awake()
         {
             DebugCustom.ValidateFields(this,
@@ -37,8 +40,20 @@ namespace HorrorGame.Player
             _inputController.OnInteractPerformed -= TryInteract;
         }
 
+        /// <summary>
+        /// ヒントを強制表示する。null を渡すと通常の Raycast 検出に戻る。
+        /// コンポーネントが無効化されていても呼び出せる。
+        /// </summary>
+        public void SetForcedHint(string hint)
+        {
+            _forcedHint = hint;
+            OnFocusChanged?.Invoke(_forcedHint);
+        }
+
         private void Update()
         {
+            if (_forcedHint != null) return; // 強制ヒント中は検出スキップ
+
             _elapsedTime += Time.deltaTime;
             if (_elapsedTime < kDetectInterval) return;
 

@@ -1360,7 +1360,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &932657415
 Transform:
   m_ObjectHideFlags: 0
@@ -2774,8 +2774,8 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2459017983334848606, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
-      propertyPath: field of view
-      value: 80
+      propertyPath: near clip plane
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 3248879358088908694, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_Layer
@@ -2828,10 +2828,6 @@ PrefabInstance:
     - target: {fileID: 5038329839560073528, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6920147249179006219, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
-      propertyPath: _particleLifetime
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7165474492473475749, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: _analyzer

@@ -15,11 +15,13 @@ public class PlayerStealthStatus : MonoBehaviour
 
     private PlayerMover _mover;
     private HandLightController _lightController;
-    private PlayerBreath _breath; 
+    private PlayerBreath _breath;
     private PlayerDashController _dashController;
+    private PlayerHidingController _hiding;
 
     public float FootstepNoiseRadius { get; private set; }
     public bool IsLightOn => _lightController.IsLightOn;
+    public bool IsHiding  => _hiding != null && _hiding.IsHiding;
 
     private void Awake()
     {
@@ -27,10 +29,18 @@ public class PlayerStealthStatus : MonoBehaviour
         _lightController = GetComponent<HandLightController>();
         _breath = GetComponent<PlayerBreath>();
         _dashController = GetComponent<PlayerDashController>();
+        _hiding = GetComponent<PlayerHidingController>();
     }
 
     private void Update()
     {
+        // 隠れ中は完全に無音
+        if (IsHiding)
+        {
+            FootstepNoiseRadius = 0f;
+            return;
+        }
+
         // MoveState ごとに足音半径を切り替える（PlayerMover.MoveState と対応）
         float noise = _mover.CurrentMoveState switch
         {

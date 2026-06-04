@@ -88,6 +88,18 @@ public class EnemyPerception : MonoBehaviour
     {
         if (_player == null) return;
 
+        // 隠れ中は視覚・音検知を停止し、警戒度を減衰だけさせる
+        if (_playerStealth != null && _playerStealth.IsHiding)
+        {
+            // 追跡中（警戒度最大）に隠れた場合は減衰を大幅に遅くする。
+            // 敵は最後に知ったプレイヤーの位置（隠れ場所の入口）まで追いかけ続ける。
+            float decayRate = AwarenessLevel >= 1f
+                ? _awarenessDecayRate * 0.1f
+                : _awarenessDecayRate;
+            AwarenessLevel = Mathf.Clamp01(AwarenessLevel - decayRate * dt);
+            return;
+        }
+
         float gain = 0f;
         bool stimulus = false;
 

@@ -16,7 +16,7 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
     private NavMeshAgent _agent;
     private List<Vector3> _corridorWaypoints = new List<Vector3>();
     private Vector3 _currentTarget;
-    private bool    _isInitialized;
+    private bool _isPendingStart;
 
     private Dictionary<Vector3, float> _waypointCooldowns = new Dictionary<Vector3, float>();
     private readonly List<Vector3>     _cooldownKeyBuffer = new List<Vector3>();
@@ -27,9 +27,16 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         _agent = GetComponent<NavMeshAgent>();
     }
 
+    private void Start()
+    {
+        if (!_isPendingStart) return;
+        _agent.SetDestination(_currentTarget);
+        _isPendingStart = false;
+    }
+
     private void Update()
     {
-        if (!_isInitialized || _waypointCooldowns.Count == 0) return;
+        if (_waypointCooldowns.Count == 0) return;
 
         // クールダウンをカウントダウン（Tick が呼ばれない追跡中も進める）
         _cooldownKeyBuffer.Clear();
@@ -62,20 +69,18 @@ public class MapWanderer : MonoBehaviour, IEnemyBehavior
         }
 
         _currentTarget = PickWeightedWaypoint();
-        _agent.SetDestination(_currentTarget);
-        _isInitialized = true;
+        _isPendingStart = true;
     }
 
     public void OnChaseEnded()
     {
-        if (!_isInitialized) return;
         _currentTarget = PickWeightedWaypoint();
         _agent.SetDestination(_currentTarget);
     }
 
     public void Tick()
     {
-        if (!_isInitialized || _agent == null) return;
+        if ( _agent == null) return;
 
         _agent.speed = _wanderSpeed;
 
