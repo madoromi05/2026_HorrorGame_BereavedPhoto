@@ -331,6 +331,8 @@ GameObject:
   m_Component:
   - component: {fileID: 178392655}
   - component: {fileID: 178392654}
+  - component: {fileID: 178392656}
+  - component: {fileID: 178392657}
   m_Layer: 0
   m_Name: RamdomDungeon
   m_TagString: Untagged
@@ -359,9 +361,9 @@ MonoBehaviour:
   _playerTransform: {fileID: 1016573261}
   _playerSpawnOffsetY: 2
   _enemySpawnOffsetY: 2
+  _navMeshSurface: {fileID: 178392657}
   _isDebugMode: 1
   _debugParent: {fileID: 937509959}
-  _isEnemyLookDebug: 0
 --- !u!4 &178392655
 Transform:
   m_ObjectHideFlags: 0
@@ -375,11 +377,56 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2096864451}
   - {fileID: 878872113}
   - {fileID: 1388207182}
   - {fileID: 937509959}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &178392656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178392653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1783b1be1b56047409dd07626cbd61b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &178392657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178392653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &313051852
 GameObject:
   m_ObjectHideFlags: 0
@@ -2517,12 +2564,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2096864450}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 178392655}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &481867516775344625
 GameObject:
@@ -2983,7 +3030,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 178392655}
-  - {fileID: 2096864451}
   - {fileID: 1051217862}
   - {fileID: 998892880}
   - {fileID: 4620285561168816033}
