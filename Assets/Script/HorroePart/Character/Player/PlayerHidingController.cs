@@ -19,6 +19,9 @@ public class PlayerHidingController : MonoBehaviour
     [SerializeField] private float     _hideLookSensitivity  = 0.1f;
     // 外→内レイキャストの長さ。隠れ場所の壁までの最大距離より少し小さく設定する
     [SerializeField] private float     _colliderCheckDist    = 0.25f;
+    [SerializeField] private AnalyzerVignetteController _vignetteController;
+    [SerializeField, Range(0f, 1f)] private float _hidingVignetteIntensity = 0.45f;
+    [SerializeField] private float _hidingFadeSpeed = 3f;
 
     public bool        IsHiding   { get; private set; }
     public HidingSpot  ActiveSpot { get; private set; }
@@ -92,6 +95,7 @@ public class PlayerHidingController : MonoBehaviour
         SetMovementEnabled(false);
         SetRenderersEnabled(false);
         _interactor?.SetForcedHint(spot.HintText); // "出る [E]" を表示
+        _vignetteController?.SetHiding(true, _hidingVignetteIntensity, _hidingFadeSpeed);
 
         if (_currentCoroutine != null) StopCoroutine(_currentCoroutine);
         _currentCoroutine = StartCoroutine(
@@ -105,6 +109,7 @@ public class PlayerHidingController : MonoBehaviour
         IsHiding   = false;
         ActiveSpot = null;
         _interactor?.SetForcedHint(null); // 強制ヒントを解除して通常検出に戻す
+        _vignetteController?.SetHiding(false, 0f, _hidingFadeSpeed);
 
         if (_currentCoroutine != null) StopCoroutine(_currentCoroutine);
         _currentCoroutine = StartCoroutine(RestoreCameraAndEnable());
