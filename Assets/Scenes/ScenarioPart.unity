@@ -1016,7 +1016,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6923e2b5c4f1ba0439fc20f4450062b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _storyDatas: []
   _background: {fileID: 2089420313}
   _characterImage: {fileID: 981272893}
   _storyText: {fileID: 494622971}
@@ -1049,9 +1048,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dc3ab3c337b5ed47a4f144c8afc852a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prologueStories: []
-  _interludeStories: []
-  _epilogueStories: []
+  _prologueStories:
+  - {fileID: 11400000, guid: c479fa94ed444064686bf5bcea06b6d9, type: 2}
+  _interludeStories:
+  - {fileID: 11400000, guid: c479fa94ed444064686bf5bcea06b6d9, type: 2}
+  _epilogueStories:
+  - {fileID: 11400000, guid: c479fa94ed444064686bf5bcea06b6d9, type: 2}
 --- !u!1 &2089420311
 GameObject:
   m_ObjectHideFlags: 0

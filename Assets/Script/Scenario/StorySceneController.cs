@@ -40,6 +40,7 @@ public class StorySceneController : MonoBehaviour
         };
 
         _storyManager.SetStoryDatas(stories);
+        AudioManager.Instance?.PlayBgm(BgmType.Scenario);
     }
 
     private void Start()

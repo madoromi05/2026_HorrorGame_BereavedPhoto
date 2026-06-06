@@ -35,8 +35,9 @@ public class EnemyAnalyzer : MonoBehaviour
         }
     }
 
-    private bool _enemyInRange = false;
-    private bool _isAiming = false;
+    private bool _enemyInRange  = false;
+    private bool _isAiming      = false;
+    private bool _wasComplete   = false;
 
     public void SetAiming(bool isAiming) => _isAiming = isAiming;
 
@@ -91,6 +92,10 @@ public class EnemyAnalyzer : MonoBehaviour
 
         _analyzerUI.SetCompleteState(isComplete);
         _analyzerUI.SetAnalyzingState(isAnalyzing && !isComplete);
+
+        if (isComplete && !_wasComplete)
+            AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
+        _wasComplete = isComplete;
     }
 
     /// 敵が解析範囲内にいるかどうかを外部から通知する。
@@ -103,8 +108,9 @@ public class EnemyAnalyzer : MonoBehaviour
     public void Reset()
     {
         _currentEnemyId = null;
-        _enemyInRange = false;
-        _isAiming = false;
+        _enemyInRange   = false;
+        _isAiming       = false;
+        _wasComplete    = false;
         _analyzerUI.ResetFields();
         _vignetteController.ResetVignette();
     }

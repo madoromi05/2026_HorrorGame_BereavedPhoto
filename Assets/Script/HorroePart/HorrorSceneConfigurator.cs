@@ -51,4 +51,9 @@ public class HorrorSceneConfigurator : MonoBehaviour
 
         DebugCustom.Log($"[HorrorSceneConfigurator] ステージ: {stage}  設定: {config.Label}");
     }
+
+    private void Start()
+    {
+        AudioManager.Instance?.PlayBgm(BgmType.GameNormal);
+    }
 }

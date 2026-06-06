@@ -13,6 +13,12 @@ public class TitleSceneController : MonoBehaviour
 
     [Header("オプション")]
     [SerializeField] private OptionController _optionController;
+
+    private void Start()
+    {
+        AudioManager.Instance?.PlayBgm(BgmType.Title);
+    }
+
     public void OnNewGame()
     {
         var mgr = GameProgressManager.Instance;

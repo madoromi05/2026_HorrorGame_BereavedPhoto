@@ -142,4 +142,9 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
         else if (context.canceled)
             OnHoldBreathPerformed?.Invoke(false);
     }
+
+    void InputSystem_Actions.IPlayerActions.OnMenu(InputAction.CallbackContext context)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -44,6 +44,7 @@ namespace HorrorGame.Item
 
             inventory.AddItem(_item);
             _uiPresenter?.Show(_item);
+            AudioManager.Instance?.PlaySe(SeType.ItemPickup);
             gameObject.SetActive(false);
         }
     }

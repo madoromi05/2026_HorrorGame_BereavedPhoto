@@ -480,7 +480,7 @@ MonoBehaviour:
   _hideLookSensitivity: 0.1
   _colliderCheckDist: 0.25
   _vignetteController: {fileID: 0}
-  _hidingVignetteIntensity: 0.45
+  _hidingVignetteIntensity: 0.3
   _hidingFadeSpeed: 3
 --- !u!1 &3248879358088908694
 GameObject:

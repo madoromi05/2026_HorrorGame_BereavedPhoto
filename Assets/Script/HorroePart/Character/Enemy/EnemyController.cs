@@ -199,6 +199,7 @@ public class EnemyController : MonoBehaviour
         _chaseDestTimer = 0f;
         _agent.speed = _chaseSpeed;
         _agent.SetDestination(_player.position);
+        AudioManager.Instance?.PlayBgm(BgmType.GameChase);
     }
 
     private void BeginSearch()
@@ -209,6 +210,7 @@ public class EnemyController : MonoBehaviour
         _currentRoamRadius = _searchRoamRadius * 0.5f;
         _state = AIState.Search;
         PickSearchPoint();
+        SwitchToNormalBgmIfSafe();
     }
 
     private void PickSearchPoint()
@@ -242,5 +244,13 @@ public class EnemyController : MonoBehaviour
     {
         _wanderBehavior?.OnChaseEnded();
         _state = AIState.Patrol;
+        SwitchToNormalBgmIfSafe();
+    }
+
+    private void SwitchToNormalBgmIfSafe()
+    {
+        foreach (var e in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+            if (e != this && e.State == AIState.Chase) return;
+        AudioManager.Instance?.PlayBgm(BgmType.GameNormal);
     }
 }

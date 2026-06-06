@@ -14,6 +14,7 @@ public class GameOverHandler : MonoBehaviour
     /// </summary>
     public void TriggerGameOver()
     {
+        AudioManager.Instance?.StopBgm(0.5f);
         enabled = false;
         SceneManager.LoadScene(GameProgressManager.SceneGameOver);
     }
