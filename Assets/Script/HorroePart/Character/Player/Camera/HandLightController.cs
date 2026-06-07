@@ -27,6 +27,7 @@ public class HandLightController : MonoBehaviour
 
     private bool _isLightOn = false;
     private float _lightOnTimer = 0f;
+    private Vector3 _initialLocalPos;
 
     // 点滅コルーチンの参照（手動OFFで中断するために保持）
     private Coroutine _flickerCoroutine;
@@ -38,6 +39,7 @@ public class HandLightController : MonoBehaviour
         if (handLight != null)
         {
             _mainLightComponent = handLight.GetComponent<Light>();
+            _initialLocalPos = handLight.transform.localPosition;
         }
         handLight?.SetActive(false);
     }
@@ -123,6 +125,13 @@ public class HandLightController : MonoBehaviour
         }
 
         TurnOff();
+    }
+
+    /// <summary>歩行ボブのオフセットをローカル座標で加算する。</summary>
+    public void SetBobOffset(Vector3 localOffset)
+    {
+        if (handLight != null)
+            handLight.transform.localPosition = _initialLocalPos + localOffset;
     }
 
     private void SetLightActive(bool isActive)

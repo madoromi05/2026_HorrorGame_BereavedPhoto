@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8130302261191189857}
   - component: {fileID: 3541762652903082572}
   - component: {fileID: 8115291069847215460}
+  - component: {fileID: 2908859312375154958}
   m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -159,6 +160,20 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &2908859312375154958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361615955480021440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a55fabb2e579d3140be88535e3547b46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cameraTransform: {fileID: 8010184895929199707}
+  _jitterAmount: 0.01
 --- !u!1 &2569421474114986601
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,6 +197,7 @@ GameObject:
   - component: {fileID: 6920147249179006219}
   - component: {fileID: 8199233245505525648}
   - component: {fileID: 6771247173611200905}
+  - component: {fileID: 6175971953874847756}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -281,6 +297,7 @@ MonoBehaviour:
   _pitchSensitivity: 0.1
   _minPitch: -90
   _maxPitch: 90
+  _jitterDegrees: 0.15
 --- !u!114 &298422640435024309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,6 +499,33 @@ MonoBehaviour:
   _vignetteController: {fileID: 0}
   _hidingVignetteIntensity: 0.3
   _hidingFadeSpeed: 3
+--- !u!114 &6175971953874847756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2569421474114986601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8727f247b21761a448d92c57f9f1c54d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerCamera: {fileID: 2761992662877834448}
+  _vignetteController: {fileID: 0}
+  _detectionVignetteIntensity: 0.25
+  _vignetteInSpeed: 6
+  _vignetteOutSpeed: 2
+  _burstDuration: 0.6
+  _burstMagnitude: 5
+  _burstFrequency: 22
+  _walkMagnitude: 1.2
+  _walkFrequency: 7
+  _bobMagnitude: 0.8
+  _bobFrequency: 4
+  _handLightController: {fileID: 8403319748086935930}
+  _handLight: {fileID: 2125111458170547310}
+  _lightBobMagnitude: 0.02
 --- !u!1 &3248879358088908694
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,7 +584,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3429471088271611411}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -665,11 +709,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.5932
+      value: -0.59319997
       objectReference: {fileID: 0}
     - target: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.777
+      value: 0.77700007
       objectReference: {fileID: 0}
     - target: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
       propertyPath: m_LocalRotation.w
@@ -708,5 +752,10 @@ PrefabInstance:
 --- !u!4 &2120807700160315126 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
+  m_PrefabInstance: {fileID: 2125248674768088610}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2125111458170547310 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1002705123656268, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
   m_PrefabInstance: {fileID: 2125248674768088610}
   m_PrefabAsset: {fileID: 0}

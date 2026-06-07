@@ -23,6 +23,7 @@ public class AnalyzerVignetteController : MonoBehaviour
     private float _hidingFadeSpeed;
     private bool _isHiding;
     private bool _isResetting;
+    private float _detectionAdd;
 
     private void Awake()
     {
@@ -89,6 +90,14 @@ public class AnalyzerVignetteController : MonoBehaviour
     }
 
     /// <summary>
+    /// 敵に発見された際のヴィネット強度を設定する。DetectionCameraEffects から毎フレーム呼ぶ。
+    /// </summary>
+    public void SetDetectionVignette(float intensity)
+    {
+        _detectionAdd = intensity;
+    }
+
+    /// <summary>
     /// 隠れ状態を設定する。true でフェードイン、false でフェードアウト。
     /// </summary>
     public void SetHiding(bool isHiding, float intensity, float fadeSpeed)
@@ -105,6 +114,6 @@ public class AnalyzerVignetteController : MonoBehaviour
         float pulse = _isHiding
             ? Mathf.Sin(Time.time * _hidingPulseFrequency * Mathf.PI * 2f) * _hidingPulseAmplitude * fadeRatio
             : 0f;
-        _vignette.intensity.value = Mathf.Min(_baseIntensity + _analyzeAdd + _hidingCurrent + pulse, 1f);
+        _vignette.intensity.value = Mathf.Min(_baseIntensity + _analyzeAdd + _hidingCurrent + _detectionAdd + pulse, 1f);
     }
 }
