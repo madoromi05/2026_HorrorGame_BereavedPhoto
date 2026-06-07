@@ -44,7 +44,14 @@ public class PlayerMover : MonoBehaviour
         _inputCallbackController = GetComponent<InputPlayerController>();
         _playerCrouch = GetComponent<PlayerCrouch>();
         _currentYaw = transform.eulerAngles.y;
+
+        // 保存済み感度を読み込む
+        if (PlayerPrefs.HasKey(OptionMenuController.KeySens))
+            _yawSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
     }
+
+    /// <summary>オプションメニューからマウス感度を即時反映する。</summary>
+    public void SetSensitivity(float v) => _yawSensitivity = v;
 
     private void OnEnable()
     {

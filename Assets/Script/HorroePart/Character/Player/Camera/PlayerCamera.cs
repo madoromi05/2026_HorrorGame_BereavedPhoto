@@ -21,7 +21,14 @@ public class PlayerCamera : MonoBehaviour
 
         if (_cameraTransform == null)
             DebugCustom.LogError($"[PlayerCamera] _cameraTransform が未設定です。", this);
+
+        // 保存済み感度を読み込む（未保存なら Inspector 値をそのまま使う）
+        if (PlayerPrefs.HasKey(OptionMenuController.KeySens))
+            _pitchSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
     }
+
+    /// <summary>オプションメニューからマウス感度を即時反映する。</summary>
+    public void SetSensitivity(float v) => _pitchSensitivity = v;
 
     private void OnEnable()
     {

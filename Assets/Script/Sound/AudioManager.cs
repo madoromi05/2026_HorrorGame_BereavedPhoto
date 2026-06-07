@@ -54,7 +54,7 @@ public class AudioManager : MonoBehaviour
 
     // ---- BGM ----
 
-    /// <summary>BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。</summary>
+    /// >BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。
     public void PlayBgm(BgmType type, float crossFadeDuration = 0.8f)
     {
         var clip = GetBgmClip(type);
@@ -66,12 +66,12 @@ public class AudioManager : MonoBehaviour
         _bgmPlayer.CrossFade(clip, crossFadeDuration);
     }
 
-    /// <summary>BGM をフェードアウトして停止する。</summary>
+    /// BGM をフェードアウトして停止する。
     public void StopBgm(float fadeOut = 0.8f) => _bgmPlayer.Stop(fadeOut);
 
     // ---- SE ----
 
-    /// <summary>SE を再生する（複数同時可）。</summary>
+    /// SE を再生する（複数同時可）。
     public void PlaySe(SeType type, float volume = 1f)
     {
         var clip = GetSeClip(type);

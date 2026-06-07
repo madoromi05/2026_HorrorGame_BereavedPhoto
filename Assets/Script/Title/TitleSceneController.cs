@@ -4,7 +4,7 @@ using TMPro;
 
 /// <summary>
 /// TitleScene にアタッチするコントローラー。
-/// ニューゲーム / コンティニュー / アルバム開閉を管理する。
+/// ニューゲーム / コンティニュー / アルバム開閉・オプション開閉を管理する。
 /// </summary>
 public class TitleSceneController : MonoBehaviour
 {
@@ -12,26 +12,42 @@ public class TitleSceneController : MonoBehaviour
     [SerializeField] private AlbumController _albumController;
 
     [Header("オプション")]
-    [SerializeField] private OptionController _optionController;
+    [SerializeField] private OptionMenuController _optionController;
+
+    [Header("入力")]
+    [SerializeField] private InputTitleController _inputTitleController;
+
+    private void OnEnable()
+    {
+        if (_inputTitleController != null)
+            _inputTitleController.OnMenuPerformed += ToggleOption;
+    }
+
+    private void OnDisable()
+    {
+        if (_inputTitleController != null)
+            _inputTitleController.OnMenuPerformed -= ToggleOption;
+    }
 
     private void Start()
     {
         AudioManager.Instance?.PlayBgm(BgmType.Title);
     }
 
+    // ---- メニューボタン ----
+
     public void OnNewGame()
     {
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
-        mgr.ResetProgress();   // Stage = Title
-        mgr.LoadNextScene();   // Title → Prologue → ScenarioPart
+        mgr.ResetProgress();
+        mgr.LoadNextScene();
     }
 
     public void OnContinue()
     {
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
-        // 現在の Stage のシーンをそのまま読み込む
         string scene = mgr.GetSceneForStage(mgr.CurrentStage);
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
     }
@@ -41,8 +57,22 @@ public class TitleSceneController : MonoBehaviour
         _albumController?.OpenAlbum();
     }
 
+    /// UI ボタンからも呼べる直接オープン。
     public void OnOption()
     {
         _optionController?.OpenOption();
+    }
+
+    // ---- 入力イベント ----
+
+    /// キー入力でオプションを開閉トグルする。
+    private void ToggleOption()
+    {
+        if (_optionController == null) return;
+
+        if (_optionController.IsOpen)
+            _optionController.CloseOption();
+        else
+            _optionController.OpenOption();
     }
 }

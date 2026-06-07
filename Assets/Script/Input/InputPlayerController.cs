@@ -16,6 +16,7 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     public event Action<bool> OnLeanLeftPerformed;
     public event Action<bool> OnLeanRightPerformed;
     public event Action<bool> OnHoldBreathPerformed;
+    public event Action OnMenuPerformed;
 
     private bool _isPlayerInputEnabled = true;
     private InputSystem_Actions _inputActions;
@@ -145,6 +146,7 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
 
     void InputSystem_Actions.IPlayerActions.OnMenu(InputAction.CallbackContext context)
     {
-        throw new NotImplementedException();
+        if (context.performed)
+            OnMenuPerformed?.Invoke();
     }
 }
