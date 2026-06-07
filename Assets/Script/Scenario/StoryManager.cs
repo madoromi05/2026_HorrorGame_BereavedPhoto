@@ -44,15 +44,18 @@ public class StoryManager : MonoBehaviour
         _inputController.OnClickPerformed += OnClickReceived;
     }
 
-    /// <summary>ストーリーデータを外部から差し替えて先頭から再生する。</summary>
+    /// ストーリーデータを外部から差し替えて先頭から再生する。
     public void SetStoryDatas(StoryData[] datas)
     {
         _storyDatas = datas;
         StoryIndex  = 0;
         TextIndex   = 0;
         if (_typingCoroutine != null) StopCoroutine(_typingCoroutine);
-        if (_storyDatas != null && _storyDatas.Length > 0)
+        if (_storyDatas != null && _storyDatas.Length > 0
+            && _storyDatas[0].Stories != null && _storyDatas[0].Stories.Count > 0)
             SetStoryElement(0, 0);
+        else if (_storyDatas != null && _storyDatas.Length > 0)
+            DebugCustom.LogWarning($"[StoryManager] StoryData[0] の Stories リストが空です。Inspectorでストーリー要素を設定してください。");
     }
 
     private void OnDisable()

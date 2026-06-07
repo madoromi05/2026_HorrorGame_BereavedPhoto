@@ -26,7 +26,7 @@ public class GameProgressManager : MonoBehaviour
     public const string SceneTitleName  = "TitleScene";
     public const string SceneStoryName  = "ScenarioPart";
     public const string ScenePrepName   = "PrepScene";
-    public const string SceneHorrorName = "HorrorScene";
+    public const string SceneHorrorName = "RandomMapScene";
     public const string SceneGameOver   = "GameOverScene";
 
     // 後方互換用エイリアス（GameDebugGUI 等から参照される定数名を変えないため残す）
@@ -60,11 +60,13 @@ public class GameProgressManager : MonoBehaviour
 
     // ---- 進行制御 ----
 
-    /// <summary>ステージを一つ進める。</summary>
+    /// <summary>ステージを一つ進める。準備パートはスキップする。</summary>
     public void AdvanceStage()
     {
         int max = System.Enum.GetValues(typeof(GameStage)).Length - 1;
         CurrentStage = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
+        if (CurrentStage == GameStage.Prep1 || CurrentStage == GameStage.Prep2)
+            CurrentStage = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
     }
 
     /// <summary>進行を最初からリセットする（ニューゲーム用）。</summary>
@@ -122,10 +124,19 @@ public class GameProgressManager : MonoBehaviour
     /// </summary>
     public AsyncOperation PreloadNextScene()
     {
-        var nextSceneName = CurrentStage == GameStage.Epilogue
-            ? SceneTitleName
-            : GetSceneForStage((GameStage)Mathf.Min((int)CurrentStage + 1,
-                System.Enum.GetValues(typeof(GameStage)).Length - 1));
+        string nextSceneName;
+        if (CurrentStage == GameStage.Epilogue)
+        {
+            nextSceneName = SceneTitleName;
+        }
+        else
+        {
+            int max = System.Enum.GetValues(typeof(GameStage)).Length - 1;
+            var next = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
+            if (next == GameStage.Prep1 || next == GameStage.Prep2)
+                next = (GameStage)Mathf.Min((int)next + 1, max);
+            nextSceneName = GetSceneForStage(next);
+        }
 
         var op = SceneManager.LoadSceneAsync(nextSceneName);
         op.allowSceneActivation = false;
