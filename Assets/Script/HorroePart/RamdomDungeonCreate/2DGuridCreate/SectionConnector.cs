@@ -14,6 +14,7 @@ public class SectionConnector
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
     private int _corridorWidth;
+    private int _maxCorridorLength;
 
     /// <summary>
     /// MST で全セクションを接続したあと、追加分岐を生成する。
@@ -30,6 +31,7 @@ public class SectionConnector
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
         _corridorWidth = bluePrint.CorridorWidth;
+        _maxCorridorLength = bluePrint.MaxCorridorLength;
 
         ConnectAllSections();
         AddExtraBranches(bluePrint);
@@ -77,28 +79,63 @@ public class SectionConnector
     private void AddExtraBranches(FieldBluePrint bluePrint)
     {
         int extraCount = Random.Range(bluePrint.MinExtraBranchNum, bluePrint.MaxExtraBranchNum + 1);
-        const int kMaxRetry = 10;
 
+        // MaxCorridorLength が有効なとき、近距離ペアだけを候補に絞る
+        var candidates = BuildNearPairs();
+
+        const int kMaxRetry = 20;
         for (int i = 0; i < extraCount; i++)
         {
-            SectionData from, to;
-            int retry = 0;
-            do
+            if (candidates.Count > 0)
             {
-                from = _sections[Random.Range(0, _sections.Length)];
-                to = _sections[Random.Range(0, _sections.Length)];
-            } while (from == to && ++retry < kMaxRetry);
+                var (from, to) = candidates[Random.Range(0, candidates.Count)];
+                ConnectTwoSections(from, to);
+            }
+            else
+            {
+                // フォールバック：距離制限なしでランダム選択
+                SectionData from, to;
+                int retry = 0;
+                do
+                {
+                    from = _sections[Random.Range(0, _sections.Length)];
+                    to   = _sections[Random.Range(0, _sections.Length)];
+                } while (from == to && ++retry < kMaxRetry);
 
-            if (from == to) continue;
-            ConnectTwoSections(from, to);
+                if (from != to)
+                    ConnectTwoSections(from, to);
+            }
         }
+    }
+
+    // セクション中心間のマンハッタン距離が MaxCorridorLength 以内のペアを列挙する。
+    // MaxCorridorLength <= 0 の場合は全ペアを返す。
+    private List<(SectionData, SectionData)> BuildNearPairs()
+    {
+        var result = new List<(SectionData, SectionData)>();
+        for (int i = 0; i < _sections.Length; i++)
+        {
+            for (int j = i + 1; j < _sections.Length; j++)
+            {
+                if (_maxCorridorLength > 0)
+                {
+                    var ci = _sections[i].GridPosition + _sections[i].GridSize / 2;
+                    var cj = _sections[j].GridPosition + _sections[j].GridSize / 2;
+                    int dist = Mathf.Abs(ci.x - cj.x) + Mathf.Abs(ci.y - cj.y);
+                    if (dist > _maxCorridorLength) continue;
+                }
+                result.Add((_sections[i], _sections[j]));
+            }
+        }
+        return result;
     }
 
     /// <summary>
     /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む。
     /// 既存の Door / Floor / Corridor セルは上書きしない。
+    /// MaxCorridorLength を超える経路は書き込まずに false を返す。
     /// </summary>
-    public void ConnectTwoSections(SectionData from, SectionData to)
+    public bool ConnectTwoSections(SectionData from, SectionData to)
     {
         var startPos = GetConnectionPoint(from, to);
         var endPos = GetConnectionPoint(to, from);
@@ -107,7 +144,13 @@ public class SectionConnector
         if (path == null)
         {
             DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");
-            return;
+            return false;
+        }
+
+        if (_maxCorridorLength > 0 && path.Count > _maxCorridorLength)
+        {
+            DebugCustom.Log($"[SectionConnector] 通路長 {path.Count} が上限 {_maxCorridorLength} を超えたためスキップ");
+            return false;
         }
 
         var newlyPainted = new List<Vector2Int>();
@@ -123,6 +166,8 @@ public class SectionConnector
 
         if (_corridorWidth > 1)
             ExpandPath(path, newlyPainted);
+
+        return true;
     }
 
     /// <summary>

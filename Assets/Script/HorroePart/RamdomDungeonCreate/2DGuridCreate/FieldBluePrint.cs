@@ -15,6 +15,9 @@ public class FieldBluePrint : ScriptableObject
     public int MinExtraBranchNum;
     public int MaxExtraBranchNum;
 
+    // 通路の最大長（グリッドセル数）。0 以下で無制限
+    public int MaxCorridorLength = 30;
+
     [Range(1, 3)] public int CorridorWidth;
 
     [Header("Enemy Navigation")]

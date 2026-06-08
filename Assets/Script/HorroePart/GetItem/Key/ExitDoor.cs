@@ -43,6 +43,7 @@ public class ExitDoor : MonoBehaviour, IInteractable
     private string _fallbackMessage = "";
     private float  _fallbackTimer   = 0f;
     private const float kFallbackDuration = 3f;
+    private bool _isInteracting = false;
 
     private void Update()
     {
@@ -77,6 +78,9 @@ public class ExitDoor : MonoBehaviour, IInteractable
 
     public void OnInteract()
     {
+        if (_isInteracting) return;
+        _isInteracting = true;
+
         var cond = EvaluateCondition();
 
         if (cond == ExitCondition.Ready)
@@ -87,6 +91,8 @@ public class ExitDoor : MonoBehaviour, IInteractable
                 GameProgressManager.Instance.LoadNextScene();
             else
                 DebugCustom.LogWarning("[ExitDoor] GameProgressManager が見つかりません。シーン遷移できません。");
+
+            _isInteracting = false;
             return;
         }
 
@@ -101,6 +107,8 @@ public class ExitDoor : MonoBehaviour, IInteractable
             _fallbackMessage = message;
             _fallbackTimer   = kFallbackDuration;
         }
+
+        _isInteracting = false;
     }
 
     /// <summary>

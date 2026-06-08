@@ -56,6 +56,9 @@ public class GameProgressManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
     }
 
     // ---- 進行制御 ----

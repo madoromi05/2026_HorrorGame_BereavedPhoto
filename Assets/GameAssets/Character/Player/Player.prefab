@@ -497,8 +497,8 @@ MonoBehaviour:
   _hideLookSensitivity: 0.1
   _colliderCheckDist: 0.25
   _vignetteController: {fileID: 0}
-  _hidingVignetteIntensity: 0.3
-  _hidingFadeSpeed: 3
+  _hidingVignetteIntensity: 0.15
+  _hidingFadeSpeed: 1
 --- !u!114 &6175971953874847756
 MonoBehaviour:
   m_ObjectHideFlags: 0
