@@ -5844,17 +5844,9 @@ PrefabInstance:
       value: -0.26
       objectReference: {fileID: 0}
     - target: {fileID: 6771247173611200905, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
-      propertyPath: _hidingFadeSpeed
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6771247173611200905, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: _vignetteController
       value: 
       objectReference: {fileID: 8956264521362112321}
-    - target: {fileID: 6771247173611200905, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
-      propertyPath: _hidingVignetteIntensity
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 7165474492473475749, guid: 88c91ff4e6bdeea4683d8a0ee7a75d48, type: 3}
       propertyPath: _analyzer
       value: 

@@ -73,7 +73,7 @@ public class PlayerHidingController : MonoBehaviour
         _input.OnLookPerformed     -= HandleHideLook;
     }
 
-    // ── 外部 API ─────────────────────────────────────────────
+    // ── 外部 API ────
 
     public void EnterHide(Transform cameraAnchor, HidingSpot spot)
     {
@@ -115,7 +115,7 @@ public class PlayerHidingController : MonoBehaviour
         _currentCoroutine = StartCoroutine(RestoreCameraAndEnable());
     }
 
-    // ── 入力ハンドラ ──────────────────────────────────────────
+    // ── 入力ハンドラ ────
 
     private void HandleInteractInput()
     {
@@ -170,7 +170,7 @@ public class PlayerHidingController : MonoBehaviour
         return false;
     }
 
-    // ── 内部ユーティリティ ────────────────────────────────────
+    // ── 内部ユーティリティ ──────────
 
     private void SetMovementEnabled(bool enabled)
     {

@@ -8,7 +8,8 @@ using UnityEngine;
 /// セットアップ:
 ///   1. ベッド/クローゼットの GameObject にこのコンポーネントを付ける。
 ///   2. 子 Transform (_cameraAnchor) を隠れ中に見える視点位置・向きに配置する。
-///      ベッド下なら床スレスレ・天井向き、クローゼットなら扉の隙間から外を覗く向きが自然。
+///      ベッド下なら床スレスレ・部屋の外を覗く方向（水平〜やや下向き）、クローゼットなら扉の隙間から外を覗く向きが自然。
+///      ※ 天井向き（Rotation X = -90°付近）にすると視点が上になってしまうため注意。
 ///   3. インタラクト可能なコライダーを _interactLayer に設定する。
 /// </summary>
 public class HidingSpot : MonoBehaviour, IInteractable
