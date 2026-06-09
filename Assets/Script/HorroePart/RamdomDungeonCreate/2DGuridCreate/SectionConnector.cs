@@ -1,7 +1,8 @@
 /// <summary>
 /// セクション間を A* で接続する通路生成クラス。
 /// MST（最小全域木）による全セクション接続と、追加分岐の生成を担当する。
-/// グリッドの書き込みは行うが、セクションの生成・部屋配置には関与しない。
+/// MaxCorridorLength は「一直線に進める最大マス数」を意味し、
+/// 超過した場合は自動的に曲がって迂回し、必ず接続する（スキップしない）。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -16,15 +17,44 @@ public class SectionConnector
     private int _corridorWidth;
     private int _maxCorridorLength;
 
+    // A* のノード。位置・直前の進行方向・直線継続マス数を保持する。
+    // 直線継続数を状態に含めることで MaxCorridorLength を超えた直進を禁止できる。
+    private struct PathState : System.IEquatable<PathState>
+    {
+        public readonly Vector2Int Pos;
+        public readonly Vector2Int Dir;      // 直前の進行方向（初期値 zero）
+        public readonly int Straight;        // 現在の直線継続マス数
+
+        public PathState(Vector2Int pos, Vector2Int dir, int straight)
+        { Pos = pos; Dir = dir; Straight = straight; }
+
+        public bool Equals(PathState o)
+            => Pos == o.Pos && Dir == o.Dir && Straight == o.Straight;
+
+        public override bool Equals(object obj) => obj is PathState s && Equals(s);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int h = Pos.x;
+                h = h * 397 ^ Pos.y;
+                h = h * 397 ^ Dir.x;
+                h = h * 397 ^ Dir.y;
+                return h * 397 ^ Straight;
+            }
+        }
+    }
+
     /// <summary>
     /// MST で全セクションを接続したあと、追加分岐を生成する。
     /// </summary>
     public void Connect(
-    GridType[,] grid,
-    SectionData[] sections,
-    Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
-    Dictionary<SectionData, Vector2Int> pathPointMap,
-    FieldBluePrint bluePrint)
+        GridType[,] grid,
+        SectionData[] sections,
+        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
+        Dictionary<SectionData, Vector2Int> pathPointMap,
+        FieldBluePrint bluePrint)
     {
         _grid = grid;
         _sections = sections;
@@ -37,7 +67,6 @@ public class SectionConnector
         AddExtraBranches(bluePrint);
     }
 
-
     // Prim 法に近い最小全域木でセクションを順番に接続する
     private void ConnectAllSections()
     {
@@ -46,7 +75,7 @@ public class SectionConnector
         while (connected.Count < _sections.Length)
         {
             SectionData bestFrom = null;
-            SectionData bestTo = null;
+            SectionData bestTo   = null;
             float minDist = float.MaxValue;
 
             foreach (var from in connected)
@@ -62,9 +91,9 @@ public class SectionConnector
 
                     if (dist < minDist)
                     {
-                        minDist = dist;
+                        minDist  = dist;
                         bestFrom = from;
-                        bestTo = to;
+                        bestTo   = to;
                     }
                 }
             }
@@ -79,9 +108,7 @@ public class SectionConnector
     private void AddExtraBranches(FieldBluePrint bluePrint)
     {
         int extraCount = Random.Range(bluePrint.MinExtraBranchNum, bluePrint.MaxExtraBranchNum + 1);
-
-        // MaxCorridorLength が有効なとき、近距離ペアだけを候補に絞る
-        var candidates = BuildNearPairs();
+        var candidates = BuildAllPairs();
 
         const int kMaxRetry = 20;
         for (int i = 0; i < extraCount; i++)
@@ -93,7 +120,6 @@ public class SectionConnector
             }
             else
             {
-                // フォールバック：距離制限なしでランダム選択
                 SectionData from, to;
                 int retry = 0;
                 do
@@ -108,37 +134,26 @@ public class SectionConnector
         }
     }
 
-    // セクション中心間のマンハッタン距離が MaxCorridorLength 以内のペアを列挙する。
-    // MaxCorridorLength <= 0 の場合は全ペアを返す。
-    private List<(SectionData, SectionData)> BuildNearPairs()
+    // 追加分岐の候補として全セクションペアを返す。
+    // 直線長制限は A* 内で処理するため、距離によるフィルタは不要。
+    private List<(SectionData, SectionData)> BuildAllPairs()
     {
         var result = new List<(SectionData, SectionData)>();
         for (int i = 0; i < _sections.Length; i++)
-        {
             for (int j = i + 1; j < _sections.Length; j++)
-            {
-                if (_maxCorridorLength > 0)
-                {
-                    var ci = _sections[i].GridPosition + _sections[i].GridSize / 2;
-                    var cj = _sections[j].GridPosition + _sections[j].GridSize / 2;
-                    int dist = Mathf.Abs(ci.x - cj.x) + Mathf.Abs(ci.y - cj.y);
-                    if (dist > _maxCorridorLength) continue;
-                }
                 result.Add((_sections[i], _sections[j]));
-            }
-        }
         return result;
     }
 
     /// <summary>
     /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む。
-    /// 既存の Door / Floor / Corridor セルは上書きしない。
-    /// MaxCorridorLength を超える経路は書き込まずに false を返す。
+    /// MaxCorridorLength を超える直線は A* 内で禁止されるため、
+    /// 経路は自動的に曲がって既存通路に合流・分岐しながら必ず接続される。
     /// </summary>
     public bool ConnectTwoSections(SectionData from, SectionData to)
     {
         var startPos = GetConnectionPoint(from, to);
-        var endPos = GetConnectionPoint(to, from);
+        var endPos   = GetConnectionPoint(to, from);
 
         var path = RunAStar(startPos, endPos);
         if (path == null)
@@ -147,18 +162,12 @@ public class SectionConnector
             return false;
         }
 
-        if (_maxCorridorLength > 0 && path.Count > _maxCorridorLength)
-        {
-            DebugCustom.Log($"[SectionConnector] 通路長 {path.Count} が上限 {_maxCorridorLength} を超えたためスキップ");
-            return false;
-        }
-
         var newlyPainted = new List<Vector2Int>();
         foreach (var pos in path)
         {
             var cellType = _grid[pos.x, pos.y];
-            if (cellType == GridType.Door) continue;
-            if (cellType == GridType.Floor) continue;
+            if (cellType == GridType.Door)     continue;
+            if (cellType == GridType.Floor)    continue;
             if (cellType == GridType.Corridor) continue;
             _grid[pos.x, pos.y] = GridType.Corridor;
             newlyPainted.Add(pos);
@@ -184,22 +193,16 @@ public class SectionConnector
             var center = corridorPath[i];
             if (!paintedSet.Contains(center)) continue;
 
-            // 前後のセルとの差分から進行方向を求め、垂直軸を決定する。
-            // 経路の端は隣接セルが 1 つしかないため、前後どちらかを代用する。
             var prev = (i > 0) ? corridorPath[i - 1] : corridorPath[i + 1];
             var next = (i < corridorPath.Count - 1) ? corridorPath[i + 1] : corridorPath[i - 1];
-            var dir = next - prev;
+            var dir  = next - prev;
 
-            // 進行方向が X 軸方向（東西）なら垂直は Y 軸、Y 軸方向（南北）なら垂直は X 軸
             var perp = (dir.x != 0)
                 ? new Vector2Int(0, 1)
                 : new Vector2Int(1, 0);
 
-            // 垂直方向へ extraWidth セル追加する（経路本体 + extraWidth = CorridorWidth）
             for (int w = 1; w <= extraWidth; w++)
-            {
                 PaintCell(center + perp * w);
-            }
         }
     }
 
@@ -207,14 +210,12 @@ public class SectionConnector
     {
         if (!IsInGrid(pos)) return;
         var cellType = _grid[pos.x, pos.y];
-        if (cellType == GridType.Door) return;
+        if (cellType == GridType.Door)  return;
         if (cellType == GridType.Floor) return;
-        if (cellType == GridType.Wall) return;
+        if (cellType == GridType.Wall)  return;
         _grid[pos.x, pos.y] = GridType.Corridor;
     }
 
-    // 対象セクションの接続点を返す。
-    // 部屋ありなら相手の中心に最も近い Door、部屋なしなら PathPoint を使う。
     private Vector2Int GetConnectionPoint(SectionData section, SectionData target)
     {
         var targetCenter = target.GridPosition + target.GridSize / 2;
@@ -233,7 +234,7 @@ public class SectionConnector
             return target;
         }
 
-        var nearest = positions[0];
+        var nearest  = positions[0];
         float minDist = float.MaxValue;
 
         foreach (var pos in positions)
@@ -249,75 +250,87 @@ public class SectionConnector
 
     /// <summary>
     /// A* で start から end までの経路を返す。
-    /// Wall と部屋内部（Door 以外の Floor）は通過不可。
-    /// Door / Corridor は移動コストを低くし、既存通路への合流を優先する。
-    /// 経路が見つからない場合は null を返す。
+    /// ノード状態に「直前の進行方向」と「直線継続マス数」を持たせることで、
+    /// MaxCorridorLength を超える直進を禁止し、自動的に曲がり角を生成する。
+    /// Wall と部屋内部（Floor）は通過不可。
     /// </summary>
     private List<Vector2Int> RunAStar(Vector2Int start, Vector2Int end)
     {
-        var openSet = new SortedSet<(float f, Vector2Int pos)>(
-            Comparer<(float f, Vector2Int pos)>.Create((a, b) =>
-                a.f != b.f ? a.f.CompareTo(b.f) :
-                a.pos.x != b.pos.x ? a.pos.x.CompareTo(b.pos.x) :
-                a.pos.y.CompareTo(b.pos.y)
-            )
+        var dirs = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        // SortedSet の要素は (f-cost, 採番ID) で一意にする
+        var openSet  = new SortedSet<(float f, int id)>(
+            Comparer<(float f, int id)>.Create((a, b) =>
+                a.f != b.f ? a.f.CompareTo(b.f) : a.id.CompareTo(b.id))
         );
+        var idState   = new Dictionary<int, PathState>();
+        var gCost     = new Dictionary<PathState, float>();
+        var cameFrom  = new Dictionary<PathState, PathState>();
+        var closedSet = new HashSet<PathState>();
+        int nextId    = 0;
 
-        var gCost = new Dictionary<Vector2Int, float>();
-        var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-
-        gCost[start] = 0f;
-        openSet.Add((Heuristic(start, end), start));
-
-        var neighbors = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+        var init = new PathState(start, Vector2Int.zero, 0);
+        gCost[init] = 0f;
+        openSet.Add((Heuristic(start, end), nextId));
+        idState[nextId++] = init;
 
         while (openSet.Count > 0)
         {
-            var (_, current) = openSet.Min;
+            var (_, id) = openSet.Min;
             openSet.Remove(openSet.Min);
+            var cur = idState[id];
 
-            if (current == end)
-                return BuildPath(cameFrom, current);
+            if (closedSet.Contains(cur)) continue;
+            closedSet.Add(cur);
 
-            foreach (var dir in neighbors)
+            if (cur.Pos == end)
+                return BuildPath(cameFrom, cur);
+
+            foreach (var dir in dirs)
             {
-                var neighbor = current + dir;
-                if (!IsInGrid(neighbor)) continue;
+                var nPos = cur.Pos + dir;
+                if (!IsInGrid(nPos)) continue;
 
-                var cellType = _grid[neighbor.x, neighbor.y];
-                if (cellType == GridType.Wall) continue;
-                // 部屋内部は Door 経由でのみ接続させる
+                var cellType = _grid[nPos.x, nPos.y];
+                if (cellType == GridType.Wall)  continue;
                 if (cellType == GridType.Floor) continue;
+
+                // 同じ方向への継続なら直線カウントを増やす。違う方向なら 1 にリセット
+                int newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
+
+                // MaxCorridorLength を超える直進は禁止（曲がりを強制する）
+                if (_maxCorridorLength > 0 && newStraight > _maxCorridorLength)
+                    continue;
 
                 float moveCost = cellType switch
                 {
-                    GridType.Door => 0.5f,
+                    GridType.Door     => 0.5f,
                     GridType.Corridor => 0.5f,
-                    _ => 1.0f,
+                    _                 => 1.0f,
                 };
 
+                // 既存通路に隣接するセルはコストを上げて通路同士の密着を抑制する
                 if (cellType == GridType.Empty)
                 {
-                    foreach (var adjDir in neighbors)
+                    foreach (var adjDir in dirs)
                     {
-                        var adj = neighbor + adjDir;
-                        if (adj == current) continue;
+                        var adj = nPos + adjDir;
+                        if (adj == cur.Pos) continue;
                         if (!IsInGrid(adj)) continue;
                         if (_grid[adj.x, adj.y] == GridType.Corridor)
-                        {
-                            moveCost += 1.5f;
-                            break;
-                        }
+                        { moveCost += 1.5f; break; }
                     }
                 }
 
+                var next  = new PathState(nPos, dir, newStraight);
+                float newG = gCost[cur] + moveCost;
 
-                float newG = gCost[current] + moveCost;
-                if (gCost.TryGetValue(neighbor, out float existingG) && newG >= existingG) continue;
+                if (gCost.TryGetValue(next, out float eg) && newG >= eg) continue;
 
-                gCost[neighbor] = newG;
-                cameFrom[neighbor] = current;
-                openSet.Add((newG + Heuristic(neighbor, end), neighbor));
+                gCost[next]    = newG;
+                cameFrom[next] = cur;
+                openSet.Add((newG + Heuristic(nPos, end), nextId));
+                idState[nextId++] = next;
             }
         }
 
@@ -327,15 +340,16 @@ public class SectionConnector
     private float Heuristic(Vector2Int a, Vector2Int b)
         => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
 
-    private List<Vector2Int> BuildPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
+    private List<Vector2Int> BuildPath(Dictionary<PathState, PathState> cameFrom, PathState end)
     {
         var path = new List<Vector2Int>();
-        while (cameFrom.ContainsKey(current))
+        var cur  = end;
+        while (cameFrom.ContainsKey(cur))
         {
-            path.Add(current);
-            current = cameFrom[current];
+            path.Add(cur.Pos);
+            cur = cameFrom[cur];
         }
-        path.Add(current);
+        path.Add(cur.Pos);
         path.Reverse();
         return path;
     }

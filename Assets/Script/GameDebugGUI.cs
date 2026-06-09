@@ -59,6 +59,7 @@ public class GameDebugGUI : MonoBehaviour
             return;
         }
         _instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }

@@ -14,28 +14,23 @@ public class SectionPlacer
     private readonly float _gridSize;
     private readonly Transform _player;
     private readonly float _playerSpawnOffsetY;
-    private readonly EnemySpawner _enemySpawner;
-
     public SectionPlacer(
         RoomDataBase roomDataBase,
         float gridSize,
         Transform player,
-        float playerSpawnOffsetY,
-        EnemySpawner enemySpawner)
+        float playerSpawnOffsetY)
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
         _player = player;
         _playerSpawnOffsetY = playerSpawnOffsetY;
-        _enemySpawner = enemySpawner;
     }
 
     /// <summary>
-    /// 全セクションに部屋とプレイヤーを配置し、最後に敵を配置する。
-    /// 敵配置をプレイヤー生成後に行うのは、EnemyControllerへPlayerTransformを注入するため。
-    /// gridはEnemySpawner経由でMapWandererのウェイポイント構築に使用する。
+    /// 全セクションに部屋とプレイヤーを配置する。
+    /// 戻り値のTransformはEnemySpawnerへの注入に使用するため、NavMeshベイク後に渡すこと。
     /// </summary>
-    public void Place(SectionData[] sections, Transform roomParent, Transform enemyParent, GridType[,] grid)
+    public Transform Place(SectionData[] sections, Transform roomParent)
     {
         Transform playerTransform = null;
 
@@ -49,7 +44,7 @@ public class SectionPlacer
                 playerTransform = PlayerTransform(section);
         }
 
-        _enemySpawner.Place(sections, enemyParent, playerTransform, grid);
+        return playerTransform;
     }
 
     private void PlaceRoom(SectionData section, Transform roomParent)

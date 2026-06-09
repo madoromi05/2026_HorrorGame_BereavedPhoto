@@ -12,9 +12,6 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float _minPitch = -90f;
     [SerializeField] private float _maxPitch = 90f;
 
-    [Header("PS1 カメラジッター")]
-    [SerializeField, Range(0f, 0.5f)] private float _jitterDegrees = 0.15f;
-
     private float _currentPitch;
     private Vector3 _shakeAngle;
     private InputPlayerController _inputCallbackController;
@@ -57,9 +54,6 @@ public class PlayerCamera : MonoBehaviour
     private void LateUpdate()
     {
         if (_cameraTransform == null) return;
-        // シェイク角度を合成してカメラに反映（Y軸シェイクはローカルなので左右の微揺れになる）
-        float jx = (Random.value - 0.5f) * 2f * _jitterDegrees;
-        float jy = (Random.value - 0.5f) * 2f * _jitterDegrees;
-        _cameraTransform.localEulerAngles = new Vector3(_currentPitch + _shakeAngle.x + jx, _shakeAngle.y + jy, 0f);
+        _cameraTransform.localEulerAngles = new Vector3(_currentPitch + _shakeAngle.x, _shakeAngle.y, 0f);
     }
 }

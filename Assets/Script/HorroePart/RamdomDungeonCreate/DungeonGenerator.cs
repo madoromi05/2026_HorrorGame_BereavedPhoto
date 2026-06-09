@@ -36,8 +36,6 @@ public class DungeonGenerator : MonoBehaviour
     // Plasyerの位置をItemInitializerが知る必要があるため必要
     public event Action<Transform> OnRoomPlaced;
 
-    private SectionPlacer _sectionPlacer;
-    private CorridorPlacer _corridorPlacer;
 
     /// <summary>
     /// Awake タイミングで外部から RoomDataBase を上書きする。
@@ -67,17 +65,17 @@ public class DungeonGenerator : MonoBehaviour
     {
         var gridBuilder    = new DungeonGridBuilder();
         var enemySpawner   = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
-        var sectionPlacer  = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY, enemySpawner);
+        var sectionPlacer  = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
 
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
 
-        sectionPlacer.Place(sections, _roomParent, _enemyParent, grid);
+        // 部屋・廊下を配置してから NavMesh をベイクし、その後に敵を生成する。
+        // 敵の NavMeshAgent は有効な NavMesh が存在しないと配置に失敗するため順序が重要。
+        var playerTransform = sectionPlacer.Place(sections, _roomParent);
         corridorPlacer.Place(grid, _corridorParent);
-
-        // 部屋・廊下を全て配置した後に NavMesh をランタイムベイクする。
-        // 単一サーフェスでダンジョン全体を覆うため、プレハブ間の隙間は生じない。
         _navMeshSurface?.BuildNavMesh();
+        enemySpawner.Place(sections, _enemyParent, playerTransform, grid);
 
         OnRoomPlaced?.Invoke(_roomParent);
 

@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FieldBluePrint", menuName = "Dungeon/FieldBluePrint")]
 public class FieldBluePrint : ScriptableObject
 {
-    public float OneGridSize = 5f;      // 1グリッドの実際のサイズ（ユニティのワールド単位）
+    public float OneGridSize = 8f;      // 1グリッドの実際のサイズ（ユニティのワールド単位）
 
     public Vector2Int MapSize;           // マップ全体のグリッドサイズ
     public Vector2Int SectionDivide;     // セクション分割数
@@ -16,7 +16,7 @@ public class FieldBluePrint : ScriptableObject
     public int MaxExtraBranchNum;
 
     // 通路の最大長（グリッドセル数）。0 以下で無制限
-    public int MaxCorridorLength = 30;
+    public int MaxCorridorLength = 10;
 
     [Range(1, 3)] public int CorridorWidth;
 

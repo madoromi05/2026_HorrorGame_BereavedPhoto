@@ -10,8 +10,8 @@ public class AudioMixerProxy : MonoBehaviour
 {
     [SerializeField] private AudioMixer _mixer;
 
-    private const string BgmParam = "BgmVolume";
-    private const string SeParam  = "SeVolume";
+    private const string BgmParam = "BGM";
+    private const string SeParam  = "SE";
 
     private float _bgmVolume = 1f;
     private float _seVolume  = 1f;
