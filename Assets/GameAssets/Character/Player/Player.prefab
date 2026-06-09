@@ -569,6 +569,7 @@ GameObject:
   - component: {fileID: 2799926813880042253}
   - component: {fileID: 5908756955886722360}
   - component: {fileID: 5128741616954487184}
+  - component: {fileID: 3812460142772399398}
   m_Layer: 0
   m_Name: SpotLightFoucus
   m_TagString: Untagged
@@ -679,6 +680,21 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &3812460142772399398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3429471088271611411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anisotropy: 0.25
+  scattering: 1
+  radius: 0.2
 --- !u!1001 &2125248674768088610
 PrefabInstance:
   m_ObjectHideFlags: 0
