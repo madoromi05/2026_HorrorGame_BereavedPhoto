@@ -105,7 +105,7 @@ public class AudioManager : MonoBehaviour
         _                  => null,
     };
 
-    private AudioClip GetSeClip(SeType type) => type switch
+    public AudioClip GetSeClip(SeType type) => type switch
     {
         SeType.EnemyMother      => _seEnemyMother,
         SeType.EnemyFather      => _seEnemyFather,

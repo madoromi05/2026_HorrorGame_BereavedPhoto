@@ -95,7 +95,7 @@ public class EnemyController : MonoBehaviour
             var dz = _player.position.z - transform.position.z;
             if (dx * dx + dz * dz < _catchDistance * _catchDistance)
             {
-                _gameOverHandler.TriggerGameOver();
+                _gameOverHandler.TriggerGameOver(transform);
                 return;
             }
         }

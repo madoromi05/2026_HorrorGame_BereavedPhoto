@@ -8,6 +8,11 @@ using UnityEngine.AI;
 /// </summary>
 public class RoomWanderer : MonoBehaviour, IEnemyBehavior
 {
+    [Header("敵種別")]
+    [SerializeField] private EnemyType _enemyType = EnemyType.Mother;
+    public EnemyType EnemyType => _enemyType;
+
+    [Header("徘徊設定")]
     [SerializeField] private float _wanderSpeed    = 2f;
     [SerializeField] private float _wanderInterval = 3f;
 

@@ -35,11 +35,15 @@ public class EnemyAnalyzer : MonoBehaviour
         }
     }
 
-    private bool _enemyInRange  = false;
-    private bool _isAiming      = false;
-    private bool _wasComplete   = false;
+    private bool _enemyInRange     = false;
+    private bool _isAiming         = false;
+    private bool _wasComplete      = false;
+    private bool _mapEnemyInView   = false;
 
     public void SetAiming(bool isAiming) => _isAiming = isAiming;
+
+    /// <summary>MapWanderer（徘徊敵）がカメラ範囲内にいるかを設定する。解析不可UIの制御に使う。</summary>
+    public void SetMapEnemyInView(bool inView) => _mapEnemyInView = inView;
 
     /// <summary>現在注目している敵を設定する。nullなら未ターゲット状態。</summary>
     public void SetCurrentEnemy(GameObject enemy)
@@ -57,6 +61,18 @@ public class EnemyAnalyzer : MonoBehaviour
     private void Update()
     {
         if (!_isAiming) return;
+
+        // MapWanderer（通路徘徊敵）を狙っているときは解析不可UIを表示して終了
+        if (_mapEnemyInView)
+        {
+            _analyzerUI.OnAnalyzeUpdate(0f);
+            _vignetteController.UpdateVignette(0f);
+            _analyzerUI.SetAnalyzingState(false);
+            _analyzerUI.SetCompleteState(false);
+            _analyzerUI.SetNotAnalyzableState(true);
+            return;
+        }
+        _analyzerUI.SetNotAnalyzableState(false);
 
         if (!_currentEnemyId.HasValue)
         {
@@ -107,10 +123,11 @@ public class EnemyAnalyzer : MonoBehaviour
     /// エイムを外したときの状態リセット。敵ごとの解析率は保持される。
     public void Reset()
     {
-        _currentEnemyId = null;
-        _enemyInRange   = false;
-        _isAiming       = false;
-        _wasComplete    = false;
+        _currentEnemyId  = null;
+        _enemyInRange    = false;
+        _isAiming        = false;
+        _wasComplete     = false;
+        _mapEnemyInView  = false;
         _analyzerUI.ResetFields();
         _vignetteController.ResetVignette();
     }

@@ -12,6 +12,12 @@ public class GameMenuController : MonoBehaviour
 
     private bool _isOpen;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible   = false;
+    }
+
     private void OnEnable()
     {
         if (_inputController != null)

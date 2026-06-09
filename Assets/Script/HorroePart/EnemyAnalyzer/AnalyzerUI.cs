@@ -10,8 +10,9 @@ public class AnalyzerUI : MonoBehaviour
     // ---- バー ----
     [SerializeField] private Image _barFill;
     // ---- 状態表示UI ----
-    [SerializeField] private GameObject _analyzingIcon; // 解析中に表示するUI
-    [SerializeField] private GameObject _completeUI;    // 解析完了時に表示するUI
+    [SerializeField] private GameObject _analyzingIcon;      // 解析中に表示するUI
+    [SerializeField] private GameObject _completeUI;         // 解析完了時に表示するUI
+    [SerializeField] private GameObject _notAnalyzableUI;    // 解析不可（MapWanderer）時に表示するUI
 
     private bool isRevealing = false;
 
@@ -49,23 +50,27 @@ public class AnalyzerUI : MonoBehaviour
         isRevealing = false;
         SetAnalyzingState(false);
         SetCompleteState(false);
+        SetNotAnalyzableState(false);
     }
 
     /// 解析中アイコンの表示切替
     public void SetAnalyzingState(bool isAnalyzing)
     {
         if (_analyzingIcon != null && _analyzingIcon.activeSelf != isAnalyzing)
-        {
             _analyzingIcon.SetActive(isAnalyzing);
-        }
     }
 
-    /// 析完了UIの表示切替
+    /// 解析完了UIの表示切替
     public void SetCompleteState(bool isComplete)
     {
         if (_completeUI != null && _completeUI.activeSelf != isComplete)
-        {
             _completeUI.SetActive(isComplete);
-        }
+    }
+
+    /// 解析不可UIの表示切替（MapWanderer を狙ったとき）
+    public void SetNotAnalyzableState(bool show)
+    {
+        if (_notAnalyzableUI != null && _notAnalyzableUI.activeSelf != show)
+            _notAnalyzableUI.SetActive(show);
     }
 }
