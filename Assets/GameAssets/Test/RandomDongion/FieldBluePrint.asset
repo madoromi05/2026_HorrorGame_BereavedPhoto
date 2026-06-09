@@ -17,4 +17,6 @@ MonoBehaviour:
   SectionDivide: {x: 3, y: 3}
   MinExtraBranchNum: 2
   MaxExtraBranchNum: 4
+  MaxCorridorLength: 10
   CorridorWidth: 1
+  EnemyNavSubdivision: 5
