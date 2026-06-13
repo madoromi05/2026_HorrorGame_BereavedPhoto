@@ -29,7 +29,7 @@ public class SePlayer : MonoBehaviour
         }
     }
 
-    /// <summary>SE を再生する。volume は AudioSource の音量スケール（0〜1）。</summary>
+    // SE を再生する。volume は AudioSource の音量スケール（0〜1）
     public void Play(AudioClip clip, float volume = 1f)
     {
         if (clip == null) return;

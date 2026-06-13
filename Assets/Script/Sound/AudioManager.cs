@@ -27,7 +27,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _seAnalysisComplete;
 
     // ---- 自動生成 ----
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void AutoCreate()
     {
@@ -52,11 +51,11 @@ public class AudioManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    // ---- BGM ----
-
-    /// >BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。
+    // ---- BGM ----（複数同時不可）
+    /// BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。
     public void PlayBgm(BgmType type, float crossFadeDuration = 0.8f)
     {
+        if (type == BgmType.None) { StopBgm(); return; }
         var clip = GetBgmClip(type);
         if (clip == null)
         {
@@ -70,10 +69,10 @@ public class AudioManager : MonoBehaviour
     public void StopBgm(float fadeOut = 0.8f) => _bgmPlayer.Stop(fadeOut);
 
     // ---- SE ----
-
     /// SE を再生する（複数同時可）。
     public void PlaySe(SeType type, float volume = 1f)
     {
+        if(type == SeType.None) return;
         var clip = GetSeClip(type);
         if (clip == null)
         {
@@ -105,7 +104,8 @@ public class AudioManager : MonoBehaviour
         _                  => null,
     };
 
-    public AudioClip GetSeClip(SeType type) => type switch
+    
+    private AudioClip GetSeClip(SeType type) => type switch
     {
         SeType.EnemyMother      => _seEnemyMother,
         SeType.EnemyFather      => _seEnemyFather,

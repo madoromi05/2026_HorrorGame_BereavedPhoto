@@ -85,7 +85,6 @@ public class BgmPlayer : MonoBehaviour
             yield return null;
         }
         _source.Stop();
-        _source.volume = 1f;
     }
 
     private IEnumerator CrossFadeRoutine(AudioClip newClip, float duration)
