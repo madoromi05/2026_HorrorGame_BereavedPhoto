@@ -3821,7 +3821,7 @@ GameObject:
   - component: {fileID: 1470969447}
   - component: {fileID: 1470969446}
   m_Layer: 5
-  m_Name: Image
+  m_Name: TitleName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3866,7 +3866,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 464a1b49ddee296499923db9416fbf16, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 394af1ba9bc832541bdb2213d2c41858, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4511,7 +4511,7 @@ GameObject:
   - component: {fileID: 1765111516}
   - component: {fileID: 1765111515}
   m_Layer: 5
-  m_Name: Image
+  m_Name: TitleBackgeound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4709,7 +4709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}
+  m_Color: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 0.8235294}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
