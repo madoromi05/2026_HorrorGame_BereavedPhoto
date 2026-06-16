@@ -75,7 +75,8 @@ public class DungeonGenerator : MonoBehaviour
         var playerTransform = sectionPlacer.Place(sections, _roomParent);
         corridorPlacer.Place(grid, _corridorParent);
         _navMeshSurface?.BuildNavMesh();
-        enemySpawner.Place(sections, _enemyParent, playerTransform, grid);
+        enemySpawner.Place(sections, _enemyParent);
+        new GameObject("StartRoomBoundary").AddComponent<StartRoomBoundary>();
 
         OnRoomPlaced?.Invoke(_roomParent);
 

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &5520788566348350066
 GameObject:
@@ -143,24 +143,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6503926412794686581, guid: a20abce8e4655294886742eb9bb5c382, type: 3}
---- !u!114 &8249144814465079602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8387792330663407722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 868fd066c3047c34f92420eb0edd4f01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hidingType: 1
-  _cameraAnchor: {fileID: 244635030700681650}
-  _yawRangeLeft: 40
-  _yawRangeRight: 40
-  _pitchMin: -5
-  _pitchMax: 30
+
 --- !u!65 &7549110980297488062
 BoxCollider:
   m_ObjectHideFlags: 0

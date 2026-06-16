@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &1361615955480021440
 GameObject:
@@ -310,22 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1418736731fc2042929784d26eca179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2947672684311563745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43142942db92128438f132df3557494b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _walkNoiseRadius: 5
-  _crouchNoiseRadius: 1.5
-  _dashNoiseRadius: 10
-  _exhaustNoiseRadius: 7
+
 --- !u!114 &8403319748086935930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,25 +451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceTurnDuration: 0.5
   _holdDuration: 0.5
---- !u!114 &6771247173611200905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60b5d3d2670d86a4faceebe645974db2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cameraTransform: {fileID: 8010184895929199707}
-  _transitionDuration: 0.35
-  _hideLookSensitivity: 0.1
-  _colliderCheckDist: 0.25
-  _vignetteController: {fileID: 0}
-  _hidingVignetteIntensity: 0.2
-  _hidingFadeSpeed: 0.5
+
 --- !u!114 &6175971953874847756
 MonoBehaviour:
   m_ObjectHideFlags: 0

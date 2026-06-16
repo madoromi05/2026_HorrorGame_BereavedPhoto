@@ -1,10 +1,7 @@
 /// <summary>
 /// RoomDataBase の設定に従い、各セクションに敵を配置する。
 /// SectionPlacer から敵生成責務を分離したクラス。
-/// PlayerのTransformはPlace呼び出し時に渡すことで、
-/// 部屋配置とプレイヤー生成の完了を待ってから敵を生成できる。
-///
-/// NavMesh 移動への移行に伴い、EnemyNavGridBuilder / DungeonPathfinder は不要になった。
+/// プレイヤー参照の付与は EnemyPlayerLinker が OnRoomPlaced 経由で行う。
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -23,7 +20,7 @@ public class EnemySpawner
         _enemySpawnOffsetY = enemySpawnOffsetY;
     }
 
-    public void Place(SectionData[] sections, Transform enemyParent, Transform playerTransform, GridType[,] grid)
+    public void Place(SectionData[] sections, Transform enemyParent)
     {
         foreach (var section in sections)
         {
@@ -33,7 +30,7 @@ public class EnemySpawner
             foreach (var entry in enemyEntries)
             {
                 if (entry.EnemyPrefab == null) continue;
-                SpawnEnemies(section, entry, enemyParent, playerTransform, grid);
+                SpawnEnemies(section, entry, enemyParent);
             }
         }
     }
@@ -41,11 +38,8 @@ public class EnemySpawner
     private void SpawnEnemies(
         SectionData section,
         RoomDataBase.EnemyEntry entry,
-        Transform enemyParent,
-        Transform playerTransform,
-        GridType[,] grid)
+        Transform enemyParent)
     {
-        var roomBounds = CalcRoomBounds(section);
         var roomCenter = CalcRoomCenterWorldPosition(section);
 
         for (int i = 0; i < entry.SpawnCount; i++)
@@ -60,54 +54,10 @@ public class EnemySpawner
             var instance = Object.Instantiate(entry.EnemyPrefab, worldPos, Quaternion.identity, enemyParent);
             instance.name = $"Enemy_{section.Role}_{section.GridPosition}_{i}";
 
-            if (instance.TryGetComponent<EnemyController>(out var controller))
-                controller.SetPlayer(playerTransform);
-
             // NavMeshAgent の baseOffset で Y 高さを制御する（Rigidbody の FreezePositionY の代替）
             if (instance.TryGetComponent<NavMeshAgent>(out var agent))
                 agent.baseOffset = _enemySpawnOffsetY;
-
-            if (instance.TryGetComponent<RoomWanderer>(out var roomWanderer))
-                roomWanderer.SetRoomBounds(roomBounds);
-
-            if (instance.TryGetComponent<MapWanderer>(out var mapWanderer))
-                mapWanderer.SetGrid(grid, _gridSize);
         }
-    }
-
-    private Bounds CalcRoomBounds(SectionData section)
-    {
-        var roomData = section.RoomGridData;
-        var origin   = section.RoomGridPosition;
-
-        if (roomData.DoorPositions != null && roomData.DoorPositions.Count > 0)
-        {
-            var min = new Vector2Int(int.MaxValue, int.MaxValue);
-            var max = new Vector2Int(int.MinValue, int.MinValue);
-
-            foreach (var door in roomData.DoorPositions)
-            {
-                if (door.x < min.x) min.x = door.x;
-                if (door.y < min.y) min.y = door.y;
-                if (door.x > max.x) max.x = door.x;
-                if (door.y > max.y) max.y = door.y;
-            }
-
-            var worldMin = new Vector3((origin.x + min.x) * _gridSize, -10f, (origin.y + min.y) * _gridSize);
-            var worldMax = new Vector3((origin.x + max.x + 1) * _gridSize, 10f, (origin.y + max.y + 1) * _gridSize);
-            var bounds   = new Bounds();
-            bounds.SetMinMax(worldMin, worldMax);
-            return bounds;
-        }
-
-        var fallbackMin = new Vector3(origin.x * _gridSize, -10f, origin.y * _gridSize);
-        var fallbackMax = new Vector3(
-            (origin.x + roomData.GridSize.x) * _gridSize, 10f,
-            (origin.y + roomData.GridSize.y) * _gridSize
-        );
-        var fallback = new Bounds();
-        fallback.SetMinMax(fallbackMin, fallbackMax);
-        return fallback;
     }
 
     private Vector3 CalcRoomCenterWorldPosition(SectionData section)

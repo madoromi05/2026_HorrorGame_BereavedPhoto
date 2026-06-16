@@ -54,8 +54,10 @@ public class EnemySoundPlayer : MonoBehaviour
 
         _lowPassFilter.cutoffFrequency = _openCutoffHz;
 
-        var wanderer = GetComponent<RoomWanderer>();
-        _seType = wanderer != null ? ToSeType(wanderer.EnemyType) : SeType.EnemyMother;
+        var identity = GetComponent<GhostIdentity>();
+        _seType = identity != null && identity.GhostType == GhostType.Father
+            ? SeType.EnemyFather
+            : SeType.EnemyMother;
 
         // 複数の敵の SE が同時に鳴らないようランダムオフセットを付ける
         _seTimer = Random.Range(0f, _seInterval);
@@ -120,10 +122,4 @@ public class EnemySoundPlayer : MonoBehaviour
             _openCutoffHz, _occludedCutoffHz,
             _currentAttenuationDb / Mathf.Max(_maxAttenuationDb, 0.001f));
     }
-
-    private static SeType ToSeType(EnemyType type) => type switch
-    {
-        EnemyType.Father => SeType.EnemyFather,
-        _                => SeType.EnemyMother,
-    };
 }

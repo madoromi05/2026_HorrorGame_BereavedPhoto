@@ -14,5 +14,8 @@ namespace HorrorGame.Item
 
         // --- メモ・ドキュメント系 ---
         NoteEntrance,
+
+        // --- 妨害アイテム系 ---
+        ObstructionItem,
     }
 }

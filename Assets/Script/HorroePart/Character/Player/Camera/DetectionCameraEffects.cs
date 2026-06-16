@@ -177,7 +177,7 @@ public class DetectionCameraEffects : MonoBehaviour
     {
         if (_enemies == null) return false;
         foreach (var e in _enemies)
-            if (e != null && e.State == EnemyController.AIState.Chase)
+            if (e != null && e.IsActivated)
                 return true;
         return false;
     }

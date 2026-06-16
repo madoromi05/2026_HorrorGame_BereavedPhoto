@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &118671049152097847
 GameObject:
@@ -144,24 +144,7 @@ Transform:
   - {fileID: 5035715232803224177}
   m_Father: {fileID: 230479888119565829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4065599609650132521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 306742075444633018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 868fd066c3047c34f92420eb0edd4f01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hidingType: 0
-  _cameraAnchor: {fileID: 5035715232803224177}
-  _yawRangeLeft: 40
-  _yawRangeRight: 40
-  _pitchMin: 0
-  _pitchMax: 30
+
 --- !u!65 &7411046902255836509
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1794,24 +1777,7 @@ Transform:
   - {fileID: 7955095345831993148}
   m_Father: {fileID: 230479888119565829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1822820196456607689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7689780613982546971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 868fd066c3047c34f92420eb0edd4f01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _hidingType: 1
-  _cameraAnchor: {fileID: 5168917319971494290}
-  _yawRangeLeft: 40
-  _yawRangeRight: 40
-  _pitchMin: 0
-  _pitchMax: 30
+
 --- !u!65 &5784535127122617255
 BoxCollider:
   m_ObjectHideFlags: 0

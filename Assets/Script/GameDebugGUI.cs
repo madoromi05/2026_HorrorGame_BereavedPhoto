@@ -27,7 +27,6 @@ public class GameDebugGUI : MonoBehaviour
     // キャッシュ
     private EnemyAnalyzer      _analyzer;
     private Inventory          _inventory;
-    private PlayerStealthStatus _stealth;
     private PlayerMover        _mover;
     private PlayerBreath       _breath;
     private PlayerDashController _dash;
@@ -68,7 +67,6 @@ public class GameDebugGUI : MonoBehaviour
     {
         _analyzer    = null;
         _inventory   = null;
-        _stealth     = null;
         _mover       = null;
         _breath      = null;
         _dash        = null;
@@ -105,7 +103,6 @@ public class GameDebugGUI : MonoBehaviour
     {
         _analyzer ??= FindFirstObjectByType<EnemyAnalyzer>();
         _inventory ??= FindFirstObjectByType<Inventory>();
-        _stealth   ??= FindFirstObjectByType<PlayerStealthStatus>();
         _mover     ??= FindFirstObjectByType<PlayerMover>();
         _breath    ??= FindFirstObjectByType<PlayerBreath>();
         _dash      ??= FindFirstObjectByType<PlayerDashController>();
@@ -264,18 +261,6 @@ public class GameDebugGUI : MonoBehaviour
             Label("PlayerMover: 未検出", Color.red);
 
         GUILayout.Space(6);
-        SectionHeader("ステルス（足音ノイズ）");
-        if (_stealth != null)
-        {
-            float noise = _stealth.FootstepNoiseRadius;
-            Label($"ノイズ半径: {noise:F2} m", Color.white);
-            DrawBar(noise, 12f);
-            Label($"ライト: {(_stealth.IsLightOn ? "ON" : "OFF")}",
-                  _stealth.IsLightOn ? new Color(1f, 0.9f, 0.3f) : Color.gray);
-        }
-        else Label("PlayerStealthStatus: 未検出", Color.red);
-
-        GUILayout.Space(6);
         SectionHeader("ブレス");
         if (_breath != null)
         {
@@ -329,22 +314,12 @@ public class GameDebugGUI : MonoBehaviour
 
             var ghost = e.GetComponent<GhostIdentity>();
             string name = ghost != null ? $"[{ghost.GhostType}]" : $"[Enemy{i}]";
-
-            var perc  = e.GetComponent<EnemyPerception>();
-            float awareness = perc != null ? perc.AwarenessLevel : 0f;
-
-            Color stateColor = e.State switch
-            {
-                EnemyController.AIState.Chase      => Color.red,
-                EnemyController.AIState.Suspicious => new Color(1f, 0.6f, 0f),
-                EnemyController.AIState.Search     => Color.yellow,
-                EnemyController.AIState.Feint      => new Color(0.7f, 0.5f, 1f),
-                _                                  => Color.white,
-            };
+            bool activated = e.IsActivated;
+            Color stateColor = activated ? Color.red : Color.white;
 
             GUILayout.BeginVertical(GUI.skin.box);
             GUILayout.BeginHorizontal();
-            Label($"{name}  {e.State}", stateColor);
+            Label($"{name}  {(activated ? "追跡中" : "待機中")}", stateColor);
             GUILayout.FlexibleSpace();
             if (_analyzer != null)
             {
@@ -352,11 +327,6 @@ public class GameDebugGUI : MonoBehaviour
                 Label($"解析: {ap:F0}%", ap >= 100f ? new Color(0.3f, 1f, 0.4f) : Color.white);
             }
             GUILayout.EndHorizontal();
-
-            // 警戒度バー
-            Label("警戒度:", Color.gray);
-            DrawBar(awareness, 1f, awareness >= 1f ? _barRedTex :
-                                   awareness >= 0.4f ? _barYellowTex : _barGreenTex);
 
             GUILayout.EndVertical();
             GUILayout.Space(2);

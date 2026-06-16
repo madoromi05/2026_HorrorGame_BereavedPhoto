@@ -59,20 +59,9 @@ public class EnemyDetector : MonoBehaviour
         {
             // 子コライダーがヒットしても常にルートの EnemyController を使う
             var root = hit.collider.GetComponentInParent<EnemyController>();
-
-            // MapWanderer（通路徘徊敵）は解析不可。UIメッセージだけ表示する
-            if (root != null && root.GetComponent<MapWanderer>() != null)
-            {
-                _analyzer.SetCurrentEnemy(null);
-                _analyzer.SetEnemyInRange(false);
-                _analyzer.SetMapEnemyInView(true);
-            }
-            else
-            {
-                _analyzer.SetCurrentEnemy(root != null ? root.gameObject : hit.collider.gameObject);
-                _analyzer.SetEnemyInRange(true);
-                _analyzer.SetMapEnemyInView(false);
-            }
+            _analyzer.SetCurrentEnemy(root != null ? root.gameObject : hit.collider.gameObject);
+            _analyzer.SetEnemyInRange(true);
+            _analyzer.SetMapEnemyInView(false);
         }
         else
         {
