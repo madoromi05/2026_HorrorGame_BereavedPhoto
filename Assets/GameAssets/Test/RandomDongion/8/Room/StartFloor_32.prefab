@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &118671049152097847
 GameObject:
@@ -117,7 +117,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2760539838051351636}
-  - component: {fileID: 4065599609650132521}
   - component: {fileID: 7411046902255836509}
   m_Layer: 3
   m_Name: hideBed
@@ -144,7 +143,6 @@ Transform:
   - {fileID: 5035715232803224177}
   m_Father: {fileID: 230479888119565829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
 --- !u!65 &7411046902255836509
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1747,7 +1745,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6913757061987676235}
-  - component: {fileID: 1822820196456607689}
   - component: {fileID: 5784535127122617255}
   m_Layer: 3
   m_Name: hide (1)
@@ -1777,7 +1774,6 @@ Transform:
   - {fileID: 7955095345831993148}
   m_Father: {fileID: 230479888119565829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
 --- !u!65 &5784535127122617255
 BoxCollider:
   m_ObjectHideFlags: 0

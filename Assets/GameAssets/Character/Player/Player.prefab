@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &1361615955480021440
 GameObject:
@@ -174,14 +174,12 @@ GameObject:
   - component: {fileID: 2761992662877834448}
   - component: {fileID: 298422640435024309}
   - component: {fileID: 8524082225208621706}
-  - component: {fileID: 2947672684311563745}
   - component: {fileID: 8403319748086935930}
   - component: {fileID: 3412488961731540206}
   - component: {fileID: 7772033762108381031}
   - component: {fileID: 2863466706399598481}
   - component: {fileID: 6920147249179006219}
   - component: {fileID: 8199233245505525648}
-  - component: {fileID: 6771247173611200905}
   - component: {fileID: 6175971953874847756}
   m_Layer: 8
   m_Name: Player
@@ -310,7 +308,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1418736731fc2042929784d26eca179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-
 --- !u!114 &8403319748086935930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,7 +448,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceTurnDuration: 0.5
   _holdDuration: 0.5
-
 --- !u!114 &6175971953874847756
 MonoBehaviour:
   m_ObjectHideFlags: 0
