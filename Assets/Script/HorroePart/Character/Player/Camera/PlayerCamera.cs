@@ -34,6 +34,15 @@ public class PlayerCamera : MonoBehaviour
     /// <summary>DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する。</summary>
     public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;
 
+    /// <summary>ピッチを 0 にリセットしてカメラを水平に戻す。</summary>
+    public void ResetPitch()
+    {
+        _currentPitch = 0f;
+        _shakeAngle   = Vector3.zero;
+        if (_cameraTransform != null)
+            _cameraTransform.localEulerAngles = Vector3.zero;
+    }
+
     private void OnEnable()
     {
         _inputCallbackController.OnLookPerformed += HandleLook;

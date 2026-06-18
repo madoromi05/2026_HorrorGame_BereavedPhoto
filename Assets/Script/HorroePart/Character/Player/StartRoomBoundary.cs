@@ -14,27 +14,38 @@ public class StartRoomBoundary : MonoBehaviour
     private Transform _player;
     private Vector3   _startPos;
     private bool      _triggered;
+    private float     _logTimer;
 
     private void Start()
     {
-        var playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj == null)
+        var linker = FindObjectOfType<EnemyPlayerLinker>();
+        if (linker == null || linker.PlayerTransform == null)
         {
-            DebugCustom.LogWarning("[StartRoomBoundary] Player タグのオブジェクトが見つかりません。");
+            DebugCustom.LogError("[StartRoomBoundary] EnemyPlayerLinker からプレイヤーを取得できません。", this);
             enabled = false;
             return;
         }
 
-        _player   = playerObj.transform;
+        _player   = linker.PlayerTransform;
         _startPos = _player.position;
+        DebugCustom.Log($"[StartRoomBoundary] 初期化完了 startPos={_startPos} exitRadius={_exitRadius}", this);
     }
 
     private void Update()
     {
         if (_triggered) return;
 
-        var dx = _player.position.x - _startPos.x;
-        var dz = _player.position.z - _startPos.z;
+        var dx   = _player.position.x - _startPos.x;
+        var dz   = _player.position.z - _startPos.z;
+        var dist = Mathf.Sqrt(dx * dx + dz * dz);
+
+        _logTimer -= Time.deltaTime;
+        if (_logTimer <= 0f)
+        {
+            DebugCustom.Log($"[StartRoomBoundary] 現在距離={dist:F1} / 脱出半径={_exitRadius}", this);
+            _logTimer = 3f;
+        }
+
         if (dx * dx + dz * dz < _exitRadius * _exitRadius) return;
 
         _triggered = true;
@@ -43,7 +54,9 @@ public class StartRoomBoundary : MonoBehaviour
 
     private void ActivateAllEnemies()
     {
-        foreach (var e in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+        var enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        DebugCustom.Log($"[StartRoomBoundary] Activate 呼び出し。対象敵数={enemies.Length}", this);
+        foreach (var e in enemies)
             e.Activate();
 
         AudioManager.Instance?.PlayBgm(BgmType.GameChase);

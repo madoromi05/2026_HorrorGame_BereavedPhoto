@@ -26,12 +26,12 @@ public class GameProgressManager : MonoBehaviour
     public const string SceneTitleName  = "TitleScene";
     public const string SceneStoryName  = "ScenarioPart";
     public const string ScenePrepName   = "PrepScene";
-    public const string SceneHorrorName = "RandomMapScene";
+    public const string SceneHorror1Name = "Horror1Scene";
+    public const string SceneHorror2Name = "Horror2Scene";
     public const string SceneGameOver   = "GameOverScene";
 
-    // 後方互換用エイリアス（GameDebugGUI 等から参照される定数名を変えないため残す）
-    public const string SceneHorror1Name = SceneHorrorName;
-    public const string SceneHorror2Name = SceneHorrorName;
+    // 後方互換用（GameDebugGUI のシーン直接遷移ボタン等で使用）
+    public const string SceneHorrorName = "RandomMapScene";
 
     public const int AlbumPageCount = 4;
 
@@ -93,10 +93,10 @@ public class GameProgressManager : MonoBehaviour
         GameStage.Title      => SceneTitleName,
         GameStage.Prologue   => SceneStoryName,
         GameStage.Prep1      => ScenePrepName,
-        GameStage.Horror1    => SceneHorrorName,  // 同じシーン・ステージで中身を切り替える
+        GameStage.Horror1    => SceneHorror1Name,
         GameStage.Interlude  => SceneStoryName,
         GameStage.Prep2      => ScenePrepName,
-        GameStage.Horror2    => SceneHorrorName,  // 同じシーン・ステージで中身を切り替える
+        GameStage.Horror2    => SceneHorror2Name,
         GameStage.Epilogue   => SceneStoryName,
         _                    => SceneTitleName,
     };

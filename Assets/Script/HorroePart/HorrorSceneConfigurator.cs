@@ -1,55 +1,36 @@
 using UnityEngine;
 
 /// <summary>
-/// HorrorScene にアタッチし、GameProgressManager のステージに応じて
-/// DungeonGenerator の RoomDataBase を起動前に差し替える。
+/// HorrorScene にアタッチし、HorrorStageConfig から RoomDataBase を DungeonGenerator に注入する。
+/// GameProgressManager のランタイム状態に依存しないため、エディタから直接再生しても正常に動作する。
+/// Horror1Scene / Horror2Scene それぞれの Inspector で異なる HorrorStageConfig を設定する。
 ///
 /// Unity の実行順序:
 ///   全 MonoBehaviour の Awake() → 全 MonoBehaviour の Start()
-/// このため、Awake() で設定を注入すれば DungeonGenerator.Start() → Generate() より必ず先に実行される。
+/// このため、Awake() で注入すれば DungeonGenerator.Start() → Generate() より必ず先に実行される。
 /// </summary>
 public class HorrorSceneConfigurator : MonoBehaviour
 {
-    [System.Serializable]
-    public class HorrorConfig
-    {
-        [Tooltip("このステージで使用する RoomDataBase（出現させる敵プレハブを含む）")]
-        public RoomDataBase RoomDataBase;
-        [Tooltip("デバッグ用ステージ名（ログに表示）")]
-        public string Label;
-    }
-
-    [Header("Horror1 設定（母の幽霊）")]
-    [SerializeField] private HorrorConfig _horror1Config;
-
-    [Header("Horror2 設定（父の幽霊）")]
-    [SerializeField] private HorrorConfig _horror2Config;
-    [SerializeField] private DungeonGenerator _dungeonGenerator;
+    [SerializeField] private HorrorStageConfig _stageConfig;
+    [SerializeField] private DungeonGenerator  _dungeonGenerator;
 
     private void Awake()
     {
-        var stage = GameProgressManager.Instance?.CurrentStage
-                    ?? GameProgressManager.GameStage.Horror1;
-
-        bool isHorror1 = stage == GameProgressManager.GameStage.Horror1;
-        var  config    = isHorror1 ? _horror1Config : _horror2Config;
-
-        if (config == null)
+        if (_stageConfig == null)
         {
-            DebugCustom.LogWarning($"[HorrorSceneConfigurator] ステージ {stage} の設定が Inspector に未設定です。");
+            DebugCustom.LogWarning("[HorrorSceneConfigurator] StageConfig が未設定です。", this);
             return;
         }
-
         if (_dungeonGenerator == null)
         {
-            DebugCustom.LogWarning("[HorrorSceneConfigurator] DungeonGenerator が未アサインです。");
+            DebugCustom.LogWarning("[HorrorSceneConfigurator] DungeonGenerator が未アサインです。", this);
             return;
         }
 
-        if (config.RoomDataBase != null)
-            _dungeonGenerator.SetRoomDataBase(config.RoomDataBase);
+        if (_stageConfig.RoomDataBase != null)
+            _dungeonGenerator.SetRoomDataBase(_stageConfig.RoomDataBase);
 
-        DebugCustom.Log($"[HorrorSceneConfigurator] ステージ: {stage}  設定: {config.Label}");
+        DebugCustom.Log($"[HorrorSceneConfigurator] 設定: {_stageConfig.Label}", this);
     }
 
     private void Start()

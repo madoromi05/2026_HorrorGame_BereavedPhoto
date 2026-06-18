@@ -373,7 +373,8 @@ public class GameDebugGUI : MonoBehaviour
         DrawSceneButton("PrepScene",    GameProgressManager.ScenePrepName);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        DrawSceneButton("HorrorScene",  GameProgressManager.SceneHorrorName);
+        DrawSceneButton("Horror1Scene", GameProgressManager.SceneHorror1Name);
+        DrawSceneButton("Horror2Scene", GameProgressManager.SceneHorror2Name);
         DrawSceneButton("GameOver",     GameProgressManager.SceneGameOver);
         GUILayout.EndHorizontal();
 

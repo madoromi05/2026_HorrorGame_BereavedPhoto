@@ -34,7 +34,14 @@ public class GameOverHandler : MonoBehaviour
         var mover = GetComponent<PlayerMover>();
         var cam   = GetComponent<PlayerCamera>();
         if (mover != null) mover.enabled = false;
-        if (cam   != null) cam.enabled   = false;
+        if (cam   != null)
+        {
+            cam.ResetPitch();
+            cam.enabled = false;
+        }
+
+        foreach (var e in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+            e.Stop();
 
         var rb = GetComponent<Rigidbody>();
         if (rb != null)

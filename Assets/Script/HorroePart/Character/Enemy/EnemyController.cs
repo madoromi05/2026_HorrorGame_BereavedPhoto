@@ -36,25 +36,37 @@ public class EnemyController : MonoBehaviour
         DebugCustom.Log("EnemyController: Player set: " + player.name, this);
     }
 
-    public void Activate() => _isActivated = true;
+    public void Activate()
+    {
+        _isActivated = true;
+        DebugCustom.Log($"[EnemyController] Activate 呼び出し: {name}", this);
+    }
+
+    public void Stop()
+    {
+        _isActivated = false;
+        _agent.isStopped = true;
+    }
 
     private void Update()
     {
         if (_player == null) return;
 
-        // 捕捉判定：距離に関わらず近距離なら即ゲームオーバー
+        if (!_isActivated) return;
+
+        // 捕捉判定：起動後のみ有効
         if (_gameOverHandler != null)
         {
             var dx = _player.position.x - transform.position.x;
             var dz = _player.position.z - transform.position.z;
-            if (dx * dx + dz * dz < _catchDistance * _catchDistance)
+            float distSq = dx * dx + dz * dz;
+            if (distSq < _catchDistance * _catchDistance)
             {
+                Debug.Log($"[EnemyController] 捕捉! 敵位置: {transform.position}, Player位置: {_player.position}, XZ距離: {Mathf.Sqrt(distSq):F3}");
                 _gameOverHandler.TriggerGameOver(transform);
                 return;
             }
         }
-
-        if (!_isActivated) return;
 
         // 常にプレイヤー方向を向く（Y軸のみ）
         Vector3 dir = _player.position - transform.position;
