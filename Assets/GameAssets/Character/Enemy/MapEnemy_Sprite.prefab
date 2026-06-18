@@ -129,7 +129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _chaseSpeed: 4
   _chaseDestUpdateInterval: 0.6
-  _catchDistance: 3
+  _catchDistance: 5
 --- !u!195 &8604436980520377003
 NavMeshAgent:
   m_ObjectHideFlags: 0

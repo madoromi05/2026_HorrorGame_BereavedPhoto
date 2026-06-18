@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb7b1dbbcee3cc4e9c1407f4d45e205, type: 3}
   m_Name: HorrorStageConfig
   m_EditorClassIdentifier: 
-  _roomDataBase: {fileID: 11400000, guid: 5589dff978e5d724991dad608f503147, type: 2}
+  _roomDataBase: {fileID: 11400000, guid: a8738e89973d86947aeedadecf31f385, type: 2}
   _label: Horror1

@@ -27,3 +27,27 @@ MonoBehaviour:
     EnemyEntries:
     - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
       SpawnCount: 1
+  - RoomType: 1
+    RoomCount: 1
+    Prefab: {fileID: 3469361202669048594, guid: 14483fb35ac57ab419eb5aa0ced25db6, type: 3}
+    RoomGridDatas:
+    - {fileID: 11400000, guid: d25479348fe06cd4cb81c1486f7d7988, type: 2}
+    EnemyEntries:
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
+      SpawnCount: 1
+  - RoomType: 1
+    RoomCount: 1
+    Prefab: {fileID: 3469361202669048594, guid: 14483fb35ac57ab419eb5aa0ced25db6, type: 3}
+    RoomGridDatas:
+    - {fileID: 11400000, guid: d25479348fe06cd4cb81c1486f7d7988, type: 2}
+    EnemyEntries:
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
+      SpawnCount: 1
+  - RoomType: 1
+    RoomCount: 1
+    Prefab: {fileID: 3469361202669048594, guid: d00ffe2572287ba4290341d268686f06, type: 3}
+    RoomGridDatas:
+    - {fileID: 11400000, guid: 7e6abfe824b07c44894efadca8c9b894, type: 2}
+    EnemyEntries:
+    - EnemyPrefab: {fileID: 5074338261638584859, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
+      SpawnCount: 1

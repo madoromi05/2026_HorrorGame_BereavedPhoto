@@ -15,7 +15,6 @@ public class RoomGridData : ScriptableObject
     public List<Vector2Int> PlayerPositions = new List<Vector2Int>();
 
     [Header("Enemy Navigation")]
-    // FieldBluePrint.EnemyNavSubdivision と値を合わせること。
     // 変更時は EnemyNavWallCells の内容が無効になるためエディタ側でクリアされる。
     [Range(1, 10)] public int EnemyNavSubdivision = 5;
 

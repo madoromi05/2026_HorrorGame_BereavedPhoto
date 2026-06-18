@@ -20,8 +20,6 @@ public class RoomDataBase : ScriptableObject
     {
         public RoomType RoomType;
 
-        public int RoomCount;
-
         public GameObject Prefab;
         public RoomGridData[] RoomGridDatas;
         public EnemyEntry[] EnemyEntries;
@@ -63,11 +61,14 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定RoomTypeの最大生成数を返す。0は上限なしを意味する。
+    /// 指定RoomTypeに登録されているRoomGridDataの数を返す。
+    /// 登録されていない場合は0を返す。
     /// </summary>
-    public int GetMaxCount(RoomType roomType)
+    public int GetRoomGridDataCount(RoomType roomType)
     {
-        return _entryMap.TryGetValue(roomType, out var entry) ? entry.RoomCount : 0;
+        if (_entryMap.TryGetValue(roomType, out var entry))
+            return entry.RoomGridDatas?.Length ?? 0;
+        return 0;
     }
 
     /// <summary>

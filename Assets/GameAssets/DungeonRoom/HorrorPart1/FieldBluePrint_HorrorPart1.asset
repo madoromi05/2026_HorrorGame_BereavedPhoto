@@ -15,8 +15,8 @@ MonoBehaviour:
   OneGridSize: 8
   MapSize: {x: 36, y: 36}
   SectionDivide: {x: 3, y: 3}
-  MinExtraBranchNum: 2
-  MaxExtraBranchNum: 4
-  MaxCorridorLength: 10
+  MinExtraBranchNum: 3
+  MaxExtraBranchNum: 6
+  MaxCorridorLength: 8
   CorridorWidth: 1
   EnemyNavSubdivision: 5

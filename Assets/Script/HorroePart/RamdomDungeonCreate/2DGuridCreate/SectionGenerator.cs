@@ -76,7 +76,7 @@ public class SectionGenerator
     }
 
     /// <summary>
-    /// RoomDataBase の定義順に MaxCount 分のロールをセクションインデックスへ割り当てる。
+    /// RoomDataBase に登録された全 RoomGridData を1件ずつセクションへ割り当てる。
     /// セクション総数を超えた分は無視し、余ったセクションは通路点になる。
     /// </summary>
     private Dictionary<int, (RoomType role, int idx)> BuildRoleAssignments(RoomDataBase roomDataBase, List<int> shuffledIndices)
@@ -86,12 +86,12 @@ public class SectionGenerator
 
         foreach (var roomType in System.Enum.GetValues(typeof(RoomType)) as RoomType[])
         {
-            int maxCount = roomDataBase.GetMaxCount(roomType);
-            for (int i = 0; i < maxCount; i++)
+            int count = roomDataBase.GetRoomGridDataCount(roomType);
+            for (int i = 0; i < count; i++)
             {
                 if (cursor >= shuffledIndices.Count)
                 {
-                    DebugCustom.LogWarning($"[SectionGenerator] セクション数が不足しています。{roomType} の割り当てを打ち切ります。");
+                    DebugCustom.LogWarning($"[SectionGenerator] セクション数が不足しています。{roomType} の割り当てを打ち切ります。SectionDivideを増やしてください。");
                     return assignments;
                 }
                 assignments[shuffledIndices[cursor]] = (roomType, i);
