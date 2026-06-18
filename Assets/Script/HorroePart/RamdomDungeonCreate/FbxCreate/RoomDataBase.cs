@@ -51,7 +51,7 @@ public class RoomDataBase : ScriptableObject
     /// 指定RoomTypeのRoomGridDataをランダムに返す。
     /// RoomGridDatasが空の場合はnullを返す。
     /// </summary>
-    public RoomGridData GetRandomRoomGridData(RoomType roomType)
+    public RoomGridData GetRoomGridData(RoomType roomType, int index)
     {
         if (!_entryMap.TryGetValue(roomType, out var entry))
         {
@@ -59,7 +59,7 @@ public class RoomDataBase : ScriptableObject
             return null;
         }
         if (entry.RoomGridDatas.Length == 0) return null;
-        return entry.RoomGridDatas[Random.Range(0, entry.RoomGridDatas.Length)];
+        return entry.RoomGridDatas[index % entry.RoomGridDatas.Length];
     }
 
     /// <summary>

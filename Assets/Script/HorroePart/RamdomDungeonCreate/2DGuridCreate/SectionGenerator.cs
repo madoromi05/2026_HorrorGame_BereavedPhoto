@@ -36,7 +36,7 @@ public class SectionGenerator
             for (int y = 0; y < divide.y; y++)
             {
                 int index = x + y * divide.x;
-                roleAssignments.TryGetValue(index, out var role);
+                roleAssignments.TryGetValue(index, out var assignment);
 
                 sections[index] = new SectionData
                 {
@@ -45,10 +45,10 @@ public class SectionGenerator
                         kMargin + y * sectionSize.y
                     ),
                     GridSize = sectionSize,
-                    Role = role,
+                    Role = assignment.role,
                     // roleAssignments に含まれないセクションは通路点扱い（RoomGridData = null）
                     RoomGridData = roleAssignments.ContainsKey(index)
-                        ? roomDataBase.GetRandomRoomGridData(role)
+                        ? roomDataBase.GetRoomGridData(assignment.role, assignment.idx)
                         : null,
                 };
             }
@@ -79,9 +79,9 @@ public class SectionGenerator
     /// RoomDataBase の定義順に MaxCount 分のロールをセクションインデックスへ割り当てる。
     /// セクション総数を超えた分は無視し、余ったセクションは通路点になる。
     /// </summary>
-    private Dictionary<int, RoomType> BuildRoleAssignments(RoomDataBase roomDataBase, List<int> shuffledIndices)
+    private Dictionary<int, (RoomType role, int idx)> BuildRoleAssignments(RoomDataBase roomDataBase, List<int> shuffledIndices)
     {
-        var assignments = new Dictionary<int, RoomType>();
+        var assignments = new Dictionary<int, (RoomType role, int idx)>();
         int cursor = 0;
 
         foreach (var roomType in System.Enum.GetValues(typeof(RoomType)) as RoomType[])
@@ -94,7 +94,7 @@ public class SectionGenerator
                     DebugCustom.LogWarning($"[SectionGenerator] セクション数が不足しています。{roomType} の割り当てを打ち切ります。");
                     return assignments;
                 }
-                assignments[shuffledIndices[cursor]] = roomType;
+                assignments[shuffledIndices[cursor]] = (roomType, i);
                 cursor++;
             }
         }

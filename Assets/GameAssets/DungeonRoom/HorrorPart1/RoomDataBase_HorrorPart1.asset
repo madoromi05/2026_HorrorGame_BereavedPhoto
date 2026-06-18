@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 271287aa15266e44ea96add7647b4c99, type: 3}
-  m_Name: RoomDataBase_8
+  m_Name: RoomDataBase_HorrorPart1
   m_EditorClassIdentifier: 
   _entries:
   - RoomType: 0
     RoomCount: 1
-    Prefab: {fileID: 3469361202669048594, guid: da597aee6697c4349be1157826cfecaf, type: 3}
+    Prefab: {fileID: 3469361202669048594, guid: 06e0401814b6fec4aa892278d603a6c8, type: 3}
     RoomGridDatas:
     - {fileID: 11400000, guid: 33c7dbdf8de43f646a3729e36fc101b7, type: 2}
     EnemyEntries: []
   - RoomType: 1
     RoomCount: 1
-    Prefab: {fileID: 4544807805352437314, guid: 0425adad1dbb306449151c378ff49c9d, type: 3}
+    Prefab: {fileID: 4544807805352437314, guid: 40bff39e72177764f95ab52dc0d40dc3, type: 3}
     RoomGridDatas:
     - {fileID: 11400000, guid: 4ed1c1c4580fe5b43b0b03961ba3e6ad, type: 2}
     EnemyEntries:

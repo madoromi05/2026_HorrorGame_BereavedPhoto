@@ -25,9 +25,6 @@ namespace DungeonSystem
     public enum RoomType
     {
         Start,
-        Mother,
-        Father,
-        Sister,
         Normal,
     }
 }

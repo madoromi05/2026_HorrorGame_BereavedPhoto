@@ -3730,7 +3730,8 @@ PrefabInstance:
       value: RoomEnemy_Sprite
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3082081776519003778, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cdaed08b0d82f444aa51694f69c2b7eb, type: 3}

@@ -75,8 +75,6 @@ public class RoomGridPlacer
         if (roomData.DoorPositions.Contains(localPos)) return GridType.Door;
         if (roomData.WallPositions != null
             && roomData.WallPositions.Contains(localPos)) return GridType.Wall;
-        if (roomData.PlayerPositions != null
-            && roomData.PlayerPositions.Contains(localPos)) return GridType.PlayerPosition;
         return GridType.Floor;
     }
 
