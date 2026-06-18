@@ -30,10 +30,27 @@ public class RoomDataBase : ScriptableObject
 
     private void OnEnable()
     {
-        // キャッシュの構築
         _entryMap = new Dictionary<RoomType, RoomEntry>(_entries.Length);
+        var roomGridDataAccum = new Dictionary<RoomType, List<RoomGridData>>();
+
         foreach (var entry in _entries)
-            _entryMap[entry.RoomType] = entry;
+        {
+            if (!_entryMap.ContainsKey(entry.RoomType))
+            {
+                _entryMap[entry.RoomType] = entry;
+                roomGridDataAccum[entry.RoomType] = new List<RoomGridData>(entry.RoomGridDatas ?? System.Array.Empty<RoomGridData>());
+            }
+            else
+            {
+                // 同一RoomTypeは RoomGridDatas を結合する（Prefab・EnemyEntries は最初のエントリを使用）
+                if (entry.RoomGridDatas != null)
+                    roomGridDataAccum[entry.RoomType].AddRange(entry.RoomGridDatas);
+            }
+        }
+
+        // 結合した RoomGridDatas を反映
+        foreach (var kv in roomGridDataAccum)
+            _entryMap[kv.Key].RoomGridDatas = kv.Value.ToArray();
     }
 
     public GameObject GetPrefab(RoomType roomType)
