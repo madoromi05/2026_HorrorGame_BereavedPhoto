@@ -181,6 +181,8 @@ GameObject:
   - component: {fileID: 6920147249179006219}
   - component: {fileID: 8199233245505525648}
   - component: {fileID: 6175971953874847756}
+  - component: {fileID: 712813678166292935}
+  - component: {fileID: 7136231948874468481}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -475,6 +477,34 @@ MonoBehaviour:
   _handLightController: {fileID: 8403319748086935930}
   _handLight: {fileID: 2125111458170547310}
   _lightBobMagnitude: 0.02
+--- !u!114 &712813678166292935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2569421474114986601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cc85dce03795da49823dab9aadd5ce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _projectilePrefab: {fileID: 2351118879395489275, guid: 6fa60970829e9794291b8e66a0601b26, type: 3}
+  _throwSpeed: 15
+  _stunDuration: 5
+--- !u!114 &7136231948874468481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2569421474114986601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57acb238f8c1a53409b574e5860efcc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initialObstructionItemCount: 5
 --- !u!1 &3248879358088908694
 GameObject:
   m_ObjectHideFlags: 0

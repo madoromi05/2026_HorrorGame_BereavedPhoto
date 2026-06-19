@@ -73,8 +73,23 @@ public class DungeonGenerator : MonoBehaviour
         // 部屋・廊下を配置してから NavMesh をベイクし、その後に敵を生成する。
         // 敵の NavMeshAgent は有効な NavMesh が存在しないと配置に失敗するため順序が重要。
         var playerTransform = sectionPlacer.Place(sections, _roomParent);
+
+        // 部屋プレハブに NavMeshAgent が埋め込まれている場合、Instantiate 時点では
+        // NavMesh が未ベイクのためエラーになる。ベイク完了まで一時的に無効化する。
+        var roomEmbeddedAgents = _roomParent.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>();
+        foreach (var agent in roomEmbeddedAgents)
+            agent.enabled = false;
+
         corridorPlacer.Place(grid, _corridorParent);
         _navMeshSurface?.BuildNavMesh();
+
+        // ベイク後に再有効化し、Warp で NavMesh 上の正しい位置に配置する。
+        foreach (var agent in roomEmbeddedAgents)
+        {
+            agent.enabled = true;
+            agent.Warp(agent.transform.position);
+        }
+
         enemySpawner.Place(sections, _enemyParent);
 
         OnRoomPlaced?.Invoke(_roomParent);

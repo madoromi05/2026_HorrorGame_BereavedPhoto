@@ -61,6 +61,5 @@ public class DungeonGridBuilder
                     case GridType.Door: door++; break;
                     case GridType.Corridor: corridor++; break;
                 }
-        DebugCustom.Log($"[DungeonGridBuilder] {label} -> Empty:{empty} Floor:{floor} Wall:{wall} Door:{door} Corridor:{corridor}");
     }
 }

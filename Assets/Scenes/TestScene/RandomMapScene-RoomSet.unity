@@ -284,9 +284,9 @@ MonoBehaviour:
   _playerTransform: {fileID: 1016573261}
   _playerSpawnOffsetY: 2
   _enemySpawnOffsetY: 2
+  _navMeshSurface: {fileID: 0}
   _isDebugMode: 1
   _debugParent: {fileID: 937509959}
-  _isEnemyLookDebug: 0
 --- !u!4 &178392655
 Transform:
   m_ObjectHideFlags: 0
@@ -893,12 +893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4598c7c6a822fb74eb2eb781474f3e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _horror1Config:
-    RoomDataBase: {fileID: 0}
-    Label: 
-  _horror2Config:
-    RoomDataBase: {fileID: 0}
-    Label: 
+  _stageConfig: {fileID: 0}
   _dungeonGenerator: {fileID: 178392654}
 --- !u!4 &632120348
 Transform:
@@ -1069,7 +1064,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &746212093
 Transform:
   m_ObjectHideFlags: 0
@@ -2523,6 +2518,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _barFill: {fileID: 3518505725231803487}
+  _analyzingIcon: {fileID: 0}
+  _completeUI: {fileID: 0}
+  _notAnalyzableUI: {fileID: 0}
 --- !u!224 &3422157061923051096
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3064,6 +3062,8 @@ MonoBehaviour:
   _permanentVignetteIntensity: 0.3
   _maxVignetteIntensity: 0.7
   _resetFadeSpeed: 2
+  _hidingPulseFrequency: 0.8
+  _hidingPulseAmplitude: 0.06
 --- !u!114 &8958346487041249861
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,8 +15,8 @@ using UnityEngine;
 public class EnemySoundPlayer : MonoBehaviour
 {
     [Header("SE 間隔")]
-    [SerializeField] private float _seInterval        = 8f;
-    [SerializeField] private float _seIntervalVariance = 3f;
+    [SerializeField] private float _seInterval        = 3f;
+    [SerializeField] private float _seIntervalVariance = 2f;
 
     [Header("3D 音源")]
     [SerializeField] private float _minDistance = 1f;

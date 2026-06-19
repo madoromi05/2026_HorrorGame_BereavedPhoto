@@ -17,6 +17,7 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     public event Action<bool> OnLeanRightPerformed;
     public event Action<bool> OnHoldBreathPerformed;
     public event Action OnMenuPerformed;
+    public event Action OnUseItemPerformed;
 
     private bool _isPlayerInputEnabled = true;
     private InputSystem_Actions _inputActions;
@@ -148,5 +149,12 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     {
         if (context.performed)
             OnMenuPerformed?.Invoke();
+    }
+
+    public void OnUseItem(InputAction.CallbackContext context)
+    {
+        if (!_isPlayerInputEnabled) return;
+        if (context.performed)
+            OnUseItemPerformed?.Invoke();
     }
 }

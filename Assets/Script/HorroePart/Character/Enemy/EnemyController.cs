@@ -33,7 +33,6 @@ public class EnemyController : MonoBehaviour
     {
         _player = player;
         _gameOverHandler = _player.GetComponent<GameOverHandler>();
-        DebugCustom.Log("EnemyController: Player set: " + player.name, this);
     }
 
     public void Activate()
@@ -46,6 +45,21 @@ public class EnemyController : MonoBehaviour
     {
         _isActivated = false;
         _agent.isStopped = true;
+    }
+
+    public void Stun(float duration)
+    {
+        if (!_isActivated) return;
+        StartCoroutine(StunCoroutine(duration));
+    }
+
+    private System.Collections.IEnumerator StunCoroutine(float duration)
+    {
+        _agent.isStopped = true;
+        _isActivated = false;
+        yield return new WaitForSeconds(duration);
+        _agent.isStopped = false;
+        _isActivated = true;
     }
 
     private void Update()

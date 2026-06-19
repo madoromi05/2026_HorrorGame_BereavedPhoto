@@ -156,24 +156,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LeanLeft"",
-                    ""type"": ""Button"",
-                    ""id"": ""a1b2c3d4-0001-4001-8001-000000000001"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""LeanRight"",
-                    ""type"": ""Button"",
-                    ""id"": ""a1b2c3d4-0002-4002-8002-000000000002"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""HoldBreath"",
                     ""type"": ""Button"",
                     ""id"": ""a1b2c3d4-0003-4003-8003-000000000003"",
@@ -186,6 +168,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Menu"",
                     ""type"": ""Button"",
                     ""id"": ""a15b98bb-0caa-4cb6-8b55-0a171eb77898"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""b2c3d4e5-0007-4007-8007-000000000007"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -481,28 +472,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a1b2c3d4-0004-4004-8004-000000000004"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""LeanLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a1b2c3d4-0005-4005-8005-000000000005"",
-                    ""path"": ""<Keyboard>/r"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""LeanRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""a1b2c3d4-0006-4006-8006-000000000006"",
                     ""path"": ""<Keyboard>/leftCtrl"",
                     ""interactions"": """",
@@ -520,6 +489,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2c3d4e5-0008-4008-8008-000000000008"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""UseItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2c3d4e5-0009-4009-8009-000000000009"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""UseItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -831,10 +822,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Camera = m_Player.FindAction("Camera", throwIfNotFound: true);
         m_Player_HandLight = m_Player.FindAction("HandLight", throwIfNotFound: true);
-        m_Player_LeanLeft = m_Player.FindAction("LeanLeft", throwIfNotFound: true);
-        m_Player_LeanRight = m_Player.FindAction("LeanRight", throwIfNotFound: true);
         m_Player_HoldBreath = m_Player.FindAction("HoldBreath", throwIfNotFound: true);
         m_Player_Menu = m_Player.FindAction("Menu", throwIfNotFound: true);
+        m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
         // Scenerio
         m_Scenerio = asset.FindActionMap("Scenerio", throwIfNotFound: true);
         m_Scenerio_Cancel = m_Scenerio.FindAction("Cancel", throwIfNotFound: true);
@@ -935,10 +925,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Camera;
     private readonly InputAction m_Player_HandLight;
-    private readonly InputAction m_Player_LeanLeft;
-    private readonly InputAction m_Player_LeanRight;
     private readonly InputAction m_Player_HoldBreath;
     private readonly InputAction m_Player_Menu;
+    private readonly InputAction m_Player_UseItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -979,14 +968,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @HandLight => m_Wrapper.m_Player_HandLight;
         /// <summary>
-        /// Provides access to the underlying input action "Player/LeanLeft".
-        /// </summary>
-        public InputAction @LeanLeft => m_Wrapper.m_Player_LeanLeft;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/LeanRight".
-        /// </summary>
-        public InputAction @LeanRight => m_Wrapper.m_Player_LeanRight;
-        /// <summary>
         /// Provides access to the underlying input action "Player/HoldBreath".
         /// </summary>
         public InputAction @HoldBreath => m_Wrapper.m_Player_HoldBreath;
@@ -994,6 +975,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Menu".
         /// </summary>
         public InputAction @Menu => m_Wrapper.m_Player_Menu;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/UseItem".
+        /// </summary>
+        public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1041,18 +1026,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @HandLight.started += instance.OnHandLight;
             @HandLight.performed += instance.OnHandLight;
             @HandLight.canceled += instance.OnHandLight;
-            @LeanLeft.started += instance.OnLeanLeft;
-            @LeanLeft.performed += instance.OnLeanLeft;
-            @LeanLeft.canceled += instance.OnLeanLeft;
-            @LeanRight.started += instance.OnLeanRight;
-            @LeanRight.performed += instance.OnLeanRight;
-            @LeanRight.canceled += instance.OnLeanRight;
             @HoldBreath.started += instance.OnHoldBreath;
             @HoldBreath.performed += instance.OnHoldBreath;
             @HoldBreath.canceled += instance.OnHoldBreath;
             @Menu.started += instance.OnMenu;
             @Menu.performed += instance.OnMenu;
             @Menu.canceled += instance.OnMenu;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
         }
 
         /// <summary>
@@ -1085,18 +1067,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @HandLight.started -= instance.OnHandLight;
             @HandLight.performed -= instance.OnHandLight;
             @HandLight.canceled -= instance.OnHandLight;
-            @LeanLeft.started -= instance.OnLeanLeft;
-            @LeanLeft.performed -= instance.OnLeanLeft;
-            @LeanLeft.canceled -= instance.OnLeanLeft;
-            @LeanRight.started -= instance.OnLeanRight;
-            @LeanRight.performed -= instance.OnLeanRight;
-            @LeanRight.canceled -= instance.OnLeanRight;
             @HoldBreath.started -= instance.OnHoldBreath;
             @HoldBreath.performed -= instance.OnHoldBreath;
             @HoldBreath.canceled -= instance.OnHoldBreath;
             @Menu.started -= instance.OnMenu;
             @Menu.performed -= instance.OnMenu;
             @Menu.canceled -= instance.OnMenu;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
         }
 
         /// <summary>
@@ -1499,20 +1478,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnHandLight(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "LeanLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLeanLeft(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "LeanRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnLeanRight(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "HoldBreath" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -1526,6 +1491,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseItem(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Scenerio" which allows adding and removing callbacks.
