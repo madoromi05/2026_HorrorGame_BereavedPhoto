@@ -19,12 +19,15 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _bgmGameChase;
     [SerializeField] private AudioClip _bgmEnding;
     [SerializeField] private AudioClip _bgmScenario;
+    [SerializeField] private AudioClip _seFootStep;
 
     [Header("SE クリップ")]
     [SerializeField] private AudioClip _seEnemyMother;
     [SerializeField] private AudioClip _seEnemyFather;
     [SerializeField] private AudioClip _seItemPickup;
     [SerializeField] private AudioClip _seAnalysisComplete;
+    [SerializeField] private AudioClip _seStartRoomExit;
+    [SerializeField] private AudioClip _seGameOver;
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -70,7 +73,7 @@ public class AudioManager : MonoBehaviour
 
     // ---- SE ----
     /// SE を再生する（複数同時可）。
-    public void PlaySe(SeType type, float volume = 1f)
+    public void PlaySe(SeType type, float volume = 1f, float pitch = 1f)
     {
         if(type == SeType.None) return;
         var clip = GetSeClip(type);
@@ -79,7 +82,7 @@ public class AudioManager : MonoBehaviour
             DebugCustom.LogWarning($"[AudioManager] SE クリップ未設定: {type}");
             return;
         }
-        _sePlayer.Play(clip, volume);
+        _sePlayer.Play(clip, volume, pitch);
     }
 
     // ---- ボリューム / ミュート ----
@@ -111,6 +114,9 @@ public class AudioManager : MonoBehaviour
         SeType.EnemyFather      => _seEnemyFather,
         SeType.ItemPickup       => _seItemPickup,
         SeType.AnalysisComplete => _seAnalysisComplete,
+        SeType.FootStep         => _seFootStep,
+        SeType.StartRoomExit    => _seStartRoomExit,
+        SeType.GameOver         => _seGameOver,
         _                       => null,
     };
 }

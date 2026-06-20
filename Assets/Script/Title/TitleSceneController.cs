@@ -41,7 +41,7 @@ public class TitleSceneController : MonoBehaviour
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
         mgr.ResetProgress();
-        mgr.LoadNextScene();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(GameProgressManager.SceneHorrorName);
     }
 
     public void OnContinue()
@@ -61,6 +61,11 @@ public class TitleSceneController : MonoBehaviour
     public void OnOption()
     {
         _optionController?.OpenOption();
+    }
+
+    public void OnQuit()
+    {
+        Application.Quit();
     }
 
     // ---- 入力イベント ----

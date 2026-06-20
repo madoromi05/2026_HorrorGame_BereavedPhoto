@@ -5,4 +5,7 @@ public enum SeType
     EnemyFather,
     ItemPickup,
     AnalysisComplete,
+    FootStep,
+    StartRoomExit,
+    GameOver
 }

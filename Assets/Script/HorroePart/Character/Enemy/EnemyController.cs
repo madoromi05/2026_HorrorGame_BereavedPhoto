@@ -38,7 +38,6 @@ public class EnemyController : MonoBehaviour
     public void Activate()
     {
         _isActivated = true;
-        DebugCustom.Log($"[EnemyController] Activate 呼び出し: {name}", this);
     }
 
     public void Stop()

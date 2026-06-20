@@ -30,9 +30,11 @@ public class SePlayer : MonoBehaviour
     }
 
     // SE を再生する。volume は AudioSource の音量スケール（0〜1）
-    public void Play(AudioClip clip, float volume = 1f)
+    public void Play(AudioClip clip, float volume = 1f, float pitch = 1f)
     {
         if (clip == null) return;
+        var src = GetFreeSource();
+        src.pitch = pitch;
         GetFreeSource().PlayOneShot(clip, volume);
     }
 

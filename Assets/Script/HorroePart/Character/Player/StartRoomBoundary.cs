@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// スタートルームの出口に配置するトリガー。
@@ -8,6 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class StartRoomBoundary : MonoBehaviour
 {
+    [SerializeField] private GameObject _enemyRevealUI;         // 一瞬表示する敵画像のUI
+    [SerializeField] private SeType _enemyRevealSe = SeType.StartRoomExit;
+    [SerializeField] private float _freezeDuration = 2f;
+    [SerializeField] private float _revealDuration = 1f;        // 画像を出す長さ
     private bool _triggered;
 
     private void OnTriggerEnter(Collider other)
@@ -15,8 +20,27 @@ public class StartRoomBoundary : MonoBehaviour
         if (_triggered) return;
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         _triggered = true;
-        gameObject.SetActive(false);
+        StartCoroutine(RevealAndActivate(other.GetComponent<PlayerMover>()));
+    }
+
+    private IEnumerator RevealAndActivate(PlayerMover mover)
+    {
+        // Player を止める
+        if (mover != null) mover.Frozen = true;
+
+        // 敵の画像・SE を一瞬出す
+        if (_enemyRevealUI != null) _enemyRevealUI.SetActive(true);
+        AudioManager.Instance?.PlaySe(_enemyRevealSe);
+
+        yield return new WaitForSeconds(_revealDuration);
+        if (_enemyRevealUI != null) _enemyRevealUI.SetActive(false);
+
+        yield return new WaitForSeconds(_freezeDuration - _revealDuration);
+
+        // Player を再開し、敵を起動
+        if (mover != null) mover.Frozen = false;
         ActivateAllEnemies();
+        gameObject.SetActive(false);
     }
 
     private void ActivateAllEnemies()

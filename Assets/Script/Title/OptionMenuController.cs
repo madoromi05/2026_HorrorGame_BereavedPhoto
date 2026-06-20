@@ -134,14 +134,14 @@ public class OptionMenuController : MonoBehaviour
     {
         AudioListener.volume = PlayerPrefs.GetFloat(KeyMaster, 1f);
         AudioManager.Instance?.SetBgmVolume(PlayerPrefs.GetFloat(KeyBgm, 1f));
-        AudioManager.Instance?.SetSeVolume(PlayerPrefs.GetFloat(KeySe, 1f));
+        AudioManager.Instance?.SetSeVolume(PlayerPrefs.GetFloat(KeySe, 0.5f));
     }
 
     private void RefreshSliders()
     {
         _masterSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyMaster, 1f));
         _bgmSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyBgm, 1f));
-        _seSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySe, 1f));
+        _seSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySe, 0.5f));
         _sensitivitySlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySens, 0.1f));
     }
 }

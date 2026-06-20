@@ -20,7 +20,7 @@ public class EnemySoundPlayer : MonoBehaviour
 
     [Header("3D 音源")]
     [SerializeField] private float _minDistance = 1f;
-    [SerializeField] private float _maxDistance = 20f;
+    [SerializeField] private float _maxDistance = 35f;
 
     [Header("オクルージョン")]
     [Tooltip("壁として扱うレイヤーを設定。未設定（0）の場合はオクルージョンなし。")]

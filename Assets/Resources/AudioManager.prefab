@@ -55,10 +55,13 @@ MonoBehaviour:
   _bgmGameChase: {fileID: 8300000, guid: 73c574c4e71607748a888750a2a42627, type: 3}
   _bgmEnding: {fileID: 8300000, guid: ad4017d4bf3621e449cbfda1059ccd6c, type: 3}
   _bgmScenario: {fileID: 0}
+  _seFootStep: {fileID: 8300000, guid: 3ba4d45941055e74a9e2c2b9702f8060, type: 3}
   _seEnemyMother: {fileID: 8300000, guid: 5c48a3e414fa6314e998962551dc0036, type: 3}
   _seEnemyFather: {fileID: 8300000, guid: f568f0e9b91e9664293450b7f8e5b103, type: 3}
   _seItemPickup: {fileID: 8300000, guid: 6818605eec0bd6f4dbe2f6719af3800a, type: 3}
   _seAnalysisComplete: {fileID: 8300000, guid: 90d92808e646c8f4480d57bd6abf1bf8, type: 3}
+  _seStartRoomExit: {fileID: 8300000, guid: 4ff90050354108b4caee8f685a9a09e1, type: 3}
+  _seGameOver: {fileID: 8300000, guid: e3450250146a24a47b0dfc46b9560c6c, type: 3}
 --- !u!1 &3992828601510246997
 GameObject:
   m_ObjectHideFlags: 0

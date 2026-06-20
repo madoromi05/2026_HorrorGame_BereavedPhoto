@@ -21,6 +21,10 @@ public class PlayerMover : MonoBehaviour
         Dash,   // ダッシュ
     }
 
+    public MoveState CurrentMoveState => GetMoveState();
+    public bool IsDashing { get; set; }
+    public bool Frozen { get; set; }
+
     [Header("移動速度")]
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _crouchSpeed = 2f;
@@ -29,14 +33,18 @@ public class PlayerMover : MonoBehaviour
     [Header("感度、調整用設定")]
     [SerializeField] private float _yawSensitivity = 0.1f;
 
-    public MoveState CurrentMoveState => GetMoveState();
-    public bool IsDashing { get; set; }
+
+    [Header("足音")]
+    [SerializeField] private float _walkStepInterval = 0.5f;
+    [SerializeField] private float _dashStepInterval = 0.3f;
+    [SerializeField] private float _dashStepPitch = 1.4f;
 
     private CharacterController _characterController;
     private InputPlayerController _inputCallbackController;
     private PlayerCrouch _playerCrouch;
     private Vector2 _moveInput;
     private float _currentYaw;
+    private float _footStepTimer;
 
     private void Awake()
     {
@@ -50,7 +58,7 @@ public class PlayerMover : MonoBehaviour
             _yawSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
     }
 
-    /// <summary>オプションメニューからマウス感度を即時反映する。</summary>
+    // オプションメニューからマウス感度を即時反映する。
     public void SetSensitivity(float v) => _yawSensitivity = v;
 
     private void OnEnable()
@@ -65,10 +73,11 @@ public class PlayerMover : MonoBehaviour
         _inputCallbackController.OnLookPerformed -= HandleLook;
     }
 
-    private void HandleMove(Vector2 input)  => _moveInput = input;
+    private void HandleMove(Vector2 input) => _moveInput = input;
 
     private void HandleLook(Vector2 input)
     {
+        if (Frozen) return;
         // 左右回転（Yaw）のみ更新。上下回転は FPSCamera が制御
         _currentYaw += input.x * _yawSensitivity;
         transform.eulerAngles = new Vector3(0f, _currentYaw, 0f);
@@ -76,6 +85,7 @@ public class PlayerMover : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Frozen) return;
         float speed = GetMoveState() switch
         {
             MoveState.Dash => _dashSpeed,
@@ -92,6 +102,7 @@ public class PlayerMover : MonoBehaviour
 
         Vector3 movement = (forward * input.y + right * input.x) * speed * Time.fixedDeltaTime;
         _characterController.Move(movement);
+        UpdateFootStep();
     }
 
     /// <summary>
@@ -104,5 +115,26 @@ public class PlayerMover : MonoBehaviour
         if (_playerCrouch.IsCrouching) return MoveState.Crouch;
         if (_moveInput.sqrMagnitude > 0.01f) return MoveState.Walk;
         return MoveState.Idle;
+    }
+
+    /// <summary>
+    /// Playerの移動状態に応じて足音を再生する。歩きとダッシュで間隔とピッチが変わる。
+    /// </summary>
+    private void UpdateFootStep()
+    {
+        var state = GetMoveState();
+        if (state != MoveState.Walk && state != MoveState.Dash)
+        {
+            _footStepTimer = 0f;
+            return;
+        }
+
+        _footStepTimer -= Time.fixedDeltaTime;
+        if (_footStepTimer > 0f) return;
+
+        float pitch = state == MoveState.Dash ? _dashStepPitch : 1f;
+        float interval = state == MoveState.Dash ? _dashStepInterval : _walkStepInterval;
+        AudioManager.Instance?.PlaySe(SeType.FootStep, 1f, pitch);
+        _footStepTimer = interval;
     }
 }
