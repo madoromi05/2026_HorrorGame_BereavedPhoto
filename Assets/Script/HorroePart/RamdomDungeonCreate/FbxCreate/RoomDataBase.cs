@@ -27,6 +27,8 @@ public class RoomDataBase : ScriptableObject
 
     [SerializeField] private RoomEntry[] _entries;
     private Dictionary<RoomType, RoomEntry> _entryMap;
+    // シリアライズフィールドを汚染しないよう、結合済みRoomGridDatasはランタイム専用で保持
+    private Dictionary<RoomType, RoomGridData[]> _mergedRoomGridDatas;
 
     private void OnEnable()
     {
@@ -48,9 +50,10 @@ public class RoomDataBase : ScriptableObject
             }
         }
 
-        // 結合した RoomGridDatas を反映
+        // 結合結果はランタイム専用辞書に保存し、シリアライズフィールドは書き換えない
+        _mergedRoomGridDatas = new Dictionary<RoomType, RoomGridData[]>(roomGridDataAccum.Count);
         foreach (var kv in roomGridDataAccum)
-            _entryMap[kv.Key].RoomGridDatas = kv.Value.ToArray();
+            _mergedRoomGridDatas[kv.Key] = kv.Value.ToArray();
     }
 
     public GameObject GetPrefab(RoomType roomType)
@@ -68,13 +71,13 @@ public class RoomDataBase : ScriptableObject
     /// </summary>
     public RoomGridData GetRoomGridData(RoomType roomType, int index)
     {
-        if (!_entryMap.TryGetValue(roomType, out var entry))
+        if (!_mergedRoomGridDatas.TryGetValue(roomType, out var datas))
         {
             DebugCustom.LogWarning($"RoomDataBase: {roomType} に対応する RoomGridData が見つかりません");
             return null;
         }
-        if (entry.RoomGridDatas.Length == 0) return null;
-        return entry.RoomGridDatas[index % entry.RoomGridDatas.Length];
+        if (datas.Length == 0) return null;
+        return datas[index % datas.Length];
     }
 
     /// <summary>
@@ -83,8 +86,8 @@ public class RoomDataBase : ScriptableObject
     /// </summary>
     public int GetRoomGridDataCount(RoomType roomType)
     {
-        if (_entryMap.TryGetValue(roomType, out var entry))
-            return entry.RoomGridDatas?.Length ?? 0;
+        if (_mergedRoomGridDatas.TryGetValue(roomType, out var datas))
+            return datas.Length;
         return 0;
     }
 

@@ -7,6 +7,7 @@ using HorrorGame.Interaction;
 using HorrorGame.Item;
 using HorrorGame.UI;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SectionPlacer
 {
@@ -58,8 +59,18 @@ public class SectionPlacer
             0f,
             (section.RoomGridPosition.y + (roomGridSize.y - 1) * 0.5f + 0.5f) * _gridSize
         );
+        // NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
+        // 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
+        bool prefabWasActive = prefab.activeSelf;
+        prefab.SetActive(false);
         var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
+        prefab.SetActive(prefabWasActive);
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
+
+        foreach (var agent in instance.GetComponentsInChildren<NavMeshAgent>(true))
+            agent.enabled = false;
+
+        instance.SetActive(true);
     }
 
     /// <summary>
