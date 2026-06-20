@@ -31,7 +31,7 @@ namespace HorrorGame.UI
                 _canvasGroup.alpha = 0f;
         }
 
-        /// <summary>メッセージを表示する。表示中に呼ばれた場合はリセットして再表示する。</summary>
+        /// メッセージを表示する。表示中に呼ばれた場合はリセットして再表示する。
         public void Show(string message)
         {
             if (_currentRoutine != null)

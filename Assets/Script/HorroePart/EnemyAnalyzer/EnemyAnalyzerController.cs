@@ -24,6 +24,10 @@ public class EnemyAnalyzerController : MonoBehaviour
             (nameof(_analyzerUIGroup), _analyzerUIGroup),
             (nameof(_detector), _detector),
             (nameof(_handLightController), _handLightController));
+
+        _analyzerUIGroup.alpha          = 0f;
+        _analyzerUIGroup.interactable   = false;
+        _analyzerUIGroup.blocksRaycasts = false;
     }
 
     private void OnEnable()
