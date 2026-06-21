@@ -822,7 +822,6 @@ public class RoomGridDataEditor : Editor
             }
 
             EditorUtility.SetDirty(data);
-            Debug.Log($"[RoomGridDataEditor] Auto-fill 完了: {blocked}/{navW * navH} セルをブロック ({data.name})");
         }
         finally
         {

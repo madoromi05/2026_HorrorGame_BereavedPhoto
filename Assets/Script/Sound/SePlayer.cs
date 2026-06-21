@@ -35,7 +35,7 @@ public class SePlayer : MonoBehaviour
         if (clip == null) return;
         var src = GetFreeSource();
         src.pitch = pitch;
-        GetFreeSource().PlayOneShot(clip, volume);
+        src.PlayOneShot(clip, volume);
     }
 
     private AudioSource GetFreeSource()

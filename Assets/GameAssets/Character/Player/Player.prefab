@@ -280,6 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraTransform: {fileID: 8010184895929199707}
   _pitchSensitivity: 0.1
+  _aimSensitivityMultiplier: 0.6
   _minPitch: -90
   _maxPitch: 90
 --- !u!114 &298422640435024309
@@ -298,6 +299,11 @@ MonoBehaviour:
   _crouchSpeed: 2
   _dashSpeed: 8
   _yawSensitivity: 0.1
+  _aimSensitivityMultiplier: 0.5
+  _aimSpeedMultiplier: 0.8
+  _walkStepInterval: 0.5
+  _dashStepInterval: 0.3
+  _dashStepPitch: 1.4
 --- !u!114 &8524082225208621706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,6 +456,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceTurnDuration: 0.5
   _holdDuration: 0.5
+  _enemyAimHeight: 1.5
 --- !u!114 &6175971953874847756
 MonoBehaviour:
   m_ObjectHideFlags: 0

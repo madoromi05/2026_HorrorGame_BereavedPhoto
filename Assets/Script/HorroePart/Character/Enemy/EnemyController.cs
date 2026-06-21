@@ -9,6 +9,9 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MonoBehaviour
 {
+    [Header("注視点")]
+    [SerializeField] private Transform _aimPoint;
+
     [Header("追跡")]
     [SerializeField] private float _chaseSpeed = 6f;
     [SerializeField] private float _chaseDestUpdateInterval = 0.6f;
@@ -31,7 +34,13 @@ public class EnemyController : MonoBehaviour
 
     public void SetPlayer(Transform player)
     {
-        _player = player;
+        if (player == null)
+        {
+            DebugCustom.LogWarning($"EnemyController.SetPlayer() に null が渡されました。", this);
+            return;
+        }
+
+            _player = player;
         _gameOverHandler = _player.GetComponent<GameOverHandler>();
     }
 
@@ -43,6 +52,7 @@ public class EnemyController : MonoBehaviour
     public void Stop()
     {
         _isActivated = false;
+        StopCoroutine(nameof(StunCoroutine));   // スタン中のコルーチンがあれば停止 
         _agent.isStopped = true;
     }
 
@@ -57,6 +67,7 @@ public class EnemyController : MonoBehaviour
         _agent.isStopped = true;
         _isActivated = false;
         yield return new WaitForSeconds(duration);
+        if (this == null || _agent == null) yield break;
         _agent.isStopped = false;
         _isActivated = true;
     }
@@ -75,8 +86,7 @@ public class EnemyController : MonoBehaviour
             float distSq = dx * dx + dz * dz;
             if (distSq < _catchDistance * _catchDistance)
             {
-                Debug.Log($"[EnemyController] 捕捉! 敵位置: {transform.position}, Player位置: {_player.position}, XZ距離: {Mathf.Sqrt(distSq):F3}");
-                _gameOverHandler.TriggerGameOver(transform);
+                _gameOverHandler.TriggerGameOver(transform, _aimPoint);
                 return;
             }
         }

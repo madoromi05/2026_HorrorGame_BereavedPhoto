@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyRevealUI: {fileID: 0}
-  _enemyRevealSe: 1
+  _enemyRevealSe: 6
   _freezeDuration: 2
   _revealDuration: 1
 --- !u!1 &3362145402759184234

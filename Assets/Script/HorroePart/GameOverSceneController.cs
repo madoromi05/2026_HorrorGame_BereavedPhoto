@@ -10,6 +10,12 @@ using TMPro;
 /// </summary>
 public class GameOverSceneController : MonoBehaviour
 {
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible   = true;
+    }
+
     /// <summary>現在のホラーシーンを再ロードする。</summary>
     public void OnRetry()
     {

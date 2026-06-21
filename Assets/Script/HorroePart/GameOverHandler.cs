@@ -20,7 +20,7 @@ public class GameOverHandler : MonoBehaviour
     /// ゲームオーバーをトリガーする。
     /// 敵の Transform を渡すと、まず敵の真正面を向いてから遷移する。
     /// </summary>
-    public void TriggerGameOver(Transform enemy = null)
+    public void TriggerGameOver(Transform enemy = null, Transform aimPoint = null)
     {
         if (_triggered) return;
         _triggered = true;
@@ -29,10 +29,10 @@ public class GameOverHandler : MonoBehaviour
         AudioManager.Instance?.PlaySe(SeType.GameOver);
         enabled = false;
 
-        StartCoroutine(GameOverSequence(enemy));
+        StartCoroutine(GameOverSequence(enemy, aimPoint));
     }
 
-    private IEnumerator GameOverSequence(Transform enemy)
+    private IEnumerator GameOverSequence(Transform enemy, Transform aimPoint)
     {
         var mover = GetComponent<PlayerMover>();
         var cam   = GetComponent<PlayerCamera>();
@@ -69,7 +69,9 @@ public class GameOverHandler : MonoBehaviour
                 float rawPitch = camTransform.localEulerAngles.x;
                 startPitch = rawPitch > 180f ? rawPitch - 360f : rawPitch;
 
-                Vector3 aimTarget = enemy.position + Vector3.up * _enemyAimHeight;
+                Vector3 aimTarget = aimPoint != null
+                    ? aimPoint.position
+                    : enemy.position + Vector3.up * _enemyAimHeight;
                 Vector3 toAim     = aimTarget - camTransform.position;
                 float   hDist     = new Vector2(toAim.x, toAim.z).magnitude;
                 // ローカル X 正 = 下向き（Unity FPS 慣例）なので符号反転

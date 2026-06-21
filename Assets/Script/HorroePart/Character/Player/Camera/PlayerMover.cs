@@ -32,6 +32,8 @@ public class PlayerMover : MonoBehaviour
 
     [Header("感度、調整用設定")]
     [SerializeField] private float _yawSensitivity = 0.1f;
+    [SerializeField] private float _aimSensitivityMultiplier = 0.5f;
+    [SerializeField] private float _aimSpeedMultiplier = 0.6f;
 
 
     [Header("足音")]
@@ -45,6 +47,7 @@ public class PlayerMover : MonoBehaviour
     private Vector2 _moveInput;
     private float _currentYaw;
     private float _footStepTimer;
+    private bool _isAiming;
 
     private void Awake()
     {
@@ -63,23 +66,28 @@ public class PlayerMover : MonoBehaviour
 
     private void OnEnable()
     {
-        _inputCallbackController.OnMovePerformed += HandleMove;
-        _inputCallbackController.OnLookPerformed += HandleLook;
+        _inputCallbackController.OnMovePerformed   += HandleMove;
+        _inputCallbackController.OnLookPerformed   += HandleLook;
+        _inputCallbackController.OnCameraPerformed += HandleAiming;
     }
 
     private void OnDisable()
     {
-        _inputCallbackController.OnMovePerformed -= HandleMove;
-        _inputCallbackController.OnLookPerformed -= HandleLook;
+        _inputCallbackController.OnMovePerformed   -= HandleMove;
+        _inputCallbackController.OnLookPerformed   -= HandleLook;
+        _inputCallbackController.OnCameraPerformed -= HandleAiming;
     }
+
+    private void HandleAiming(bool isAiming) => _isAiming = isAiming;
 
     private void HandleMove(Vector2 input) => _moveInput = input;
 
     private void HandleLook(Vector2 input)
     {
         if (Frozen) return;
+        float sens = _yawSensitivity * (_isAiming ? _aimSensitivityMultiplier : 1f);
         // 左右回転（Yaw）のみ更新。上下回転は FPSCamera が制御
-        _currentYaw += input.x * _yawSensitivity;
+        _currentYaw += input.x * sens;
         transform.eulerAngles = new Vector3(0f, _currentYaw, 0f);
     }
 
@@ -92,6 +100,7 @@ public class PlayerMover : MonoBehaviour
             MoveState.Crouch => _crouchSpeed,
             _ => _moveSpeed,
         };
+        if (_isAiming) speed *= _aimSpeedMultiplier;
 
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
