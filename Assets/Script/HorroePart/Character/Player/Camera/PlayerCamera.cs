@@ -32,13 +32,13 @@ public class PlayerCamera : MonoBehaviour
             _pitchSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
     }
 
-    /// オプションメニューからマウス感度を即時反映する。
+    /// <summary>オプションメニューからマウス感度を即時反映する。</summary>
     public void SetSensitivity(float v) => _pitchSensitivity = v;
 
-    /// DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する。
+    /// <summary>DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する。</summary>
     public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;
 
-    /// ピッチを 0 にリセットしてカメラを水平に戻す。
+    /// <summary>ピッチを 0 にリセットしてカメラを水平に戻す。</summary>
     public void ResetPitch()
     {
         _currentPitch = 0f;
@@ -57,6 +57,7 @@ public class PlayerCamera : MonoBehaviour
     {
         _inputCallbackController.OnLookPerformed   -= HandleLook;
         _inputCallbackController.OnCameraPerformed -= HandleAiming;
+        _isAiming = false;
     }
 
     private void HandleAiming(bool isAiming) => _isAiming = isAiming;

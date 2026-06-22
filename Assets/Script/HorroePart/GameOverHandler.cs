@@ -15,6 +15,17 @@ public class GameOverHandler : MonoBehaviour
     [SerializeField] private float _enemyAimHeight = 1.5f;
 
     private bool _triggered;
+    private PlayerMover _playerMover;
+    private PlayerCamera _playerCamera;
+    private Transform _mainCameraTransform;
+
+    private void Awake()
+    {
+        _playerMover = GetComponent<PlayerMover>();
+        _playerCamera = GetComponent<PlayerCamera>();
+        if (Camera.main != null)
+            _mainCameraTransform = Camera.main.transform;
+    }
 
     /// <summary>
     /// ゲームオーバーをトリガーする。
@@ -34,20 +45,11 @@ public class GameOverHandler : MonoBehaviour
 
     private IEnumerator GameOverSequence(Transform enemy, Transform aimPoint)
     {
-        var mover = GetComponent<PlayerMover>();
-        var cam   = GetComponent<PlayerCamera>();
-        if (mover != null) mover.enabled = false;
-        if (cam   != null) cam.enabled = false;   // 入力を即座に遮断（ResetPitch は呼ばない）
+        if (_playerMover != null) _playerMover.enabled = false;
+        if (_playerCamera != null) _playerCamera.enabled = false;   // 入力を即座に遮断（ResetPitch は呼ばない）
 
         foreach (var e in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
             e.Stop();
-
-        var rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
 
         if (enemy != null)
         {
@@ -60,7 +62,7 @@ public class GameOverHandler : MonoBehaviour
                 : startYaw;
 
             // ── Pitch: カメラを敵の注視点へ垂直回転 ──
-            var camTransform = Camera.main != null ? Camera.main.transform : null;
+            var camTransform = _mainCameraTransform;
             float startPitch  = 0f;
             float targetPitch = 0f;
             if (camTransform != null)

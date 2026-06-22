@@ -76,6 +76,7 @@ public class PlayerMover : MonoBehaviour
         _inputCallbackController.OnMovePerformed   -= HandleMove;
         _inputCallbackController.OnLookPerformed   -= HandleLook;
         _inputCallbackController.OnCameraPerformed -= HandleAiming;
+        _isAiming = false;
     }
 
     private void HandleAiming(bool isAiming) => _isAiming = isAiming;
@@ -94,13 +95,15 @@ public class PlayerMover : MonoBehaviour
     private void FixedUpdate()
     {
         if (Frozen) return;
-        float speed = GetMoveState() switch
+        var state = GetMoveState();
+        float speed = state switch
         {
             MoveState.Dash => _dashSpeed,
             MoveState.Crouch => _crouchSpeed,
             _ => _moveSpeed,
         };
         if (_isAiming) speed *= _aimSpeedMultiplier;
+
 
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
@@ -111,7 +114,7 @@ public class PlayerMover : MonoBehaviour
 
         Vector3 movement = (forward * input.y + right * input.x) * speed * Time.fixedDeltaTime;
         _characterController.Move(movement);
-        UpdateFootStep();
+        UpdateFootStep(state);
     }
 
     /// <summary>
@@ -129,9 +132,8 @@ public class PlayerMover : MonoBehaviour
     /// <summary>
     /// Playerの移動状態に応じて足音を再生する。歩きとダッシュで間隔とピッチが変わる。
     /// </summary>
-    private void UpdateFootStep()
+    private void UpdateFootStep(MoveState state)
     {
-        var state = GetMoveState();
         if (state != MoveState.Walk && state != MoveState.Dash)
         {
             _footStepTimer = 0f;
