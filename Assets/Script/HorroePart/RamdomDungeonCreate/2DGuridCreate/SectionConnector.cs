@@ -3,6 +3,7 @@
 /// MST（最小全域木）による全セクション接続と、追加分岐の生成を担当する。
 /// MaxCorridorLength は「一直線に進める最大マス数」を意味し、
 /// 超過した場合は自動的に曲がって迂回し、必ず接続する（スキップしない）。
+/// 追加通路は MinExtraCorridorLength 条件を満たすセクションペアのみ生成する。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ public class SectionConnector
     private SectionData[] _sections;
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
-    private int _corridorWidth;
     private int _maxCorridorLength;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
@@ -32,7 +32,6 @@ public class SectionConnector
         _sections = sections;
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
-        _corridorWidth = bluePrint.CorridorWidth;
         _maxCorridorLength = bluePrint.MaxCorridorLength;
 
         ConnectAllSections();
@@ -77,44 +76,35 @@ public class SectionConnector
         }
     }
 
+    // 全セクションペアを検査し、どちらの接続点から見ても MinExtraCorridorLength 以上
+    // 離れているペアのみ追加通路を生成する。
     private void AddExtraBranches(FieldBluePrint bluePrint)
     {
-        int extraCount = Random.Range(bluePrint.MinExtraBranchNum, bluePrint.MaxExtraBranchNum + 1);
-        var candidates = BuildAllPairs();
+        int minLength = bluePrint.MinExtraCorridorLength;
 
-        const int kMaxRetry = 20;
-        for (int i = 0; i < extraCount; i++)
+        for (int i = 0; i < _sections.Length; i++)
         {
-            if (candidates.Count > 0)
+            for (int j = i + 1; j < _sections.Length; j++)
             {
-                var (from, to) = candidates[Random.Range(0, candidates.Count)];
-                ConnectTwoSections(from, to);
-            }
-            else
-            {
-                SectionData from, to;
-                int retry = 0;
-                do
-                {
-                    from = _sections[Random.Range(0, _sections.Length)];
-                    to   = _sections[Random.Range(0, _sections.Length)];
-                } while (from == to && ++retry < kMaxRetry);
+                var from = _sections[i];
+                var to   = _sections[j];
 
-                if (from != to)
+                var startPos   = GetConnectionPoint(from, to);
+                var endPos     = GetConnectionPoint(to, from);
+                var fromCenter = from.GridPosition + from.GridSize / 2;
+                var toCenter   = to.GridPosition   + to.GridSize   / 2;
+
+                // from 側の接続点 → to の中心までの距離
+                int distFromSide = Mathf.Abs(startPos.x - toCenter.x)
+                                 + Mathf.Abs(startPos.y - toCenter.y);
+                // to 側の接続点 → from の中心までの距離
+                int distToSide   = Mathf.Abs(endPos.x - fromCenter.x)
+                                 + Mathf.Abs(endPos.y - fromCenter.y);
+
+                if (distFromSide >= minLength && distToSide >= minLength)
                     ConnectTwoSections(from, to);
             }
         }
-    }
-
-    // 追加分岐の候補として全セクションペアを返す。
-    // 直線長制限は A* 内で処理するため、距離によるフィルタは不要。
-    private List<(SectionData, SectionData)> BuildAllPairs()
-    {
-        var result = new List<(SectionData, SectionData)>();
-        for (int i = 0; i < _sections.Length; i++)
-            for (int j = i + 1; j < _sections.Length; j++)
-                result.Add((_sections[i], _sections[j]));
-        return result;
     }
 
     /// <summary>
@@ -134,7 +124,6 @@ public class SectionConnector
             return false;
         }
 
-        var newlyPainted = new List<Vector2Int>();
         foreach (var pos in path)
         {
             var cellType = _grid[pos.x, pos.y];
@@ -142,50 +131,9 @@ public class SectionConnector
             if (cellType == GridType.Floor)    continue;
             if (cellType == GridType.Corridor) continue;
             _grid[pos.x, pos.y] = GridType.Corridor;
-            newlyPainted.Add(pos);
         }
-
-        if (_corridorWidth > 1)
-            ExpandPath(path, newlyPainted);
 
         return true;
-    }
-
-    /// <summary>
-    /// 経路の各セルから _corridorWidth の範囲（正方形）を Corridor に塗る。
-    /// Door / Floor / Wall は保護して上書きしない。
-    /// </summary>
-    private void ExpandPath(List<Vector2Int> corridorPath, List<Vector2Int> newlyPainted)
-    {
-        int extraWidth = _corridorWidth - 1;
-
-        var paintedSet = new HashSet<Vector2Int>(newlyPainted);
-        for (int i = 0; i < corridorPath.Count; i++)
-        {
-            var center = corridorPath[i];
-            if (!paintedSet.Contains(center)) continue;
-
-            var prev = (i > 0) ? corridorPath[i - 1] : corridorPath[i + 1];
-            var next = (i < corridorPath.Count - 1) ? corridorPath[i + 1] : corridorPath[i - 1];
-            var dir  = next - prev;
-
-            var perp = (dir.x != 0)
-                ? new Vector2Int(0, 1)
-                : new Vector2Int(1, 0);
-
-            for (int w = 1; w <= extraWidth; w++)
-                PaintCell(center + perp * w);
-        }
-    }
-
-    private void PaintCell(Vector2Int pos)
-    {
-        if (!IsInGrid(pos)) return;
-        var cellType = _grid[pos.x, pos.y];
-        if (cellType == GridType.Door)  return;
-        if (cellType == GridType.Floor) return;
-        if (cellType == GridType.Wall)  return;
-        _grid[pos.x, pos.y] = GridType.Corridor;
     }
 
     private Vector2Int GetConnectionPoint(SectionData section, SectionData target)

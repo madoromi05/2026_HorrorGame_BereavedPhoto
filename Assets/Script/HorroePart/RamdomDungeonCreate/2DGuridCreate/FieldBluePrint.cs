@@ -11,14 +11,11 @@ public class FieldBluePrint : ScriptableObject
     public Vector2Int MapSize;           // マップ全体のグリッドサイズ
     public Vector2Int SectionDivide;     // セクション分割数
 
-    // 全Section接続後に追加するランダム通路の本数範囲
-    public int MinExtraBranchNum;
-    public int MaxExtraBranchNum;
-
     // 通路の最大長（グリッドセル数）。0 以下で無制限
     public int MaxCorridorLength = 10;
 
-    [Range(1, 3)] public int CorridorWidth;
+    // 追加通路を生成する最小距離（どちらのセクションから見ても接続点がこの値以上離れていること）
+    public int MinExtraCorridorLength = 15;
 
 
 }
