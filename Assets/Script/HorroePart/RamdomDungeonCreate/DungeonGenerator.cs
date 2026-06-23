@@ -77,8 +77,6 @@ public class DungeonGenerator : MonoBehaviour
         // 部屋プレハブに NavMeshAgent が埋め込まれている場合、Instantiate 時点では
         // NavMesh が未ベイクのためエラーになる。ベイク完了まで一時的に無効化する。
         var roomEmbeddedAgents = _roomParent.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>();
-        foreach (var agent in roomEmbeddedAgents)
-            agent.enabled = false;
 
         corridorPlacer.Place(grid, _corridorParent);
         _navMeshSurface?.BuildNavMesh();

@@ -10,6 +10,7 @@ using UnityEngine;
 public class IsolatedDoorRepairer
 {
     private GridType[,] _grid;
+    private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     /// <summary>
     /// 孤立 Door の補修を実行する。
@@ -17,27 +18,14 @@ public class IsolatedDoorRepairer
     /// </summary>
     public void Repair(
         GridType[,] grid,
-        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
-        SectionConnector connector,
-        SectionData[] sections)
+        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap)
     {
         _grid = grid;
 
         var corridorCells = CollectCorridorCells();
-
-        // ConnectSections が全失敗した場合は隣接セクションを順番に強制接続して通路を確保する
         if (corridorCells.Count == 0)
         {
             DebugCustom.LogWarning("[IsolatedDoorRepairer] corridorCells が空のため強制接続を実行します");
-            for (int i = 0; i < sections.Length - 1; i++)
-                connector.ConnectTwoSections(sections[i], sections[i + 1]);
-            corridorCells = CollectCorridorCells();
-        }
-
-        // 強制接続後も Corridor が生成できなかった場合はマップ設定が不正なので中断する
-        if (corridorCells.Count == 0)
-        {
-            DebugCustom.LogWarning("[IsolatedDoorRepairer] 強制接続後も corridorCells が空です。マップ設定を確認してください");
             return;
         }
 
@@ -72,7 +60,7 @@ public class IsolatedDoorRepairer
             return;
         }
 
-        var path = RunAStar(exitCell.Value, target.Value);
+        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value);
         if (path == null)
         {
             DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door A* 失敗: {exitCell.Value} -> {target.Value}");
@@ -148,90 +136,6 @@ public class IsolatedDoorRepairer
         }
 
         return nearest;
-    }
-
-    /// <summary>
-    /// A* で start から end までの経路を返す。
-    /// Wall と部屋内部（Door 以外の Floor）は通過不可。
-    /// 経路が見つからない場合は null を返す。
-    /// </summary>
-    private List<Vector2Int> RunAStar(Vector2Int start, Vector2Int end)
-    {
-        var openSet = new SortedSet<(float f, Vector2Int pos)>(
-            Comparer<(float f, Vector2Int pos)>.Create((a, b) =>
-                a.f != b.f ? a.f.CompareTo(b.f) :
-                a.pos.x != b.pos.x ? a.pos.x.CompareTo(b.pos.x) :
-                a.pos.y.CompareTo(b.pos.y)
-            )
-        );
-
-        var gCost = new Dictionary<Vector2Int, float>();
-        var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-
-        gCost[start] = 0f;
-        openSet.Add((Heuristic(start, end), start));
-
-        var neighbors = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
-        int iterationCount = 0;
-        const int kMaxIterations = 100;
-
-        while (openSet.Count > 0)
-        {
-            if (++iterationCount > kMaxIterations)
-            {
-                DebugCustom.LogWarning($"[IsolatedDoorRepairer] A*探索が上限({kMaxIterations}回)に達したため強制中断しました。Start:{start} End:{end}");
-                break;
-            }
-
-            var (_, current) = openSet.Min;
-            openSet.Remove(openSet.Min);
-
-            if (current == end)
-                return BuildPath(cameFrom, current);
-
-            foreach (var dir in neighbors)
-            {
-                var neighbor = current + dir;
-                if (!IsInGrid(neighbor)) continue;
-
-                var cellType = _grid[neighbor.x, neighbor.y];
-                if (cellType == GridType.Wall) continue;
-                if (cellType == GridType.Floor) continue;
-
-                float moveCost = cellType switch
-                {
-                    GridType.Door => 0.5f,
-                    GridType.Corridor => 0.5f,
-                    _ => 1.0f,
-                };
-
-                float newG = gCost[current] + moveCost;
-                if (gCost.TryGetValue(neighbor, out float existingG) && newG >= existingG) continue;
-
-                gCost[neighbor] = newG;
-                cameFrom[neighbor] = current;
-                openSet.Add((newG + Heuristic(neighbor, end), neighbor));
-            }
-        }
-
-        return null;
-    }
-
-    private float Heuristic(Vector2Int a, Vector2Int b)
-        => Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-
-    private List<Vector2Int> BuildPath(Dictionary<Vector2Int, Vector2Int> cameFrom, Vector2Int current)
-    {
-        var path = new List<Vector2Int>();
-        while (cameFrom.ContainsKey(current))
-        {
-            path.Add(current);
-            current = cameFrom[current];
-        }
-        path.Add(current);
-        path.Reverse();
-        return path;
     }
 
     private bool IsInGrid(Vector2Int pos)

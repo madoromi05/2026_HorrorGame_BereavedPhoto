@@ -42,10 +42,25 @@ public class DungeonGridBuilder
         _sectionConnector.Connect(grid, sections, sectionDoorMap, pathPointMap, bluePrint);
         LogGridStats(grid, "After ConnectSections");
 
-        _isolatedDoorRepairer.Repair(grid, sectionDoorMap, _sectionConnector, sections);
+        if (!HasAnyCorridor(grid))
+        {
+            DebugCustom.LogWarning("[DungeonGridBuilder] 通路が生成されなかったため強制接続を実行します");
+            for (int i = 0; i < sections.Length - 1; i++)
+                _sectionConnector.ConnectTwoSections(sections[i], sections[i + 1]);
+        }
+
+        _isolatedDoorRepairer.Repair(grid, sectionDoorMap);
         LogGridStats(grid, "After ConnectUnconnectedDoors");
 
         return (grid, sections);
+    }
+
+    private bool HasAnyCorridor(GridType[,] grid)
+    {
+        for (int x = 0; x < grid.GetLength(0); x++)
+            for (int y = 0; y < grid.GetLength(1); y++)
+                if (grid[x, y] == GridType.Corridor) return true;
+        return false;
     }
 
     private void LogGridStats(GridType[,] grid, string label)
