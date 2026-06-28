@@ -19,9 +19,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _bgmGameChase;
     [SerializeField] private AudioClip _bgmEnding;
     [SerializeField] private AudioClip _bgmScenario;
-    [SerializeField] private AudioClip _seFootStep;
 
     [Header("SE クリップ")]
+    [SerializeField] private AudioClip _seFootStep;
     [SerializeField] private AudioClip _seEnemyMother;
     [SerializeField] private AudioClip _seEnemyFather;
     [SerializeField] private AudioClip _seItemPickup;
@@ -86,17 +86,14 @@ public class AudioManager : MonoBehaviour
     }
 
     // ---- ボリューム / ミュート ----
-
     public void SetBgmVolume(float normalized) => _mixerProxy?.SetBgmVolume(normalized);
     public void SetSeVolume(float normalized)  => _mixerProxy?.SetSeVolume(normalized);
     public void MuteBgm(bool mute)             => _mixerProxy?.MuteBgm(mute);
     public void MuteSe(bool mute)              => _mixerProxy?.MuteSe(mute);
-
     public float BgmVolume => _mixerProxy != null ? _mixerProxy.GetBgmVolume() : 1f;
     public float SeVolume  => _mixerProxy != null ? _mixerProxy.GetSeVolume()  : 1f;
 
     // ---- クリップ取得 ----
-
     private AudioClip GetBgmClip(BgmType type) => type switch
     {
         BgmType.Title      => _bgmTitle,

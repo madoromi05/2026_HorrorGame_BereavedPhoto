@@ -11,11 +11,6 @@ public class FieldBluePrint : ScriptableObject
     public Vector2Int MapSize;           // マップ全体のグリッドサイズ
     public Vector2Int SectionDivide;     // セクション分割数
 
-    // 通路の最大長（グリッドセル数）。0 以下で無制限
-    public int MaxCorridorLength = 10;
-
     // 追加通路を生成する最小距離（どちらのセクションから見ても接続点がこの値以上離れていること）
-    public int MinExtraCorridorLength = 15;
-
-
+    public int MinExtraCorridorLength = 8;
 }

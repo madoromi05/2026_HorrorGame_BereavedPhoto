@@ -40,13 +40,15 @@ public class RoomDataBase : ScriptableObject
             if (!_entryMap.ContainsKey(entry.RoomType))
             {
                 _entryMap[entry.RoomType] = entry;
-                roomGridDataAccum[entry.RoomType] = new List<RoomGridData>(entry.RoomGridDatas ?? System.Array.Empty<RoomGridData>());
+                roomGridDataAccum[entry.RoomType] = new List<RoomGridData>(
+                    System.Array.FindAll(entry.RoomGridDatas ?? System.Array.Empty<RoomGridData>(), d => d != null));
             }
             else
             {
                 // 同一RoomTypeは RoomGridDatas を結合する（Prefab・EnemyEntries は最初のエントリを使用）
                 if (entry.RoomGridDatas != null)
-                    roomGridDataAccum[entry.RoomType].AddRange(entry.RoomGridDatas);
+                    foreach (var d in entry.RoomGridDatas)
+                        if (d != null) roomGridDataAccum[entry.RoomType].Add(d);
             }
         }
 

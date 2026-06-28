@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// 敵に取り付けて周期的に SE を 3D 音源で再生し、Raycast による壁オクルージョンを適用する。
@@ -15,7 +16,8 @@ using UnityEngine;
 public class EnemySoundPlayer : MonoBehaviour
 {
     [Header("SE 間隔")]
-    [SerializeField] private float _seInterval        = 3f;
+    [SerializeField] private AudioMixerGroup _outputGroup;
+    [SerializeField] private float _seInterval         = 3f;
     [SerializeField] private float _seIntervalVariance = 2f;
 
     [Header("3D 音源")]
@@ -51,6 +53,9 @@ public class EnemySoundPlayer : MonoBehaviour
         _audioSource.maxDistance  = _maxDistance;
         _audioSource.playOnAwake  = false;
         _audioSource.volume       = 1f;
+
+        if (_outputGroup != null)
+            _audioSource.outputAudioMixerGroup = _outputGroup;
 
         _lowPassFilter.cutoffFrequency = _openCutoffHz;
 

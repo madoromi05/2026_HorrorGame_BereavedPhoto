@@ -9,8 +9,8 @@ public class AudioMixerProxy : MonoBehaviour
 {
     [SerializeField] private AudioMixer _mixer;
 
-    private const string BgmParam = "BGM";
-    private const string SeParam  = "SE";
+    private const string kBgmParam = "BGM";
+    private const string kSeParam  = "SE";
 
     private float _bgmVolume = 1f;
     private float _seVolume  = 1f;
@@ -22,14 +22,14 @@ public class AudioMixerProxy : MonoBehaviour
     {
         _bgmVolume = Mathf.Clamp01(normalized);
         if (!_bgmMuted)
-            _mixer?.SetFloat(BgmParam, ToDb(_bgmVolume));
+            _mixer?.SetFloat(kBgmParam, ToDb(_bgmVolume));
     }
 
     public void SetSeVolume(float normalized)
     {
         _seVolume = Mathf.Clamp01(normalized);
         if (!_seMuted)
-            _mixer?.SetFloat(SeParam, ToDb(_seVolume));
+            _mixer?.SetFloat(kSeParam, ToDb(_seVolume));
     }
 
     public float GetBgmVolume() => _bgmVolume;
@@ -39,13 +39,13 @@ public class AudioMixerProxy : MonoBehaviour
     public void MuteBgm(bool mute)
     {
         _bgmMuted = mute;
-        _mixer?.SetFloat(BgmParam, mute ? -80f : ToDb(_bgmVolume));
+        _mixer?.SetFloat(kBgmParam, mute ? -80f : ToDb(_bgmVolume));
     }
 
     public void MuteSe(bool mute)
     {
         _seMuted = mute;
-        _mixer?.SetFloat(SeParam, mute ? -80f : ToDb(_seVolume));
+        _mixer?.SetFloat(kSeParam, mute ? -80f : ToDb(_seVolume));
     }
     // ---- ユーティリティ ----
 

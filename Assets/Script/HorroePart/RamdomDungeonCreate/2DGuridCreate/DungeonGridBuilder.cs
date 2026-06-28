@@ -7,6 +7,7 @@
 ///   2. RoomGridPlacer      - グリッドへの部屋・パスポイント書き込み
 ///   3. SectionConnector    - MST + 追加分岐による通路生成（A*）
 ///   4. IsolatedDoorRepairer- 孤立 Door の後処理補修
+///   5. DeadEndConnector    - 行き止まり通路を最近傍通路へ接続
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class DungeonGridBuilder
     private RoomGridPlacer _roomGridPlacer;
     private SectionConnector _sectionConnector;
     private IsolatedDoorRepairer _isolatedDoorRepairer;
+    private DeadEndConnector _deadEndConnector;
 
     public DungeonGridBuilder()
     {
@@ -24,6 +26,7 @@ public class DungeonGridBuilder
         _roomGridPlacer = new RoomGridPlacer();
         _sectionConnector = new SectionConnector();
         _isolatedDoorRepairer = new IsolatedDoorRepairer();
+        _deadEndConnector = new DeadEndConnector();
     }
 
     /// <summary>
@@ -51,6 +54,9 @@ public class DungeonGridBuilder
 
         _isolatedDoorRepairer.Repair(grid, sectionDoorMap);
         LogGridStats(grid, "After ConnectUnconnectedDoors");
+
+        _deadEndConnector.Connect(grid);
+        LogGridStats(grid, "After ConnectDeadEnds");
 
         return (grid, sections);
     }

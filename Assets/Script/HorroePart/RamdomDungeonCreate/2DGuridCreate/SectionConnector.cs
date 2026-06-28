@@ -15,7 +15,6 @@ public class SectionConnector
     private SectionData[] _sections;
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
-    private int _maxCorridorLength;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     /// <summary>
@@ -32,7 +31,6 @@ public class SectionConnector
         _sections = sections;
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
-        _maxCorridorLength = bluePrint.MaxCorridorLength;
 
         ConnectAllSections();
         AddExtraBranches(bluePrint);
@@ -117,7 +115,7 @@ public class SectionConnector
         var startPos = GetConnectionPoint(from, to);
         var endPos   = GetConnectionPoint(to, from);
 
-        var path = _pathfinder.FindPath(_grid, startPos, endPos, _maxCorridorLength);
+        var path = _pathfinder.FindPath(_grid, startPos, endPos);
         if (path == null)
         {
             DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");

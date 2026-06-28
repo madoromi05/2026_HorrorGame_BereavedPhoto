@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 849f068f49f3e3b4e8f1cebce6b6e999, type: 3}
-  m_Name: FieldBluePrint_HorrorPart1
+  m_Script: {fileID: 11500000, guid: 6832be63cdd1d894dad2b0e040a87cd8, type: 3}
+  m_Name: ObstructionItemData
   m_EditorClassIdentifier: 
-  OneGridSize: 8
-  MapSize: {x: 36, y: 36}
-  SectionDivide: {x: 3, y: 3}
-  MaxCorridorLength: 8
-  MinExtraCorridorLength: 8
+  _itemType: 3
+  _displayName: 
+  _icon: {fileID: 21300000, guid: 0a27684f4c4914f4d99e7f85cf3d6c17, type: 3}
+  _description: 

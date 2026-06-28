@@ -51,7 +51,6 @@ public class AStarPathfinder
         GridType[,] grid,
         Vector2Int start,
         Vector2Int end,
-        int maxStraight = 0,
         bool avoidCorridorAdjacency = false)
     {
         var openSet = new SortedSet<(float f, int id)>(
@@ -91,7 +90,6 @@ public class AStarPathfinder
                 if (cellType == GridType.Floor) continue;
 
                 int newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
-                if (maxStraight > 0 && newStraight > maxStraight) continue;
 
                 float moveCost = cellType switch
                 {

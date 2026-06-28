@@ -14,12 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _entries:
   - CorridorType: 0
-    CorridorPrefab: {fileID: 4491565729967431468, guid: c993e3bc36a269b4aa2408b82728dc95, type: 3}
+    CorridorPrefab: {fileID: 2120093827002533099, guid: 7ea548bae4057a744904f5ffd04db747, type: 3}
   - CorridorType: 1
     CorridorPrefab: {fileID: 6488183903742532064, guid: c430b8a1605020a43addee0434ea5167, type: 3}
   - CorridorType: 2
     CorridorPrefab: {fileID: 6488183903742532064, guid: 6fccfe74c86c303448890433ed7fbb4b, type: 3}
   - CorridorType: 3
     CorridorPrefab: {fileID: 6488183903742532064, guid: 54b71a42949ffe746b0fddbddd60e854, type: 3}
-  - CorridorType: 4
-    CorridorPrefab: {fileID: 6488183903742532064, guid: c4a6f0018c6ff2f42a13bd4e000382fd, type: 3}

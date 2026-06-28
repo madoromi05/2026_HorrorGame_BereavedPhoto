@@ -12,12 +12,14 @@ namespace HorrorGame.Item
     {
         [SerializeField] private ItemType _itemType;
         [SerializeField] private string _displayName;
+        [SerializeField] private Sprite _icon;
 
         [TextArea(2, 5)]
         [SerializeField] private string _description;
 
         public ItemType ItemType => _itemType;
         public string DisplayName => _displayName;
+        public Sprite Icon => _icon;
         public string Description => _description;
     }
 }

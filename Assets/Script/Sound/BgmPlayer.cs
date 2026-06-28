@@ -25,10 +25,7 @@ public class BgmPlayer : MonoBehaviour
             _source.outputAudioMixerGroup = _outputGroup;
     }
 
-    /// <summary>現在再生中のクリップが引数と一致するか。</summary>
-    public bool IsPlaying(AudioClip clip) => _source.isPlaying && _source.clip == clip;
-
-    /// <summary>フェードインして再生。</summary>
+    /// フェードインして再生。
     public void Play(AudioClip clip, float fadeIn = -1f)
     {
         if (clip == null) return;
@@ -37,7 +34,7 @@ public class BgmPlayer : MonoBehaviour
             FadeInRoutine(clip, fadeIn >= 0f ? fadeIn : _defaultFadeDuration));
     }
 
-    /// <summary>フェードアウトして停止。</summary>
+    /// フェードアウトして停止。
     public void Stop(float fadeOut = -1f)
     {
         if (!_source.isPlaying) return;
@@ -46,7 +43,7 @@ public class BgmPlayer : MonoBehaviour
             FadeOutRoutine(fadeOut >= 0f ? fadeOut : _defaultFadeDuration));
     }
 
-    /// <summary>現在の曲をフェードアウトし、新しい曲をフェードインする。</summary>
+    /// 現在の曲をフェードアウトし、新しい曲をフェードインする。
     public void CrossFade(AudioClip newClip, float crossDuration = -1f)
     {
         if (newClip == null) return;
@@ -89,10 +86,14 @@ public class BgmPlayer : MonoBehaviour
 
     private IEnumerator CrossFadeRoutine(AudioClip newClip, float duration)
     {
-        float half = duration * 0.5f;
         if (_source.isPlaying)
+        {
+            float half = duration * 0.5f;
             yield return FadeOutRoutine(half);
-        yield return FadeInRoutine(newClip, half);
+            yield return FadeInRoutine(newClip, half);
+        } else {
+            yield return FadeInRoutine(newClip, duration);
+        }
     }
 
     private void StopFade()
