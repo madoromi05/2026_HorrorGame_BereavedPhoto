@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75c8ae8d043cbfe4593e0d30cb6aba03, type: 3}
-  m_Name: NormalFloor_24 3
+  m_Name: NormalFloor_32_3
   m_EditorClassIdentifier: 
   GridSize: {x: 3, y: 3}
   DoorPositions:
@@ -47,7 +47,7 @@ MonoBehaviour:
   - {x: 8, y: 6}
   - {x: 11, y: 6}
   - {x: 5, y: 14}
-  RoomPrefab: {fileID: 3469361202669048594, guid: 3f09a1fc5aebf2a4fa5110f57765256b, type: 3}
+  RoomPrefab: {fileID: 3469361202669048594, guid: 8550d909ca9e83342a0128118e3ed600, type: 3}
   NavCheckYMin: 1
   NavCheckYMax: 3
   NavCheckXZScale: 0.85
