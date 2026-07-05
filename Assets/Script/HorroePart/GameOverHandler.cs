@@ -11,7 +11,7 @@ public class GameOverHandler : MonoBehaviour
 {
     [SerializeField] private float _faceTurnDuration = 0.5f;
     [SerializeField] private float _holdDuration = 1.0f;
-    /// <summary>敵のどの高さを注視点とするか（NavMeshAgent ルートからのオフセット）。</summary>
+    /// 敵のどの高さを注視点とするか（NavMeshAgent ルートからのオフセット）
     [SerializeField] private float _enemyAimHeight = 1.5f;
 
     private bool _triggered;
@@ -54,16 +54,23 @@ public class GameOverHandler : MonoBehaviour
         if (enemy != null)
         {
             // ── Yaw: 体を敵の方向へ水平回転 ──
-            float   startYaw  = transform.eulerAngles.y;
-            Vector3 toEnemy   = enemy.position - transform.position;
+            float startYaw = transform.eulerAngles.y;
+            Vector3 toEnemy = enemy.position - transform.position;
             toEnemy.y = 0f;
             float targetYaw = toEnemy.sqrMagnitude > 0.001f
                 ? Quaternion.LookRotation(toEnemy).eulerAngles.y
                 : startYaw;
 
+            const float debugDrawDuration = 30f; // 停止(Time.timeScale=0)後もSceneビューで確認できるよう長めに表示
+
+            Debug.Log($"[GameOverHandler] Enemy={enemy.name}, EnemyPos={enemy.position}, PlayerPos={transform.position}, startYaw={startYaw}, targetYaw={targetYaw}, turnAmount={Mathf.DeltaAngle(startYaw, targetYaw)}");
+            Debug.DrawLine(transform.position, enemy.position, Color.red, debugDrawDuration, false);
+            Debug.DrawRay(transform.position, Quaternion.Euler(0f, startYaw, 0f) * Vector3.forward * 3f, Color.blue, debugDrawDuration, false);
+            Debug.DrawRay(transform.position, Quaternion.Euler(0f, targetYaw, 0f) * Vector3.forward * 3f, Color.green, debugDrawDuration, false);
+
             // ── Pitch: カメラを敵の注視点へ垂直回転 ──
             var camTransform = _mainCameraTransform;
-            float startPitch  = 0f;
+            float startPitch = 0f;
             float targetPitch = 0f;
             if (camTransform != null)
             {
@@ -74,10 +81,17 @@ public class GameOverHandler : MonoBehaviour
                 Vector3 aimTarget = aimPoint != null
                     ? aimPoint.position
                     : enemy.position + Vector3.up * _enemyAimHeight;
-                Vector3 toAim     = aimTarget - camTransform.position;
-                float   hDist     = new Vector2(toAim.x, toAim.z).magnitude;
+
+                // camTransform は Player 直下の子なので、Yaw 回転後にカメラが実際に移動する位置を
+                // 先に予測してからピッチを計算する（回転前の位置で計算すると、体の回転量が
+                // 大きいほどカメラのオフセット分だけ狙点がズレる）。
+                Vector3 futureCamPos = transform.position + Quaternion.Euler(0f, targetYaw, 0f) * camTransform.localPosition;
+                Vector3 toAim = aimTarget - futureCamPos;
+                float hDist = new Vector2(toAim.x, toAim.z).magnitude;
                 // ローカル X 正 = 下向き（Unity FPS 慣例）なので符号反転
                 targetPitch = Mathf.Clamp(-Mathf.Atan2(toAim.y, hDist) * Mathf.Rad2Deg, -90f, 90f);
+
+                Debug.Log($"[GameOverHandler] AimTarget={aimTarget}, CameraAngle(before)={camTransform.eulerAngles}, targetYaw={targetYaw}, targetPitch={targetPitch}");
             }
 
             float elapsed = 0f;
@@ -93,10 +107,25 @@ public class GameOverHandler : MonoBehaviour
             transform.eulerAngles = new Vector3(0f, targetYaw, 0f);
             if (camTransform != null)
                 camTransform.localEulerAngles = new Vector3(targetPitch, 0f, 0f);
+
+            Debug.Log($"[GameOverHandler] CameraAngle(after)={camTransform?.eulerAngles}, PlayerAngle(after)={transform.eulerAngles}");
+            Debug.DrawRay(transform.position, transform.forward * 3f, Color.magenta, debugDrawDuration, false);
+            if (camTransform != null)
+                Debug.DrawRay(camTransform.position, camTransform.forward * 3f, Color.cyan, debugDrawDuration, false);
         }
 
         yield return new WaitForSeconds(_holdDuration);
 
-        SceneManager.LoadScene(GameProgressManager.SceneGameOver);
+        // ここで何かに上書きされていないか最終確認（停止直前のライブ値）
+        if (enemy != null)
+        {
+            Debug.Log($"[GameOverHandler] [停止直前] PlayerForward={transform.forward}, PlayerEulerY={transform.eulerAngles.y}, CamForward={_mainCameraTransform?.forward}, CamEulerX={_mainCameraTransform?.eulerAngles.x}, EnemyPos(now)={enemy.position}");
+            Debug.DrawRay(transform.position, transform.forward * 5f, Color.yellow, 30f, false);
+            if (_mainCameraTransform != null)
+                Debug.DrawRay(_mainCameraTransform.position, _mainCameraTransform.forward * 5f, new Color(1f, 0.5f, 0f), 30f, false);
+        }
+
+        Time.timeScale = 0;
+        // SceneManager.LoadScene(GameProgressManager.SceneGameOver);
     }
 }

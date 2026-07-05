@@ -79,6 +79,7 @@ public class DungeonGenerator : MonoBehaviour
         var roomEmbeddedAgents = _roomParent.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>();
 
         corridorPlacer.Place(grid, _corridorParent);
+        corridorPlacer.Combine(_corridorParent);
         _navMeshSurface?.BuildNavMesh();
 
         // ベイク後に再有効化し、Warp で NavMesh 上の正しい位置に配置する。

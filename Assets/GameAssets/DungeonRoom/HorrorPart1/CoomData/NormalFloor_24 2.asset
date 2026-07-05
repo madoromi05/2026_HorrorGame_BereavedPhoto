@@ -14,12 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GridSize: {x: 3, y: 3}
   DoorPositions:
-  - {x: 1, y: 0}
   - {x: 1, y: 2}
   WallPositions:
   - {x: 0, y: 0}
   - {x: 0, y: 1}
-  - {x: 0, y: 2}
   - {x: 0, y: 3}
   - {x: 0, y: 4}
   - {x: 1, y: 4}
@@ -31,17 +29,14 @@ MonoBehaviour:
   - {x: 4, y: 1}
   - {x: 4, y: 0}
   - {x: 3, y: 0}
-  - {x: 2, y: 0}
-  - {x: 2, y: 2}
   - {x: 2, y: 1}
+  - {x: 2, y: 0}
+  - {x: 0, y: 2}
+  - {x: 2, y: 2}
+  - {x: 1, y: 0}
   PlayerPositions: []
   EnemyNavSubdivision: 5
   EnemyNavWallCells:
-  - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  - {x: 7, y: 0}
-  - {x: 8, y: 0}
-  - {x: 9, y: 0}
   - {x: 2, y: 3}
   - {x: 3, y: 3}
   - {x: 5, y: 3}
@@ -74,12 +69,7 @@ MonoBehaviour:
   - {x: 6, y: 12}
   - {x: 9, y: 12}
   - {x: 10, y: 12}
-  - {x: 5, y: 14}
-  - {x: 6, y: 14}
-  - {x: 7, y: 14}
-  - {x: 8, y: 14}
-  - {x: 9, y: 14}
-  RoomPrefab: {fileID: 3469361202669048594, guid: d00ffe2572287ba4290341d268686f06, type: 3}
+  RoomPrefab: {fileID: 3469361202669048594, guid: ceb8325dd1c253047b5c34b929873143, type: 3}
   NavCheckYMin: 1
   NavCheckYMax: 3
   NavCheckXZScale: 0.85

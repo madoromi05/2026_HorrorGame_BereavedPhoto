@@ -51,9 +51,7 @@ MonoBehaviour:
   - {x: 8, y: 9}
   - {x: 7, y: 10}
   - {x: 8, y: 10}
-  - {x: 5, y: 14}
-  - {x: 9, y: 14}
-  RoomPrefab: {fileID: 3469361202669048594, guid: 14483fb35ac57ab419eb5aa0ced25db6, type: 3}
+  RoomPrefab: {fileID: 3469361202669048594, guid: ccb4432a23a78e4468c154760ef92553, type: 3}
   NavCheckYMin: 1
   NavCheckYMax: 3
   NavCheckXZScale: 0.85

@@ -9,12 +9,14 @@ public class CorridorPlacer
 {
     private CorridorDataBase _corridorDataBase;
     private CorridorResolver _corridorResolver;
+    private CorridorMeshCombiner _corridorMeshCombiner;
     private float _gridSize;
 
     public CorridorPlacer(CorridorDataBase corridorDataBase, float gridSize)
     {
         _corridorDataBase = corridorDataBase;
         _corridorResolver = new CorridorResolver();
+        _corridorMeshCombiner = new CorridorMeshCombiner();
         _gridSize = gridSize;
     }
 
@@ -34,6 +36,15 @@ public class CorridorPlacer
         }
     }
 
+    /// <summary>
+    /// 配置済みの通路メッシュをマテリアルごとに結合し、描画コール数を削減する。
+    /// NavMeshベイクはBoxColliderを参照するため、結合後もColliderは維持される。
+    /// </summary>
+    public void Combine(Transform corridorParent)
+    {
+        _corridorMeshCombiner.Combine(corridorParent);
+    }
+
     private void PlaceCorridor(GridType[,] grid, Vector2Int gridPos, Transform corridorParent)
     {
         var (corridorType, rotationY) = _corridorResolver.Resolve(grid, gridPos);
@@ -49,7 +60,10 @@ public class CorridorPlacer
         );
 
         var instance = Object.Instantiate(prefab, corridorParent);
-        instance.transform.localPosition = localPos;
+
+        // Prefab自身の元のPosition（Instantiate直後の値）をオフセットとしてセル中心座標に加算する。
+        var prefabOffset = instance.transform.localPosition;
+        instance.transform.localPosition = localPos + prefabOffset;
 
         // Prefab自身の元の回転（Instantiate直後の値）に算出した回転を加算する。
         // ワールド回転で設定するため、corridorParentの回転は結果に反映されない。
