@@ -57,7 +57,5 @@ public class PlayerItemUser : MonoBehaviour
         var projectile = go.GetComponent<ObstructionItemProjectile>();
         if (projectile != null)
             projectile.Init(cam.transform.forward * _throwSpeed, _stunDuration);
-
-        DebugCustom.Log("[PlayerItemUser] 妨害アイテムを投擲");
     }
 }

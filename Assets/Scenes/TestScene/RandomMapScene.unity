@@ -2635,7 +2635,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerInventory: {fileID: 1016573276}
-  _panel: {fileID: 333461878}
   _strandedCont: {fileID: 333461879}
   _strandedPrefab: {fileID: 3556839985201001755, guid: 1f41058a90100dd469a6cd9a9e4485c7, type: 3}
   _entries:

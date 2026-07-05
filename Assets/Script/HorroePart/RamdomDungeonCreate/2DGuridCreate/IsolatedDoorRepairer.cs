@@ -60,7 +60,7 @@ public class IsolatedDoorRepairer
             return;
         }
 
-        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value);
+        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value, avoidCorridorAdjacency: true);
         if (path == null)
         {
             DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door A* 失敗: {exitCell.Value} -> {target.Value}");

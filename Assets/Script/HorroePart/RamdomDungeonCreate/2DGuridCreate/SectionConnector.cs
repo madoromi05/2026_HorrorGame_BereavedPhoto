@@ -1,9 +1,12 @@
 /// <summary>
 /// セクション間を A* で接続する通路生成クラス。
-/// MST（最小全域木）による全セクション接続と、追加分岐の生成を担当する。
+/// MST（最小全域木）による全セクション接続、追加分岐の生成、
+/// 行き止まり（接続数1本）セクションへの補強接続を担当する。
 /// MaxCorridorLength は「一直線に進める最大マス数」を意味し、
 /// 超過した場合は自動的に曲がって迂回し、必ず接続する（スキップしない）。
 /// 追加通路は MinExtraCorridorLength 条件を満たすセクションペアのみ生成する。
+/// A* は avoidCorridorAdjacency を有効にして探索するため、
+/// 既存通路とほぼ平行に隣接する新規通路（＝見た目上2列の通路）が作られにくくなる。
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -15,10 +18,13 @@ public class SectionConnector
     private SectionData[] _sections;
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
+    private Dictionary<SectionData, HashSet<SectionData>> _adjacency;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     /// <summary>
     /// MST で全セクションを接続したあと、追加分岐を生成する。
+    /// 最後に、接続数が 1 本しかない（行き止まりになる）セクションへ
+    /// 追加のループ通路を張って行き止まりを解消する。
     /// </summary>
     public void Connect(
         GridType[,] grid,
@@ -32,8 +38,50 @@ public class SectionConnector
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
 
+        _adjacency = new Dictionary<SectionData, HashSet<SectionData>>();
+        foreach (var section in sections)
+            _adjacency[section] = new HashSet<SectionData>();
+
         ConnectAllSections();
         AddExtraBranches(bluePrint);
+        EnsureMinimumDegree();
+    }
+
+    /// <summary>
+    /// 接続数が 1 本以下のセクションを検出し、最も近い未接続のセクションへ
+    /// 追加通路を張ることで行き止まりを解消する。
+    /// </summary>
+    private void EnsureMinimumDegree()
+    {
+        if (_sections.Length < 3) return;
+
+        foreach (var section in _sections)
+        {
+            if (_adjacency[section].Count >= 2) continue;
+
+            var sectionCenter = section.GridPosition + section.GridSize / 2;
+
+            SectionData best = null;
+            float minDist = float.MaxValue;
+
+            foreach (var candidate in _sections)
+            {
+                if (candidate == section) continue;
+                if (_adjacency[section].Contains(candidate)) continue;
+
+                float dist = Vector2Int.Distance(
+                    sectionCenter, candidate.GridPosition + candidate.GridSize / 2);
+
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    best = candidate;
+                }
+            }
+
+            if (best != null)
+                ConnectTwoSections(section, best);
+        }
     }
 
     // Prim 法に近い最小全域木でセクションを順番に接続する
@@ -115,7 +163,7 @@ public class SectionConnector
         var startPos = GetConnectionPoint(from, to);
         var endPos   = GetConnectionPoint(to, from);
 
-        var path = _pathfinder.FindPath(_grid, startPos, endPos);
+        var path = _pathfinder.FindPath(_grid, startPos, endPos, avoidCorridorAdjacency: true);
         if (path == null)
         {
             DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");
@@ -129,6 +177,12 @@ public class SectionConnector
             if (cellType == GridType.Floor)    continue;
             if (cellType == GridType.Corridor) continue;
             _grid[pos.x, pos.y] = GridType.Corridor;
+        }
+
+        if (_adjacency != null)
+        {
+            if (_adjacency.TryGetValue(from, out var fromSet)) fromSet.Add(to);
+            if (_adjacency.TryGetValue(to, out var toSet)) toSet.Add(from);
         }
 
         return true;

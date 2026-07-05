@@ -41,15 +41,20 @@ public class CorridorPlacer
         var prefab = _corridorDataBase.GetPrefab(corridorType);
         if (prefab == null) return;
 
-        // セルの中心座標に配置する
-        var worldPos = new Vector3(
+        // セルの中心座標に配置する（親のローカル空間上の座標）
+        var localPos = new Vector3(
             (gridPos.x + 0.5f) * _gridSize,
             0f,
             (gridPos.y + 0.5f) * _gridSize
         );
 
-        var rotation = Quaternion.Euler(0f, rotationY, 0f);
-        var instance = Object.Instantiate(prefab, worldPos, rotation, corridorParent);
+        var instance = Object.Instantiate(prefab, corridorParent);
+        instance.transform.localPosition = localPos;
+
+        // Prefab自身の元の回転（Instantiate直後の値）に算出した回転を加算する。
+        // ワールド回転で設定するため、corridorParentの回転は結果に反映されない。
+        var baseRotation = instance.transform.rotation;
+        instance.transform.rotation = Quaternion.Euler(0f, rotationY, 0f) * baseRotation;
         instance.name = $"Corridor_{corridorType}_{gridPos}";
     }
 }

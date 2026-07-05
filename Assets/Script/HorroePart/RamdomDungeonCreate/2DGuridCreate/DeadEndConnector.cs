@@ -53,7 +53,7 @@ public class DeadEndConnector
             var target = FindNearest(exitCell, corridorCells, deadEnd);
             if (target == null) continue;
 
-            var path = _pathfinder.FindPath(_grid, exitCell, target.Value);
+            var path = _pathfinder.FindPath(_grid, exitCell, target.Value, avoidCorridorAdjacency: true);
             if (path == null) continue;
 
             _grid[exitCell.x, exitCell.y] = GridType.Corridor;
