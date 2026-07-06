@@ -29,26 +29,37 @@ public class RoomDataBase : ScriptableObject
     private Dictionary<RoomType, RoomEntry> _entryMap;
     // シリアライズフィールドを汚染しないよう、結合済みRoomGridDatasはランタイム専用で保持
     private Dictionary<RoomType, RoomGridData[]> _mergedRoomGridDatas;
+    // 同一RoomTypeに複数エントリ（＝物理サイズの異なるPrefab違い）がある場合、
+    // RoomGridDataごとに「本来対応するPrefab」を引けるようにするための対応表。
+    // これが無いと GetPrefab(RoomType) が常に最初のエントリのPrefabを返し、
+    // ランダムに選ばれたRoomGridData（例: 32x32用）と実際にInstantiateされるPrefab（例: 40x40）が
+    // 食い違うバグになる。
+    private Dictionary<RoomGridData, GameObject> _roomGridDataToPrefab;
 
     private void OnEnable()
     {
         _entryMap = new Dictionary<RoomType, RoomEntry>(_entries.Length);
         var roomGridDataAccum = new Dictionary<RoomType, List<RoomGridData>>();
+        _roomGridDataToPrefab = new Dictionary<RoomGridData, GameObject>();
 
         foreach (var entry in _entries)
         {
             if (!_entryMap.ContainsKey(entry.RoomType))
             {
                 _entryMap[entry.RoomType] = entry;
-                roomGridDataAccum[entry.RoomType] = new List<RoomGridData>(
-                    System.Array.FindAll(entry.RoomGridDatas ?? System.Array.Empty<RoomGridData>(), d => d != null));
+                roomGridDataAccum[entry.RoomType] = new List<RoomGridData>();
             }
-            else
+
+            // 同一RoomTypeは RoomGridDatas を結合する（EnemyEntries は最初のエントリを使用）が、
+            // Prefab は各エントリ自身のものを RoomGridData ごとに紐付けて記録する。
+            if (entry.RoomGridDatas != null)
             {
-                // 同一RoomTypeは RoomGridDatas を結合する（Prefab・EnemyEntries は最初のエントリを使用）
-                if (entry.RoomGridDatas != null)
-                    foreach (var d in entry.RoomGridDatas)
-                        if (d != null) roomGridDataAccum[entry.RoomType].Add(d);
+                foreach (var d in entry.RoomGridDatas)
+                {
+                    if (d == null) continue;
+                    roomGridDataAccum[entry.RoomType].Add(d);
+                    _roomGridDataToPrefab[d] = entry.Prefab;
+                }
             }
         }
 
@@ -65,6 +76,20 @@ public class RoomDataBase : ScriptableObject
 
         DebugCustom.LogWarning($"RoomDataBase: {roomType}に対応するPrefabが見つかりません");
         return null;
+    }
+
+    /// <summary>
+    /// 指定のRoomGridDataが本来対応しているPrefabを返す。
+    /// 同一RoomTypeに複数のPrefabバリエーションが登録されている場合でも、
+    /// RoomGridDataを実際に生成したエントリのPrefabを正しく取得できる。
+    /// 対応が見つからない場合は roomType の代表Prefab（先頭エントリ）にフォールバックする。
+    /// </summary>
+    public GameObject GetPrefab(RoomType roomType, RoomGridData roomGridData)
+    {
+        if (roomGridData != null && _roomGridDataToPrefab.TryGetValue(roomGridData, out var prefab))
+            return prefab;
+
+        return GetPrefab(roomType);
     }
 
     /// <summary>

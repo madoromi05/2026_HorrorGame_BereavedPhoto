@@ -12,41 +12,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c8ae8d043cbfe4593e0d30cb6aba03, type: 3}
   m_Name: NormalFloor_32_3
   m_EditorClassIdentifier: 
-  GridSize: {x: 3, y: 3}
+  GridSize: {x: 4, y: 4}
   DoorPositions:
-  - {x: 1, y: 0}
-  - {x: 1, y: 2}
+  - {x: 2, y: 3}
+  - {x: 1, y: 3}
   WallPositions:
   - {x: 0, y: 0}
-  - {x: 0, y: 1}
-  - {x: 0, y: 2}
-  - {x: 0, y: 3}
-  - {x: 0, y: 4}
-  - {x: 1, y: 4}
-  - {x: 2, y: 4}
-  - {x: 3, y: 4}
-  - {x: 4, y: 4}
-  - {x: 4, y: 3}
-  - {x: 4, y: 2}
-  - {x: 4, y: 1}
-  - {x: 4, y: 0}
-  - {x: 3, y: 0}
+  - {x: 1, y: 0}
   - {x: 2, y: 0}
-  - {x: 2, y: 2}
-  - {x: 2, y: 1}
+  - {x: 3, y: 0}
+  - {x: 3, y: 1}
+  - {x: 3, y: 2}
+  - {x: 3, y: 3}
+  - {x: 0, y: 3}
+  - {x: 0, y: 2}
+  - {x: 0, y: 1}
   PlayerPositions: []
   EnemyNavSubdivision: 5
   EnemyNavWallCells:
-  - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  - {x: 7, y: 0}
-  - {x: 8, y: 0}
-  - {x: 9, y: 0}
-  - {x: 2, y: 3}
-  - {x: 5, y: 3}
-  - {x: 8, y: 6}
-  - {x: 11, y: 6}
-  - {x: 5, y: 14}
+  - {x: 11, y: 2}
+  - {x: 12, y: 2}
+  - {x: 14, y: 2}
+  - {x: 15, y: 2}
+  - {x: 16, y: 2}
+  - {x: 3, y: 3}
+  - {x: 4, y: 3}
+  - {x: 7, y: 3}
+  - {x: 8, y: 3}
+  - {x: 11, y: 3}
+  - {x: 12, y: 3}
+  - {x: 14, y: 3}
+  - {x: 15, y: 3}
+  - {x: 16, y: 3}
+  - {x: 3, y: 4}
+  - {x: 4, y: 4}
+  - {x: 7, y: 4}
+  - {x: 8, y: 4}
+  - {x: 11, y: 4}
+  - {x: 12, y: 4}
+  - {x: 14, y: 4}
+  - {x: 15, y: 4}
+  - {x: 16, y: 4}
+  - {x: 4, y: 8}
+  - {x: 5, y: 8}
+  - {x: 6, y: 8}
+  - {x: 7, y: 8}
+  - {x: 8, y: 8}
+  - {x: 11, y: 8}
+  - {x: 14, y: 8}
+  - {x: 15, y: 8}
+  - {x: 6, y: 14}
+  - {x: 7, y: 14}
+  - {x: 8, y: 14}
+  - {x: 12, y: 14}
+  - {x: 13, y: 14}
+  - {x: 14, y: 14}
   RoomPrefab: {fileID: 3469361202669048594, guid: 8550d909ca9e83342a0128118e3ed600, type: 3}
   NavCheckYMin: 1
   NavCheckYMax: 3

@@ -79,6 +79,7 @@ public class RoomGridDataEditor : Editor
         {
             Undo.RecordObject(data, "Resize Room Grid");
             data.GridSize = new Vector2Int(Mathf.Max(1, newSize.x), Mathf.Max(1, newSize.y));
+            PruneOutOfRangeCells(data);
             EditorUtility.SetDirty(data);
         }
 
@@ -205,6 +206,25 @@ public class RoomGridDataEditor : Editor
 
         if (scrollH || scrollV) EditorGUILayout.EndScrollView();
     }
+
+    // Grid Size を縮小すると、旧サイズ基準で置かれたセルが新しい範囲外に取り残され、
+    // Inspector 表示（現在の GridSize 内のみ描画）と実データが食い違ったまま残ってしまう。
+    // RoomGridPlacer も GridSize 内しか参照しないため範囲外セルは常に無効データとなるので、
+    // リサイズの都度ここで刈り取り、保存されている値と実際に有効な値を一致させる。
+    private static void PruneOutOfRangeCells(RoomGridData data)
+    {
+        var size = data.GridSize;
+        data.DoorPositions?.RemoveAll(p => !IsInRoomGrid(p, size));
+        data.WallPositions?.RemoveAll(p => !IsInRoomGrid(p, size));
+        data.PlayerPositions?.RemoveAll(p => !IsInRoomGrid(p, size));
+
+        int sub = Mathf.Max(1, data.EnemyNavSubdivision);
+        var navSize = new Vector2Int(size.x * sub, size.y * sub);
+        data.EnemyNavWallCells?.RemoveAll(p => !IsInRoomGrid(p, navSize));
+    }
+
+    private static bool IsInRoomGrid(Vector2Int p, Vector2Int size)
+        => p.x >= 0 && p.y >= 0 && p.x < size.x && p.y < size.y;
 
     // Floor を起点に一方向へ進む 4 段階サイクル。
     // Player を最後に置くことで「通常セル(F/D/W)を設定してから必要な箇所だけ初期配置を指定」

@@ -50,7 +50,7 @@ public class SectionPlacer
 
     private void PlaceRoom(SectionData section, Transform roomParent)
     {
-        var prefab = _roomDataBase.GetPrefab(section.Role);
+        var prefab = _roomDataBase.GetPrefab(section.Role, section.RoomGridData);
         if (prefab == null) return;
 
         var roomGridSize = section.RoomGridData.GridSize;
