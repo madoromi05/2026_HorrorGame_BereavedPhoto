@@ -26,7 +26,8 @@ public class EnemySpawner
         {
             if (section.RoomGridData == null) continue;
 
-            var enemyEntries = _roomDataBase.GetEnemyEntries(section.Role);
+            // 敵は部屋（バリエーション）ごとに設定できるよう RoomGridData をキーに引く。
+            var enemyEntries = _roomDataBase.GetEnemyEntries(section.RoomGridData);
             foreach (var entry in enemyEntries)
             {
                 if (entry.EnemyPrefab == null) continue;

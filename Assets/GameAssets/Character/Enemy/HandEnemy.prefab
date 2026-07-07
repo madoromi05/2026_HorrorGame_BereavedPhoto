@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 4845050878769780941}
   - component: {fileID: -2243931691572478503}
   m_Layer: 6
-  m_Name: EnemiesSprite
+  m_Name: HandEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,8 +58,8 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 4
+  m_Radius: 1
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -109,7 +109,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cba0b48f1c1a4fb46b135b53d4eaca25, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3162e06ed7ed80b4c8b50d823c83ac67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -132,9 +132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyType: 1
   _aimPoint: {fileID: 5826340294384010155}
-  _chaseSpeed: 4
-  _chaseDestUpdateInterval: 0.6
+  _chaseSpeed: 4.5
+  _chaseDestUpdateInterval: 0.3
   _catchDistance: 3
 --- !u!195 &8604436980520377003
 NavMeshAgent:
@@ -145,8 +146,8 @@ NavMeshAgent:
   m_GameObject: {fileID: 5074338261638584859}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 4
+  m_Radius: 1
+  m_Speed: 4.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -154,8 +155,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 1
+  m_Height: 4
+  m_BaseOffset: 2
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 3
 --- !u!82 &3763750867118990717
@@ -299,7 +300,7 @@ MonoBehaviour:
   _maxDistance: 35
   _occlusionLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 64
   _maxAttenuationDb: 20
   _dbPerMeter: 3
   _maxDbChangePerSecond: 10

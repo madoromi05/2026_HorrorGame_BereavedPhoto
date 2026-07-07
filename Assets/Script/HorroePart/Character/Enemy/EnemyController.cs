@@ -14,9 +14,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform _aimPoint;
 
     [Header("追跡")]
-    [SerializeField] private float _chaseSpeed = 6f;
-    [SerializeField] private float _chaseDestUpdateInterval = 0.6f;
-    [SerializeField] private float _catchDistance = 1.2f;
+    [SerializeField] private float _chaseSpeed = 4f;
+    [SerializeField] private float _chaseDestUpdateInterval = 0.6f;     // 目的地再計算
+    [SerializeField] private float _catchDistance = 3.0f;               // 捕まえる判定の距離
 
     private NavMeshAgent    _agent;
     private Transform       _player;

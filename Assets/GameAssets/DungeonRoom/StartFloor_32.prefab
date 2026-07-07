@@ -602,7 +602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _item: {fileID: 11400000, guid: dfdf04bf64ee5904eab10d31e4ca990f, type: 2}
-  _obstructionRespawnMinTiles: 8
+  _obstructionRespawnMinTiles: 15
 --- !u!1 &3712662616137851304
 GameObject:
   m_ObjectHideFlags: 0
