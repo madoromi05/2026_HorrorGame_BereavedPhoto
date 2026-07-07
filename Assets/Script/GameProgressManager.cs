@@ -13,25 +13,16 @@ public class GameProgressManager : MonoBehaviour
     public enum GameStage
     {
         Title,      // 0: タイトル画面
-        Prologue,   // 1: ストーリー（ホラー1前）
-        Prep1,      // 2: 準備パート（ホラー1前・母の家族情報）
-        Horror1,    // 3: ホラーパート1（母の幽霊）
-        Interlude,  // 4: ストーリー（ホラー1後）
-        Prep2,      // 5: 準備パート（ホラー2前・父の家族情報）
-        Horror2,    // 6: ホラーパート2（父の幽霊）
-        Epilogue,   // 7: エンディングストーリー
+        Horror,     // 1: ホラーパート（単一・母と父の幽霊を解析）
+        Epilogue,   // 2: エンディング（クリア）ストーリー
     }
 
     // シーン名定数（Build Settings に登録必須）
     public const string SceneTitleName  = "TitleScene";
-    public const string SceneStoryName  = "ScenarioPart";
+    public const string SceneStoryName  = "ScenarioPart";   // Epilogue（クリア）で使用
     public const string ScenePrepName   = "PrepScene";
-    public const string SceneHorror1Name = "Horror1Scene";
-    public const string SceneHorror2Name = "Horror2Scene";
+    public const string SceneHorrorName = "RandomMapScene";  // 単一のホラーシーン
     public const string SceneGameOver   = "GameOverScene";
-
-    // 後方互換用（GameDebugGUI のシーン直接遷移ボタン等で使用）
-    public const string SceneHorrorName = "RandomMapScene";
 
     public const int AlbumPageCount = 4;
 
@@ -63,13 +54,11 @@ public class GameProgressManager : MonoBehaviour
 
     // ---- 進行制御 ----
 
-    /// <summary>ステージを一つ進める。準備パートはスキップする。</summary>
+    /// <summary>ステージを一つ進める。</summary>
     public void AdvanceStage()
     {
         int max = System.Enum.GetValues(typeof(GameStage)).Length - 1;
         CurrentStage = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
-        if (CurrentStage == GameStage.Prep1 || CurrentStage == GameStage.Prep2)
-            CurrentStage = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
     }
 
     /// <summary>進行を最初からリセットする（ニューゲーム用）。</summary>
@@ -77,6 +66,14 @@ public class GameProgressManager : MonoBehaviour
     {
         CurrentStage = GameStage.Title;
         AlbumPages   = new bool[AlbumPageCount];
+    }
+
+    /// <summary>ニューゲーム開始。進行をリセットしてホラーシーンへ遷移する。</summary>
+    public void StartHorror()
+    {
+        ResetProgress();
+        CurrentStage = GameStage.Horror;
+        SceneManager.LoadScene(SceneHorrorName);
     }
 
     public void UnlockAlbumPage(int index)
@@ -90,15 +87,10 @@ public class GameProgressManager : MonoBehaviour
     /// <summary>指定ステージに対応するシーン名を返す。</summary>
     public string GetSceneForStage(GameStage stage) => stage switch
     {
-        GameStage.Title      => SceneTitleName,
-        GameStage.Prologue   => SceneStoryName,
-        GameStage.Prep1      => ScenePrepName,
-        GameStage.Horror1    => SceneHorror1Name,
-        GameStage.Interlude  => SceneStoryName,
-        GameStage.Prep2      => ScenePrepName,
-        GameStage.Horror2    => SceneHorror2Name,
-        GameStage.Epilogue   => SceneStoryName,
-        _                    => SceneTitleName,
+        GameStage.Title    => SceneTitleName,
+        GameStage.Horror   => SceneHorrorName,
+        GameStage.Epilogue => SceneStoryName,
+        _                  => SceneTitleName,
     };
 
     /// <summary>
@@ -136,8 +128,6 @@ public class GameProgressManager : MonoBehaviour
         {
             int max = System.Enum.GetValues(typeof(GameStage)).Length - 1;
             var next = (GameStage)Mathf.Min((int)CurrentStage + 1, max);
-            if (next == GameStage.Prep1 || next == GameStage.Prep2)
-                next = (GameStage)Mathf.Min((int)next + 1, max);
             nextSceneName = GetSceneForStage(next);
         }
 
@@ -169,9 +159,11 @@ public class GameProgressManager : MonoBehaviour
     {
         switch (CurrentStage)
         {
-            case GameStage.Prologue:  UnlockAlbumPage(0); break; // 表紙
-            case GameStage.Horror1:   UnlockAlbumPage(1); break; // 母のページ
-            case GameStage.Horror2:   UnlockAlbumPage(2); break; // 父のページ
+            case GameStage.Horror:    // ホラークリアで表紙・母・父のページを解放
+                UnlockAlbumPage(0);   // 表紙
+                UnlockAlbumPage(1);   // 母のページ
+                UnlockAlbumPage(2);   // 父のページ
+                break;
             case GameStage.Epilogue:  UnlockAlbumPage(3); break; // 終章ページ
         }
     }

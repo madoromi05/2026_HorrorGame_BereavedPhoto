@@ -52,17 +52,12 @@ public class PrepSceneController : MonoBehaviour
 
     private void Start()
     {
-        var stage = GameProgressManager.Instance != null
-            ? GameProgressManager.Instance.CurrentStage
-            : GameProgressManager.GameStage.Prep1;
-
-        bool isPrep1 = stage == GameProgressManager.GameStage.Prep1;
-        var info = isPrep1 ? _prep1Info : _prep2Info;
-
-        ApplyInfo(info);
+        // ホラーシーンが1つに統合され準備パートは廃止されたため、
+        // このシーンが使われる場合は既定の調査情報のみを表示する。
+        ApplyInfo(_prep1Info);
 
         if (_stageLabel != null)
-            _stageLabel.text = isPrep1 ? "調査準備 1/2" : "調査準備 2/2";
+            _stageLabel.text = "調査準備";
 
         _startButton?.onClick.AddListener(OnStartPressed);
     }

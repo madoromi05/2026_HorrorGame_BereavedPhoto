@@ -111,23 +111,11 @@ public class ExitDoor : MonoBehaviour, IInteractable
         _isInteracting = false;
     }
 
-    /// <summary>
-    /// 有効な鍵種別を返す。
-    /// GameProgressManager が存在する場合はステージから自動判定するため、
-    /// 単一の HorrorScene で両ステージに対応できる。
-    /// </summary>
-    private ItemType GetEffectiveKey()
-    {
-        var stage = GameProgressManager.Instance?.CurrentStage;
-        if (stage == GameProgressManager.GameStage.Horror1) return ItemType.KeyMother;
-        if (stage == GameProgressManager.GameStage.Horror2) return ItemType.KeyFather;
-        return _requiredKey; // GameProgressManager がない場合は Inspector の設定値を使う
-    }
-
     private ExitCondition EvaluateCondition()
     {
+        // ホラーシーンは1つに統合されたため、必要な鍵は Inspector 設定値を使う。
         bool analysisOk = Analyzer  != null && Analyzer.IsComplete;
-        bool hasKey     = Inventory != null && Inventory.HasItem(GetEffectiveKey());
+        bool hasKey     = Inventory != null && Inventory.HasItem(_requiredKey);
 
         if (!analysisOk && !hasKey) return ExitCondition.NeedBoth;
         if (!analysisOk)            return ExitCondition.NeedAnalysis;

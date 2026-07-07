@@ -11,6 +11,9 @@ using UnityEngine.AI;
 
 public class SectionPlacer
 {
+    private const float CellCenterOffset = 0.5f;
+    private const float FloorY = 0f;
+
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
     private readonly Transform _player;
@@ -53,26 +56,31 @@ public class SectionPlacer
         var prefab = _roomDataBase.GetPrefab(section.Role, section.RoomGridData);
         if (prefab == null) return;
 
-        var roomGridSize = section.RoomGridData.GridSize;
-        var worldPos = new Vector3(
-            (section.RoomGridPosition.x + (roomGridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
-            0f,
-            (section.RoomGridPosition.y + (roomGridSize.y - 1) * 0.5f + 0.5f) * _gridSize
-        );
+
+        var worldPos = CellToWorld(section, RoomCenterLocal(section.RoomGridData.GridSize), FloorY);
+        var instance = InstantiateAgentsDisabled(prefab, worldPos, roomParent);
+
         // NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
         // 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
-        bool prefabWasActive = prefab.activeSelf;
-        prefab.SetActive(false);
-        var instance = Object.Instantiate(prefab, worldPos, Quaternion.identity, roomParent);
-        prefab.SetActive(prefabWasActive);
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
+    }
 
+    /// <summary>
+    /// NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
+    /// 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
+    /// </summary>
+    private static GameObject InstantiateAgentsDisabled(GameObject prefab, Vector3 worldPosition, Transform roomParent)
+    {
+        bool prefabActive = prefab.activeSelf;
+        prefab.SetActive(false);
+        var instance = Object.Instantiate(prefab, worldPosition, Quaternion.identity, roomParent);
+        prefab.SetActive(prefabActive);
         foreach (var agent in instance.GetComponentsInChildren<NavMeshAgent>(true))
             agent.enabled = false;
 
         instance.SetActive(true);
+        return instance;
     }
-
     /// <summary>
     /// StartセクションのRoomGridDataに登録されたPlayerPositionsの先頭セルにプレイヤーを移動させる。
     /// PlayerPositionsが未設定の場合は部屋中央にフォールバックする。
@@ -113,4 +121,17 @@ public class SectionPlacer
             (section.RoomGridPosition.y + (gridSize.y - 1) * 0.5f + 0.5f) * _gridSize
         );
     }
+
+    // 部屋ローカルのセル座標をワールド座標へ変換する（座標規約はここに一本化）
+    private Vector3 CellToWorld(SectionData section, Vector2 localCell, float y)
+    {
+        return new Vector3(
+            (section.RoomGridPosition.x + localCell.x + CellCenterOffset) * _gridSize,
+            y,
+            (section.RoomGridPosition.y + localCell.y + CellCenterOffset) * _gridSize);
+    }
+
+    // 部屋中央のローカルセル座標（偶数サイズの場合はセル境界）を返す。
+    private static Vector2 RoomCenterLocal(Vector2Int gridSize)
+        => new Vector2((gridSize.x - 1) * 0.5f, (gridSize.y - 1) * 0.5f);
 }

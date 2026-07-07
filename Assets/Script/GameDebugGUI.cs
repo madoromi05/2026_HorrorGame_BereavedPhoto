@@ -254,6 +254,30 @@ public class GameDebugGUI : MonoBehaviour
 
     private void DrawTabPlayer()
     {
+        // ---- デバッグ操作（無敵・速度変更） ----
+        SectionHeader("デバッグ");
+
+        GUILayout.BeginHorizontal();
+        Label("無敵:", Color.white);
+        Label(GameOverHandler.DebugInvincible ? "ON" : "OFF",
+              GameOverHandler.DebugInvincible ? new Color(0.3f, 1f, 0.4f) : Color.gray);
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button(GameOverHandler.DebugInvincible ? "無敵 OFF" : "無敵 ON", GUILayout.Width(90)))
+            GameOverHandler.DebugInvincible = !GameOverHandler.DebugInvincible;
+        GUILayout.EndHorizontal();
+
+        if (_mover != null)
+        {
+            Label($"移動速度: {_mover.MoveSpeed:F0}", Color.white);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("10"))  _mover.SetMoveSpeed(10f);
+            if (GUILayout.Button("50"))  _mover.SetMoveSpeed(50f);
+            if (GUILayout.Button("100")) _mover.SetMoveSpeed(100f);
+            GUILayout.EndHorizontal();
+        }
+        else Label("PlayerMover: 未検出（速度変更不可）", Color.red);
+
+        GUILayout.Space(6);
         SectionHeader("移動状態");
         if (_mover != null)
             Label($"MoveState: {_mover.CurrentMoveState}", Color.white);
@@ -321,9 +345,10 @@ public class GameDebugGUI : MonoBehaviour
             GUILayout.BeginHorizontal();
             Label($"{name}  {(activated ? "追跡中" : "待機中")}", stateColor);
             GUILayout.FlexibleSpace();
-            if (_analyzer != null)
+            if (_analyzer != null && ghost != null)
             {
-                float ap = _analyzer.GetAnalyzePercent(e.gameObject.GetInstanceID());
+                // 解析率は種類（GhostType）ごとに共有される
+                float ap = _analyzer.GetAnalyzePercent(ghost.GhostType);
                 Label($"解析: {ap:F0}%", ap >= 100f ? new Color(0.3f, 1f, 0.4f) : Color.white);
             }
             GUILayout.EndHorizontal();
@@ -350,17 +375,9 @@ public class GameDebugGUI : MonoBehaviour
         Label("ステージジャンプ（ステージも更新）:", Color.gray);
 
         GUILayout.BeginHorizontal();
-        DrawStageButton("Title",     GameProgressManager.GameStage.Title,     mgr);
-        DrawStageButton("Prologue",  GameProgressManager.GameStage.Prologue,  mgr);
-        DrawStageButton("Prep1",     GameProgressManager.GameStage.Prep1,     mgr);
-        DrawStageButton("Horror1",   GameProgressManager.GameStage.Horror1,   mgr);
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        DrawStageButton("Interlude", GameProgressManager.GameStage.Interlude, mgr);
-        DrawStageButton("Prep2",     GameProgressManager.GameStage.Prep2,     mgr);
-        DrawStageButton("Horror2",   GameProgressManager.GameStage.Horror2,   mgr);
-        DrawStageButton("Epilogue",  GameProgressManager.GameStage.Epilogue,  mgr);
+        DrawStageButton("Title",    GameProgressManager.GameStage.Title,    mgr);
+        DrawStageButton("Horror",   GameProgressManager.GameStage.Horror,   mgr);
+        DrawStageButton("Epilogue", GameProgressManager.GameStage.Epilogue, mgr);
         GUILayout.EndHorizontal();
 
         // ---- シーン直接遷移（ステージ変更なし） ----
@@ -373,9 +390,8 @@ public class GameDebugGUI : MonoBehaviour
         DrawSceneButton("PrepScene",    GameProgressManager.ScenePrepName);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
-        DrawSceneButton("Horror1Scene", GameProgressManager.SceneHorror1Name);
-        DrawSceneButton("Horror2Scene", GameProgressManager.SceneHorror2Name);
-        DrawSceneButton("GameOver",     GameProgressManager.SceneGameOver);
+        DrawSceneButton("HorrorScene", GameProgressManager.SceneHorrorName);
+        DrawSceneButton("GameOver",    GameProgressManager.SceneGameOver);
         GUILayout.EndHorizontal();
 
         // ---- デバッグ操作 ----

@@ -64,6 +64,19 @@ public class PlayerMover : MonoBehaviour
     // オプションメニューからマウス感度を即時反映する。
     public void SetSensitivity(float v) => _yawSensitivity = v;
 
+    /// <summary>現在の基本移動速度（デバッグ表示用）。</summary>
+    public float MoveSpeed => _moveSpeed;
+
+    /// <summary>
+    /// デバッグ用：基本移動速度を即時変更する。
+    /// ダッシュ速度が基本速度を下回らないよう、必要に応じてダッシュ速度も引き上げる。
+    /// </summary>
+    public void SetMoveSpeed(float speed)
+    {
+        _moveSpeed = speed;
+        _dashSpeed = Mathf.Max(_dashSpeed, speed);
+    }
+
     private void OnEnable()
     {
         _inputCallbackController.OnMovePerformed   += HandleMove;

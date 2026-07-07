@@ -40,8 +40,8 @@ public class TitleSceneController : MonoBehaviour
     {
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
-        mgr.ResetProgress();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(GameProgressManager.SceneHorrorName);
+        // 進行をリセットし、ステージを Horror に設定してホラーシーンへ遷移する。
+        mgr.StartHorror();
     }
 
     public void OnContinue()

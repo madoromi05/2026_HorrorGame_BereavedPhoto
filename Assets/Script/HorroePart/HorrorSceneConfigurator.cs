@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// HorrorScene にアタッチし、HorrorStageConfig から RoomDataBase を DungeonGenerator に注入する。
 /// GameProgressManager のランタイム状態に依存しないため、エディタから直接再生しても正常に動作する。
-/// Horror1Scene / Horror2Scene それぞれの Inspector で異なる HorrorStageConfig を設定する。
+/// ホラーシーンは1つに統合されており、Inspector で単一の HorrorStageConfig を設定する。
 ///
 /// Unity の実行順序:
 ///   全 MonoBehaviour の Awake() → 全 MonoBehaviour の Start()

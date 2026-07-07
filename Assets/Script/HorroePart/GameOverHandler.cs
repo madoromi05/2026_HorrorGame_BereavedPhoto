@@ -9,6 +9,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
+    /// <summary>デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える。</summary>
+    public static bool DebugInvincible;
+
     [SerializeField] private float _faceTurnDuration = 0.5f;
     [SerializeField] private float _holdDuration = 1.0f;
 
@@ -31,6 +34,7 @@ public class GameOverHandler : MonoBehaviour
     /// </summary>
     public void TriggerGameOver(Transform enemy = null, Transform aimPoint = null)
     {
+        if (DebugInvincible) return;   // デバッグ無敵中はゲームオーバーにしない
         if (_triggered) return;
         _triggered = true;
 

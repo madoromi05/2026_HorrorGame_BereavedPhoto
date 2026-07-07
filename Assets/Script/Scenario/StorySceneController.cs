@@ -8,14 +8,8 @@ using UnityEngine;
 [RequireComponent(typeof(StoryManager))]
 public class StorySceneController : MonoBehaviour
 {
-    [Header("ステージ対応ストーリーデータ")]
-    [Tooltip("Prologue ステージで再生するストーリー")]
-    [SerializeField] private StoryData[] _prologueStories;
-
-    [Tooltip("Interlude ステージで再生するストーリー")]
-    [SerializeField] private StoryData[] _interludeStories;
-
-    [Tooltip("Epilogue ステージで再生するストーリー")]
+    [Header("ストーリーデータ")]
+    [Tooltip("Epilogue（クリア）で再生するエンディングストーリー")]
     [SerializeField] private StoryData[] _epilogueStories;
 
     private StoryManager _storyManager;
@@ -27,19 +21,9 @@ public class StorySceneController : MonoBehaviour
 
         // Awake で設定することで StoryManager.Start() より確実に先に実行される。
         // Unity の実行順序: 全 Awake() → 全 Start()
-        var stage = GameProgressManager.Instance != null
-            ? GameProgressManager.Instance.CurrentStage
-            : GameProgressManager.GameStage.Prologue;
-
-        var stories = stage switch
-        {
-            GameProgressManager.GameStage.Prologue  => _prologueStories,
-            GameProgressManager.GameStage.Interlude => _interludeStories,
-            GameProgressManager.GameStage.Epilogue  => _epilogueStories,
-            _                                       => _prologueStories,
-        };
-
-        _storyManager.SetStoryDatas(stories);
+        // フローが Title → Horror → Epilogue に統合されたため、
+        // ScenarioPart で再生するのはエンディング（クリア）ストーリーのみ。
+        _storyManager.SetStoryDatas(_epilogueStories);
         AudioManager.Instance?.PlayBgm(BgmType.Scenario);
     }
 

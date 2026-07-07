@@ -16,27 +16,11 @@ public class GameOverSceneController : MonoBehaviour
         Cursor.visible   = true;
     }
 
-    /// <summary>現在のホラーシーンを再ロードする。</summary>
+    /// <summary>ホラーシーンを再ロードする。</summary>
     public void OnRetry()
     {
-        var mgr = GameProgressManager.Instance;
-        if (mgr == null)
-        {
-            // フォールバック: ステージ不明のためホラー1へ
-            SceneManager.LoadScene(GameProgressManager.SceneHorror1Name);
-            return;
-        }
-
-        // ステージが Horror1/Horror2 以外になっている場合はホラー1へ戻す
-        var stage = mgr.CurrentStage;
-        bool isHorrorStage = stage == GameProgressManager.GameStage.Horror1
-                          || stage == GameProgressManager.GameStage.Horror2;
-
-        string scene = isHorrorStage
-            ? mgr.GetSceneForStage(stage)
-            : GameProgressManager.SceneHorror1Name;
-
-        SceneManager.LoadScene(scene);
+        // ホラーシーンは1つに統合されたため、常に単一のホラーシーンへ戻る。
+        SceneManager.LoadScene(GameProgressManager.SceneHorrorName);
     }
 
     /// <summary>タイトルへ戻る（ステージは変更しない）。</summary>
