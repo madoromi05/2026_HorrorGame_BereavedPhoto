@@ -19,10 +19,21 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private Transform _roomParent;
     [SerializeField] private Transform _corridorParent;
     [SerializeField] private Transform _enemyParent;
+    [SerializeField] private Transform _ofudaParent;
     [SerializeField] private Transform _playerTransform;
 
-    [SerializeField] private float _playerSpawnOffsetY = 0f;
     [SerializeField] private float _enemySpawnOffsetY = 0f;
+
+    [Header("Ofuda")]
+    [Tooltip("通路のランダムなセルに配置するお札の ItemPickup プレハブ。")]
+    [SerializeField] private GameObject _ofudaPrefab;
+    [Tooltip("通路に配置するお札の個数。")]
+    [SerializeField] private int _ofudaCount = 10;
+    [Tooltip("お札を配置する高さ（床からのYオフセット）。")]
+    [SerializeField] private float _ofudaSpawnOffsetY = 0.3f;
+
+    // ItemInitializer が配置済みのお札を初期化するために参照する。
+    public Transform OfudaParent => _ofudaParent;
 
     [Header("NavMesh")]
     [Tooltip("この GameObject にアタッチした NavMeshSurface を指定する。" +
@@ -43,6 +54,10 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     public void SetRoomDataBase(RoomDataBase data) => _roomDataBase = data;
 
+    // 妨害item再配置用
+    private GridType[,] _grid;
+    public GridType[,] Grid => _grid;
+    public float GridSize => _bluePrint.OneGridSize;
     private void Start()
     {
         DebugCustom.ValidateFields(this,
@@ -52,6 +67,7 @@ public class DungeonGenerator : MonoBehaviour
             (nameof(_roomParent), _roomParent),
             (nameof(_corridorParent), _corridorParent),
             (nameof(_enemyParent), _enemyParent),
+            (nameof(_ofudaParent), _ofudaParent),
             (nameof(_playerTransform), _playerTransform));
 
         Generate();
@@ -65,10 +81,12 @@ public class DungeonGenerator : MonoBehaviour
     {
         var gridBuilder    = new DungeonGridBuilder();
         var enemySpawner   = new EnemySpawner(_roomDataBase, _bluePrint.OneGridSize, _enemySpawnOffsetY);
-        var sectionPlacer  = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform, _playerSpawnOffsetY);
+        var sectionPlacer  = new SectionPlacer(_roomDataBase, _bluePrint.OneGridSize, _playerTransform);
         var corridorPlacer = new CorridorPlacer(_corridorDataBase, _bluePrint.OneGridSize);
+        var ofudaPlacer    = new OfudaPlacer(_ofudaPrefab, _bluePrint.OneGridSize, _ofudaCount, _ofudaSpawnOffsetY);
 
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
+        _grid = grid;
 
         // 部屋・廊下を配置してから NavMesh をベイクし、その後に敵を生成する。
         // 敵の NavMeshAgent は有効な NavMesh が存在しないと配置に失敗するため順序が重要。
@@ -91,12 +109,18 @@ public class DungeonGenerator : MonoBehaviour
 
         enemySpawner.Place(sections, _enemyParent);
 
-        OnRoomPlaced?.Invoke(_roomParent);
+        // 通路セルへお札をランダム配置する。取得処理・UI初期化は OnRoomPlaced 経由で
+        // ItemInitializer が行うため、Invoke より前に配置しておく。
+        ofudaPlacer.Place(grid, _ofudaParent);
 
         if (_isDebugMode && _debugParent != null)
         {
             var debugVisualizer = new DungeonDebugVisualizer(_bluePrint.OneGridSize);
             debugVisualizer.Visualize(grid, sections, _debugParent);
         }
+
+        // 部屋・廊下・敵・お札・NavMesh の配置がすべて完了した後に発火する。
+        // これにより ItemInitializer は生成が完全に終わった状態で初期化できる。
+        OnRoomPlaced?.Invoke(_roomParent);
     }
 }

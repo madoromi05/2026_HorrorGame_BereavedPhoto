@@ -15,15 +15,16 @@ namespace HorrorGame.Item
     public class ItemPickup : MonoBehaviour, IInteractable
     {
         [SerializeField] private ItemData _item;
-
+        [SerializeField] private int _obstructionRespawnMinTiles = 8;
         public bool CanInteract => _item != null;
         public string HintText => _item != null ? $"[E] {_item.DisplayName}を取得" : string.Empty;
 
         private ItemAcquiredUIPresenter _uiPresenter;
-
-        public void Init(ItemAcquiredUIPresenter presenter)
+        private ObstructionRespawner _respawner;
+        public void Init(ItemAcquiredUIPresenter presenter, ObstructionRespawner respawner = null)
         {
             _uiPresenter = presenter;
+            _respawner = respawner;
         }
 
         /// <summary>
@@ -42,9 +43,23 @@ namespace HorrorGame.Item
                 return;
             }
 
+            // 妨害アイテムは初回取得時のみ名前・説明を表示し、2回目以降は表示しない。
+            // AddItemで所持数が増える前に取得済みかどうかを判定しておく。
+            bool alreadyOwned = inventory.HasItem(_item.ItemType);
+
             inventory.AddItem(_item);
-            _uiPresenter?.Show(_item);
+
+            if (_item.ItemType != ItemType.ObstructionItem || !alreadyOwned)
+                _uiPresenter?.Show(_item);
+
             AudioManager.Instance?.PlaySe(SeType.ItemPickup);
+
+            if (_item.ItemType == ItemType.ObstructionItem && _respawner != null && _respawner.TryGetRespawnPosition(transform.position.y, _obstructionRespawnMinTiles, out var respawnPos))
+            {
+                transform.position = respawnPos;
+                return;
+            }
+            
             gameObject.SetActive(false);
         }
     }

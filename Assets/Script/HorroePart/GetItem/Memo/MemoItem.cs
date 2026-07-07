@@ -18,7 +18,7 @@ namespace HorrorGame.Interaction
         [SerializeField][TextArea(3, 10)] private string[] _memoPages;
         [SerializeField] private ItemData _itemData;
         public bool CanInteract => true;
-        public string HintText => "メモを読む";
+        public string HintText => "【E】メモを読む";
 
         private MemoUIPresenter _uiPresenter;
         private Inventory _inventory;
@@ -29,15 +29,6 @@ namespace HorrorGame.Interaction
             _inventory = inventory;
         }
 
-        private void Start()
-        {
-            // ItemInitializer 経由で Init() されない場合（シーン直置き等）のフォールバック
-            if (_uiPresenter == null)
-                _uiPresenter = FindFirstObjectByType<MemoUIPresenter>();
-            if (_inventory == null)
-                _inventory = FindFirstObjectByType<Inventory>();
-        }
-
         public void OnInteract()
         {
             if (_uiPresenter == null)
@@ -45,6 +36,9 @@ namespace HorrorGame.Interaction
                 DebugCustom.LogWarning("[MemoItem] MemoUIPresenter がシーン内に見つかりません。");
                 return;
             }
+
+            // 最初に本を見た時、チュートリアル用の操作UIが有効なら非表示にしてから表示処理を開始する。
+            OperationTutorialUI.HideIfActive();
 
             _uiPresenter.Show(_memoPages);
             _inventory.AddItem(_itemData);

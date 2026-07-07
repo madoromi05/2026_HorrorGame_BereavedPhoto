@@ -69,7 +69,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.05
-  far clip plane: 100
+  far clip plane: 80
   field of view: 80
   orthographic: 0
   orthographic size: 5
@@ -590,8 +590,8 @@ Light:
   m_Color: {r: 1, g: 0.95097196, b: 0.7688679, a: 1}
   m_Intensity: 10
   m_Range: 12
-  m_SpotAngle: 69.98993
-  m_InnerSpotAngle: 0
+  m_SpotAngle: 89.1685
+  m_InnerSpotAngle: 20
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
@@ -677,8 +677,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anisotropy: -0.776
-  scattering: 12.06
+  anisotropy: 0.3
+  scattering: 8
   radius: 0
 --- !u!1001 &2125248674768088610
 PrefabInstance:

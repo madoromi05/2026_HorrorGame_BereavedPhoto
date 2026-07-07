@@ -1,1 +1,1 @@
-public enum EnemyType { Mother, Father }
+public enum EnemyType { SmileEnemies, HandEnemy}

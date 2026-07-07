@@ -15,14 +15,13 @@ namespace HorrorGame.Dungeon
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private DungeonGenerator _dungeonGenerator;
 
-        private void Start()
+        private void Awake()
         {
             DebugCustom.ValidateFields(this,
                 (nameof(_memoUIPresenter), _memoUIPresenter),
                 (nameof(_itemAcquiredUIPresenter), _itemAcquiredUIPresenter),
                 (nameof(_playerTransform), _playerTransform),
                 (nameof(_dungeonGenerator), _dungeonGenerator));
-
             _dungeonGenerator.OnRoomPlaced += Initialize;
         }
 
@@ -43,12 +42,25 @@ namespace HorrorGame.Dungeon
                 DebugCustom.LogWarning("[ItemInitializer] Inventoryがプレイヤーに見つかりません。");
                 return;
             }
+                // 妨害アイテムを取得時に再配置するための情報を組み立てる。
+                var respawner = new ObstructionRespawner(
+                _dungeonGenerator.Grid,
+                _dungeonGenerator.GridSize,
+                _playerTransform);
 
             foreach (var memo in roomParent.GetComponentsInChildren<MemoItem>())
                 memo.Init(_memoUIPresenter, inventory);
 
             foreach (var pickup in roomParent.GetComponentsInChildren<ItemPickup>())
-                pickup.Init(_itemAcquiredUIPresenter);
+                pickup.Init(_itemAcquiredUIPresenter, respawner);
+
+            // 通路にランダム配置されたお札（ItemPickup）も初期化する。
+            var ofudaParent = _dungeonGenerator.OfudaParent;
+            if (ofudaParent != null)
+            {
+                foreach (var pickup in ofudaParent.GetComponentsInChildren<ItemPickup>())
+                    pickup.Init(_itemAcquiredUIPresenter, respawner);
+            }
         }
     }
 }

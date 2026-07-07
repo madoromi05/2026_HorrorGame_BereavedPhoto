@@ -12,7 +12,7 @@ namespace HorrorGame.UI
     public class MemoUIPresenter : RevealUIPresenterBase
     {
         [SerializeField] private TextMeshProUGUI _memoText;
-        [SerializeField] private TextMeshProUGUI _pageText; // 「1 / 3」等のページ表示（任意）
+        [SerializeField] private TextMeshProUGUI _pageCountText;
 
         private string[] _pages;
         private int _currentPage;
@@ -58,8 +58,8 @@ namespace HorrorGame.UI
         private void ApplyPage()
         {
             _memoText.text = _pages[_currentPage];
-            if (_pageText != null)
-                _pageText.text = $"{_currentPage + 1} / {_pages.Length}";
+            if (_pageCountText != null)
+                _pageCountText.text = $"{_currentPage + 1} / {_pages.Length}";
         }
     }
 }

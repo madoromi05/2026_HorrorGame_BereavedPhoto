@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using HorrorGame.UI;
 
 /// <summary>
 /// スタートルームの出口に配置するトリガー。
@@ -20,6 +21,10 @@ public class StartRoomBoundary : MonoBehaviour
         if (_triggered) return;
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         _triggered = true;
+
+        // スタートルームを出た時、チュートリアル用の操作UIが有効なら非表示にしてから処理を開始する。
+        OperationTutorialUI.HideIfActive();
+
         StartCoroutine(RevealAndActivate(other.GetComponent<PlayerMover>()));
     }
 

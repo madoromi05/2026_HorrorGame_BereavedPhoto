@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 4845050878769780941}
   - component: {fileID: -2243931691572478503}
   m_Layer: 6
-  m_Name: MapEnemy_Sprite
+  m_Name: EnemiesSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

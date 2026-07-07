@@ -17,17 +17,14 @@ public class SectionPlacer
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
     private readonly Transform _player;
-    private readonly float _playerSpawnOffsetY;
     public SectionPlacer(
         RoomDataBase roomDataBase,
         float gridSize,
-        Transform player,
-        float playerSpawnOffsetY)
+        Transform player)
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
         _player = player;
-        _playerSpawnOffsetY = playerSpawnOffsetY;
     }
 
     /// <summary>
@@ -42,19 +39,19 @@ public class SectionPlacer
         {
             if (section.RoomGridData == null) continue;
 
-            PlaceRoom(section, roomParent);
+            var instance = PlaceRoom(section, roomParent);
 
             if (section.Role == RoomType.Start)
-                playerTransform = PlayerTransform(section);
+                playerTransform = PlayerTransform(instance);
         }
 
         return playerTransform;
     }
 
-    private void PlaceRoom(SectionData section, Transform roomParent)
+    private GameObject PlaceRoom(SectionData section, Transform roomParent)
     {
         var prefab = _roomDataBase.GetPrefab(section.Role, section.RoomGridData);
-        if (prefab == null) return;
+        if (prefab == null) return null;
 
 
         var worldPos = CellToWorld(section, RoomCenterLocal(section.RoomGridData.GridSize), FloorY);
@@ -63,6 +60,7 @@ public class SectionPlacer
         // NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
         // 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
+        return instance;
     }
 
     /// <summary>
@@ -82,44 +80,42 @@ public class SectionPlacer
         return instance;
     }
     /// <summary>
-    /// StartセクションのRoomGridDataに登録されたPlayerPositionsの先頭セルにプレイヤーを移動させる。
-    /// PlayerPositionsが未設定の場合は部屋中央にフォールバックする。
+    /// プレイヤーをStartルームの初期位置へ移動させる。
+    /// StartルームPrefab内のPlayerSpawnPointマーカーの位置・向きをそのまま使用する。
+    /// マーカーが無い場合はスポーン位置を決められないため、警告のみ出して現在位置を維持する
+    /// （部屋中央などへのフォールバックは行わない）。
     /// </summary>
-    private Transform PlayerTransform(SectionData section)
+    private Transform PlayerTransform(GameObject startRoomInstance)
     {
-        var pos = ResolvePlayerWorldPosition(section);
+        var marker = startRoomInstance != null
+            ? startRoomInstance.GetComponentInChildren<PlayerSpawnPoint>(true)
+            : null;
+
+        if (marker == null)
+        {
+            Debug.LogWarning(
+                "SectionPlacer: StartルームにPlayerSpawnPointマーカーが見つかりません。" +
+                "StartルームのPrefabにPlayerSpawnPointを配置してください。" +
+                "プレイヤーの位置は変更しません。");
+            return _player;
+        }
 
         if (_player.TryGetComponent<CharacterController>(out var cc))
             cc.enabled = false;
 
-        _player.position = pos;
+        _player.position = marker.Position;
+
+        // PlayerMover は内部Yawを基準に回転を制御するため、直接rotationを書くだけでは
+        // 最初の視点入力で元に戻ってしまう。SetYaw経由で内部状態も同期させる。
+        if (_player.TryGetComponent<PlayerMover>(out var mover))
+            mover.SetYaw(marker.Yaw);
+        else
+            _player.rotation = Quaternion.Euler(0f, marker.Yaw, 0f);
 
         if (cc != null)
             cc.enabled = true;
 
         return _player;
-    }
-
-    private Vector3 ResolvePlayerWorldPosition(SectionData section)
-    {
-        var roomData = section.RoomGridData;
-        if (roomData.PlayerPositions != null && roomData.PlayerPositions.Count > 0)
-        {
-            var localPos = roomData.PlayerPositions[0];
-            return new Vector3(
-                (section.RoomGridPosition.x + localPos.x + 0.5f) * _gridSize,
-                _playerSpawnOffsetY,
-                (section.RoomGridPosition.y + localPos.y + 0.5f) * _gridSize
-            );
-        }
-
-        // PlayerPositions未設定時は部屋中央にフォールバック
-        var gridSize = section.RoomGridData.GridSize;
-        return new Vector3(
-            (section.RoomGridPosition.x + (gridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
-            _playerSpawnOffsetY,
-            (section.RoomGridPosition.y + (gridSize.y - 1) * 0.5f + 0.5f) * _gridSize
-        );
     }
 
     // 部屋ローカルのセル座標をワールド座標へ変換する（座標規約はここに一本化）

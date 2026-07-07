@@ -64,6 +64,17 @@ public class PlayerMover : MonoBehaviour
     // オプションメニューからマウス感度を即時反映する。
     public void SetSensitivity(float v) => _yawSensitivity = v;
 
+    /// <summary>
+    /// スポーン時などに向き（Yaw）を外部から設定する。
+    /// HandleLook が基準にする _currentYaw も更新しないと、最初の視点入力で
+    /// Awake 時点の値に戻ってしまうため、Transform と内部状態を同時に合わせる。
+    /// </summary>
+    public void SetYaw(float yaw)
+    {
+        _currentYaw = yaw;
+        transform.eulerAngles = new Vector3(0f, _currentYaw, 0f);
+    }
+
     /// <summary>現在の基本移動速度（デバッグ表示用）。</summary>
     public float MoveSpeed => _moveSpeed;
 
