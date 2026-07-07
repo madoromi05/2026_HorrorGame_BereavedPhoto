@@ -13,7 +13,7 @@ namespace HorrorGame.Item
         KeyMother,
 
         // --- メモ・ドキュメント系 ---
-        NoteEntrance,
+        Memo,
 
         // --- 妨害アイテム系 ---
         ObstructionItem,

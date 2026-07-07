@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6832be63cdd1d894dad2b0e040a87cd8, type: 3}
   m_Name: ItemData
   m_EditorClassIdentifier: 
-  itemType: 2
-  displayName: memo
-  description: 
+  _itemType: 2
+  _displayName: 
+  _icon: {fileID: 0}
+  _description: 

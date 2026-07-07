@@ -62,7 +62,25 @@ namespace HorrorGame.UI
             _holdProgressImage.fillAmount = _holdElapsed / kHoldDuration;
 
             if (_holdElapsed >= kHoldDuration)
-                Hide();
+            {
+                // ホールド完了。連続で再発火しないようホールド状態をリセットし、
+                // 再度「離す→押す」まで次のアクションを起こさないようにする。
+                _isHolding = false;
+                _holdElapsed = 0f;
+                _holdProgressImage.fillAmount = 0f;
+                _holdProgressImage.gameObject.SetActive(false);
+                OnHoldComplete();
+            }
+        }
+
+        /// <summary>
+        /// ホールド完了時に呼ばれる。デフォルトは閉じる。
+        /// 派生クラスでオーバーライドすれば、複数ページ送りなど
+        /// 別の挙動に差し替えられる（最後は base.OnHoldComplete() で閉じる）。
+        /// </summary>
+        protected virtual void OnHoldComplete()
+        {
+            Hide();
         }
 
         private void OnInteractHeld()
