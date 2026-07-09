@@ -19,6 +19,7 @@ namespace HorrorGame.UI
             if (_iconImage != null)
             {
                 _iconImage.sprite = icon;
+                _iconImage.preserveAspect = true;
                 _iconImage.enabled = icon != null;
             }
         }

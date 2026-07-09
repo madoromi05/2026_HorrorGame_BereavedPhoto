@@ -30,10 +30,6 @@ MonoBehaviour:
   PlayerPositions: []
   EnemyNavSubdivision: 5
   EnemyNavWallCells:
-  - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  - {x: 7, y: 0}
-  - {x: 8, y: 0}
   - {x: 9, y: 4}
   - {x: 10, y: 4}
   - {x: 11, y: 4}

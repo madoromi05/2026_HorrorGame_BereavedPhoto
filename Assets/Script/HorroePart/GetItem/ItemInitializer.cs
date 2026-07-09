@@ -11,7 +11,7 @@ namespace HorrorGame.Dungeon
     public class ItemInitializer : MonoBehaviour
     {
         [SerializeField] private MemoUIPresenter _memoUIPresenter;
-        [SerializeField] private ItemAcquiredUIPresenter _itemAcquiredUIPresenter;
+        [SerializeField] private ItemGetUIPresenter _itemGetUIPresenter;
         [SerializeField] private Transform _playerTransform;
         [SerializeField] private DungeonGenerator _dungeonGenerator;
 
@@ -19,7 +19,7 @@ namespace HorrorGame.Dungeon
         {
             DebugCustom.ValidateFields(this,
                 (nameof(_memoUIPresenter), _memoUIPresenter),
-                (nameof(_itemAcquiredUIPresenter), _itemAcquiredUIPresenter),
+                (nameof(_itemGetUIPresenter), _itemGetUIPresenter),
                 (nameof(_playerTransform), _playerTransform),
                 (nameof(_dungeonGenerator), _dungeonGenerator));
             _dungeonGenerator.OnRoomPlaced += Initialize;
@@ -52,14 +52,14 @@ namespace HorrorGame.Dungeon
                 memo.Init(_memoUIPresenter, inventory);
 
             foreach (var pickup in roomParent.GetComponentsInChildren<ItemPickup>())
-                pickup.Init(_itemAcquiredUIPresenter, respawner);
+                pickup.Init(_itemGetUIPresenter, respawner);
 
             // 通路にランダム配置されたお札（ItemPickup）も初期化する。
             var ofudaParent = _dungeonGenerator.OfudaParent;
             if (ofudaParent != null)
             {
                 foreach (var pickup in ofudaParent.GetComponentsInChildren<ItemPickup>())
-                    pickup.Init(_itemAcquiredUIPresenter, respawner);
+                    pickup.Init(_itemGetUIPresenter, respawner);
             }
         }
     }

@@ -52,8 +52,36 @@ public class EnemyController : MonoBehaviour
     public void Stop()
     {
         _isActivated = false;
-        StopCoroutine(nameof(StunCoroutine));   // スタン中のコルーチンがあれば停止 
+        StopCoroutine(nameof(StunCoroutine));   // スタン中のコルーチンがあれば停止
         _agent.isStopped = true;
+    }
+
+    /// <summary>
+    /// この敵をシーンから退場させる。解析完了などの外部トリガーから呼ぶ。
+    /// 今後フェードや消滅演出を足す場合はここに集約する。
+    /// </summary>
+    public void Despawn()
+    {
+        Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 指定した種類（GhostType）の敵をすべて退場させる。
+    /// GhostIdentity が子にあっても、EnemyController のルートごと消す。
+    /// </summary>
+    public static void DespawnByType(EnemyType type)
+    {
+        int removed = 0;
+        foreach (var ghost in FindObjectsByType<GhostIdentity>(FindObjectsSortMode.None))
+        {
+            if (ghost.GhostType != type) continue;
+
+            var controller = ghost.GetComponentInParent<EnemyController>();
+            if (controller != null) controller.Despawn();
+            else                    Destroy(ghost.gameObject);
+            removed++;
+        }
+        DebugCustom.Log($"[EnemyController] {type} の敵 {removed} 体を退場させました。");
     }
 
     public void Stun(float duration)

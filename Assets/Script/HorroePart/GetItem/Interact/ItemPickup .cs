@@ -19,9 +19,9 @@ namespace HorrorGame.Item
         public bool CanInteract => _item != null;
         public string HintText => _item != null ? $"[E] {_item.DisplayName}を取得" : string.Empty;
 
-        private ItemAcquiredUIPresenter _uiPresenter;
+        private ItemGetUIPresenter _uiPresenter;
         private ObstructionRespawner _respawner;
-        public void Init(ItemAcquiredUIPresenter presenter, ObstructionRespawner respawner = null)
+        public void Init(ItemGetUIPresenter presenter, ObstructionRespawner respawner = null)
         {
             _uiPresenter = presenter;
             _respawner = respawner;
@@ -42,6 +42,9 @@ namespace HorrorGame.Item
                 DebugCustom.LogWarning("[ItemPickup] Inventoryが見つかりません。");
                 return;
             }
+
+            // アイテムを取得したら、チュートリアル用の操作UIが有効なら非表示にする。
+            OperationTutorialUI.HideIfActive();
 
             // 妨害アイテムは初回取得時のみ名前・説明を表示し、2回目以降は表示しない。
             // AddItemで所持数が増える前に取得済みかどうかを判定しておく。

@@ -14,8 +14,6 @@ public class EnemyAnalyzer : MonoBehaviour
     [SerializeField] private AnalyzerVignetteController _vignetteController;
 
     [Header("クリア遷移")]
-    [Tooltip("シーン内の全ての敵（母・父）を解析完了したら自動でクリア（次シーン）へ遷移する。" +
-             "オフにすると脱出ドアからの遷移のみになる。")]
     [SerializeField] private bool _autoTransitionToClear = true;
     [Tooltip("解析完了からクリア遷移までの待機秒数")]
     [SerializeField] private float _clearTransitionDelay = 1.0f;
@@ -25,11 +23,14 @@ public class EnemyAnalyzer : MonoBehaviour
     private readonly Dictionary<EnemyType, float> _analyzePercents = new();
     private EnemyType? _currentGhostType = null;
 
+    // 100%到達を検知して「その種類の敵を消す」処理を一度だけ実行するための記録
+    private readonly HashSet<EnemyType> _completedTypes = new();
+
     private bool  _clearTriggered;
     private float _clearCheckTimer;
     private const float kClearCheckInterval = 0.5f;
 
-    /// 現在ターゲット中の種類の解析率。カメラを外すと 0 を返す（UI更新用）
+    // 現在ターゲット中の種類の解析率。カメラを外すと 0 を返す（UI更新用）
     public float AnalyzePercent =>
         _currentGhostType.HasValue && _analyzePercents.TryGetValue(_currentGhostType.Value, out var v) ? v : 0f;
 
@@ -53,7 +54,6 @@ public class EnemyAnalyzer : MonoBehaviour
 
     private bool _enemyInRange     = false;
     private bool _isAiming         = false;
-    private bool _wasComplete      = false;
 
     public void SetAiming(bool isAiming)
     {
@@ -132,24 +132,27 @@ public class EnemyAnalyzer : MonoBehaviour
         _analyzerUI.SetCompleteState(isComplete);
         _analyzerUI.SetAnalyzingState(isAnalyzing && !isComplete);
 
-        if (isComplete && !_wasComplete)
+        // その種類が新たに100%到達した瞬間を一度だけ検知し、SE再生と敵の退場を行う。
+        // 敵の消去処理そのものは EnemyController の責務に委譲する。
+        if (isComplete && _completedTypes.Add(_currentGhostType.Value))
+        {
             AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
-        _wasComplete = isComplete;
+            EnemyController.DespawnByType(_currentGhostType.Value);
+        }
     }
 
-    /// 敵が解析範囲内にいるかどうかを外部から通知する。
+    // 敵が解析範囲内にいるかどうかを外部から通知する。
     public void SetEnemyInRange(bool inRange)
     {
         _enemyInRange = inRange;
     }
 
-    /// エイムを外したときの状態リセット。種類ごとの解析率は保持される。
+    // エイムを外したときの状態リセット。種類ごとの解析率は保持される。
     public void Reset()
     {
         _currentGhostType = null;
         _enemyInRange    = false;
         _isAiming        = false;
-        _wasComplete     = false;
         _analyzerUI.ResetFields();
         _vignetteController.ResetVignette();
     }

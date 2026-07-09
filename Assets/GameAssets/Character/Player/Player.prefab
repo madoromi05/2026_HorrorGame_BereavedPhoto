@@ -278,7 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraTransform: {fileID: 8010184895929199707}
   _pitchSensitivity: 0.1
-  _aimSensitivityMultiplier: 0.6
+  _aimSensitivityMultiplier: 0.5
   _minPitch: -90
   _maxPitch: 90
 --- !u!114 &298422640435024309
@@ -296,8 +296,8 @@ MonoBehaviour:
   _moveSpeed: 5
   _dashSpeed: 8
   _yawSensitivity: 0.1
-  _aimSensitivityMultiplier: 0.5
-  _aimSpeedMultiplier: 0.8
+  _aimSensitivityMultiplier: 0.7
+  _aimSpeedMultiplier: 0.7
   _walkStepInterval: 0.5
   _dashStepInterval: 0.3
   _dashStepPitch: 1.4
@@ -515,10 +515,10 @@ Light:
   serializedVersion: 11
   m_Type: 0
   m_Color: {r: 1, g: 0.95097196, b: 0.7688679, a: 1}
-  m_Intensity: 10
+  m_Intensity: 4
   m_Range: 12
-  m_SpotAngle: 89.1685
-  m_InnerSpotAngle: 20
+  m_SpotAngle: 147.86905
+  m_InnerSpotAngle: 7.1031747
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
@@ -604,9 +604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anisotropy: 0.3
-  scattering: 8
-  radius: 0
+  anisotropy: 0.227
+  scattering: 16
+  radius: 0.361
 --- !u!1001 &2125248674768088610
 PrefabInstance:
   m_ObjectHideFlags: 0

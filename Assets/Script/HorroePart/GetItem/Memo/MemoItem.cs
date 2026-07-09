@@ -41,7 +41,12 @@ namespace HorrorGame.Interaction
             OperationTutorialUI.HideIfActive();
 
             _uiPresenter.Show(_memoPages);
+
+            // 他のアイテムと取得SEを統一する。何度も読み返せるため初回取得時のみ鳴らす。
+            bool alreadyOwned = _itemData != null && _inventory.HasItem(_itemData.ItemType);
             _inventory.AddItem(_itemData);
+            if (!alreadyOwned)
+                AudioManager.Instance?.PlaySe(SeType.ItemPickup);
         }
     }
 }
