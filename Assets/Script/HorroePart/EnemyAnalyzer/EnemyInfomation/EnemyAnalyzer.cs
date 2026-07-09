@@ -13,11 +13,6 @@ public class EnemyAnalyzer : MonoBehaviour
     [SerializeField] private AnalyzerUI _analyzerUI;
     [SerializeField] private AnalyzerVignetteController _vignetteController;
 
-    [Header("クリア遷移")]
-    [SerializeField] private bool _autoTransitionToClear = true;
-    [Tooltip("解析完了からクリア遷移までの待機秒数")]
-    [SerializeField] private float _clearTransitionDelay = 1.0f;
-
     // 解析率は敵の「種類（GhostType）」ごとに共有する。
     // 同じ種類の敵が複数体いても解析率は1つにまとまり、代表1体を100%にすればその種類は完了扱い。
     private readonly Dictionary<EnemyType, float> _analyzePercents = new();
@@ -25,10 +20,6 @@ public class EnemyAnalyzer : MonoBehaviour
 
     // 100%到達を検知して「その種類の敵を消す」処理を一度だけ実行するための記録
     private readonly HashSet<EnemyType> _completedTypes = new();
-
-    private bool  _clearTriggered;
-    private float _clearCheckTimer;
-    private const float kClearCheckInterval = 0.5f;
 
     // 現在ターゲット中の種類の解析率。カメラを外すと 0 を返す（UI更新用）
     public float AnalyzePercent =>
@@ -67,10 +58,9 @@ public class EnemyAnalyzer : MonoBehaviour
     /// </summary>
     public void SetCurrentEnemy(GameObject enemy)
     {
-        var ghost = enemy != null ? enemy.GetComponentInParent<GhostIdentity>() : null;
+        var ghost = enemy != null ? enemy.GetComponent<GhostIdentity>() : null;
         _currentGhostType = ghost?.GhostType;
     }
-    private string _lastTargetLog;
 
     private void Awake()
     {
@@ -81,28 +71,10 @@ public class EnemyAnalyzer : MonoBehaviour
 
     private void Update()
     {
-        // 全敵の解析が完了したらクリア（次シーン）へ自動遷移する。
-        // IsComplete はシーン検索を伴うため毎フレームではなく一定間隔で確認する。
-        if (_autoTransitionToClear && !_clearTriggered)
-        {
-            _clearCheckTimer -= Time.deltaTime;
-            if (_clearCheckTimer <= 0f)
-            {
-                _clearCheckTimer = kClearCheckInterval;
-                if (IsComplete)
-                {
-                    _clearTriggered = true;
-                    StartCoroutine(TransitionToClearCoroutine());
-                }
-            }
-        }
-
         if (!_isAiming) return;
 
         if (!_currentGhostType.HasValue)
         {
-            // 解析率究明用ログ：解析対象（GhostIdentity付きの敵）を捉えていない
-            DebugCustom.Log("[EnemyAnalyzer] 解析対象なし（GhostIdentityを持つ敵を捉えていない）", this);
             _analyzerUI.OnAnalyzeUpdate(0f);
             _vignetteController.UpdateVignette(0f);
             _analyzerUI.SetAnalyzingState(false);
@@ -161,17 +133,6 @@ public class EnemyAnalyzer : MonoBehaviour
     public float GetAnalyzePercent(EnemyType type)
         => _analyzePercents.TryGetValue(type, out var v) ? v : 0f;
 
-    // 解析完了後、少し待ってからクリア（次シーン）へ遷移する
-    private System.Collections.IEnumerator TransitionToClearCoroutine()
-    {
-        DebugCustom.Log("[EnemyAnalyzer] 全敵の解析完了。クリアへ遷移します。", this);
-        yield return new WaitForSeconds(_clearTransitionDelay);
-
-        if (GameProgressManager.Instance != null)
-            GameProgressManager.Instance.LoadNextScene();
-        else
-            DebugCustom.LogWarning("[EnemyAnalyzer] GameProgressManager が見つかりません。クリア遷移できません。", this);
-    }
     public void DebugForceComplete()
     {
         foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType)))

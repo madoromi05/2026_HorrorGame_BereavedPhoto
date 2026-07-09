@@ -20,7 +20,7 @@ GameObject:
   - component: {fileID: -4257024236280975183}
   - component: {fileID: -3459410862979002515}
   m_Layer: 6
-  m_Name: HandEnemy
+  m_Name: HandEnemy 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

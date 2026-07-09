@@ -23,6 +23,9 @@ public class EnemyController : MonoBehaviour
     private float           _chaseDestTimer;
     private bool            _isActivated;
 
+    // 目的地の決め方を差し替える拡張点（HandEnemy の先回りなど）。無ければ現在位置を追う。
+    private IChaseDestinationProvider _destinationProvider;
+
     public bool IsActivated => _isActivated;
 
     private void Awake()
@@ -30,6 +33,7 @@ public class EnemyController : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _agent.updateRotation = false;
         _agent.speed = _chaseSpeed;
+        TryGetComponent(out _destinationProvider);
     }
 
     public void SetPlayer(Transform player)
@@ -129,7 +133,10 @@ public class EnemyController : MonoBehaviour
         _chaseDestTimer -= Time.deltaTime;
         if (_chaseDestTimer <= 0f)
         {
-            _agent.SetDestination(_player.position);
+            Vector3 destination = _destinationProvider != null
+                ? _destinationProvider.GetChaseDestination(_player)
+                : _player.position;
+            _agent.SetDestination(destination);
             _chaseDestTimer = _chaseDestUpdateInterval;
         }
     }
