@@ -271,8 +271,8 @@ public class GameDebugGUI : MonoBehaviour
             Label($"移動速度: {_mover.MoveSpeed:F0}", Color.white);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("10"))  _mover.SetMoveSpeed(10f);
-            if (GUILayout.Button("50"))  _mover.SetMoveSpeed(50f);
-            if (GUILayout.Button("100")) _mover.SetMoveSpeed(100f);
+            if (GUILayout.Button("25"))  _mover.SetMoveSpeed(25f);
+            if (GUILayout.Button("50")) _mover.SetMoveSpeed(50f);
             GUILayout.EndHorizontal();
         }
         else Label("PlayerMover: 未検出（速度変更不可）", Color.red);

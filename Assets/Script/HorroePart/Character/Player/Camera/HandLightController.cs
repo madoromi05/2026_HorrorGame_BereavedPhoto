@@ -89,6 +89,7 @@ public class HandLightController : MonoBehaviour
         _isLightOn = true;
         _lightOnTimer = 0f;
         SetLightActive(true);
+        AudioManager.Instance?.PlaySe(SeType.HandLightToggle);
     }
 
     /// <summary>
@@ -97,9 +98,13 @@ public class HandLightController : MonoBehaviour
     /// </summary>
     private void TurnOff()
     {
+        // 既に消灯済みなら何もしない（構え時の ForceOff などで余計な切り替えSEを鳴らさない）
+        if (!_isLightOn) return;
+
         _isLightOn = false;
         _lightOnTimer = 0f;
         SetLightActive(false);
+        AudioManager.Instance?.PlaySe(SeType.HandLightToggle);
 
         if (_flickerCoroutine != null)
         {
@@ -114,6 +119,9 @@ public class HandLightController : MonoBehaviour
     private IEnumerator FlickerThenTurnOff()
     {
         float remainingTime = _maxLightDuration - _lightOnTimer;
+
+        // 消えかかりの開始を知らせるSE（点滅開始時に一度だけ）
+        AudioManager.Instance?.PlaySe(SeType.HandLightFlicker);
 
         while (remainingTime > 0f)
         {

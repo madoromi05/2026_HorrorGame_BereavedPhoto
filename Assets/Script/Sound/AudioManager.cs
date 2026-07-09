@@ -25,9 +25,12 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _seEnemyMother;
     [SerializeField] private AudioClip _seEnemyFather;
     [SerializeField] private AudioClip _seItemPickup;
+    [SerializeField] private AudioClip _seMemoPageTurn;
     [SerializeField] private AudioClip _seAnalysisComplete;
     [SerializeField] private AudioClip _seStartRoomExit;
     [SerializeField] private AudioClip _seGameOver;
+    [SerializeField] private AudioClip _seHandLightToggle;
+    [SerializeField] private AudioClip _seHandLightFlicker;
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -110,10 +113,13 @@ public class AudioManager : MonoBehaviour
         SeType.EnemyMother      => _seEnemyMother,
         SeType.EnemyFather      => _seEnemyFather,
         SeType.ItemPickup       => _seItemPickup,
+        SeType.MemoPageTurn     => _seMemoPageTurn,
         SeType.AnalysisComplete => _seAnalysisComplete,
         SeType.FootStep         => _seFootStep,
         SeType.StartRoomExit    => _seStartRoomExit,
         SeType.GameOver         => _seGameOver,
+        SeType.HandLightToggle  => _seHandLightToggle,
+        SeType.HandLightFlicker => _seHandLightFlicker,
         _                       => null,
     };
 }

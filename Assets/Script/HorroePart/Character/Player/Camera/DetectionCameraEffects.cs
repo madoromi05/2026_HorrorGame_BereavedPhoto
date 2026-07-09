@@ -122,12 +122,8 @@ public class DetectionCameraEffects : MonoBehaviour
         if (isMoving)
         {
             var state = _playerMover.CurrentMoveState;
-            float freq = state == PlayerMover.MoveState.Dash   ? _bobFrequency * 1.4f :
-                         state == PlayerMover.MoveState.Crouch ? _bobFrequency * 0.6f :
-                         _bobFrequency;
-            float mag  = state == PlayerMover.MoveState.Dash   ? _bobMagnitude * 1.4f :
-                         state == PlayerMover.MoveState.Crouch ? _bobMagnitude * 0.6f :
-                         _bobMagnitude;
+            float freq = state == PlayerMover.MoveState.Dash ? _bobFrequency * 1.4f : _bobFrequency;
+            float mag  = state == PlayerMover.MoveState.Dash ? _bobMagnitude * 1.4f : _bobMagnitude;
             float t = Time.time * freq;
             float x = Mathf.Sin(t * 2f) * mag;
             float y = Mathf.Sin(t) * (mag * 0.35f);
@@ -151,12 +147,8 @@ public class DetectionCameraEffects : MonoBehaviour
         }
 
         var state = _playerMover.CurrentMoveState;
-        float freq = state == PlayerMover.MoveState.Dash   ? _bobFrequency * 1.4f :
-                     state == PlayerMover.MoveState.Crouch ? _bobFrequency * 0.6f :
-                     _bobFrequency;
-        float mag = state == PlayerMover.MoveState.Dash   ? _lightBobMagnitude * 1.4f :
-                    state == PlayerMover.MoveState.Crouch ? _lightBobMagnitude * 0.6f :
-                    _lightBobMagnitude;
+        float freq = state == PlayerMover.MoveState.Dash ? _bobFrequency * 1.4f : _bobFrequency;
+        float mag = state == PlayerMover.MoveState.Dash ? _lightBobMagnitude * 1.4f : _lightBobMagnitude;
 
         float t = Time.time * freq;
         var offset = new Vector3(Mathf.Sin(t) * (mag * 0.35f), Mathf.Sin(t * 2f) * mag, 0f);

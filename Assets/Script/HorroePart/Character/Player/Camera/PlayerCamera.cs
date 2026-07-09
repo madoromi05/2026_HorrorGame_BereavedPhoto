@@ -18,6 +18,7 @@ public class PlayerCamera : MonoBehaviour
     private bool _isAiming;
     private InputPlayerController _inputCallbackController;
     private PlayerMover _playerMover;
+    private float _pendingLookY;
 
     private void Awake()
     {
@@ -32,13 +33,13 @@ public class PlayerCamera : MonoBehaviour
             _pitchSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
     }
 
-    /// <summary>オプションメニューからマウス感度を即時反映する。</summary>
+    // オプションメニューからマウス感度を即時反映する
     public void SetSensitivity(float v) => _pitchSensitivity = v;
 
-    /// <summary>DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する。</summary>
+    // DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する
     public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;
 
-    /// <summary>ピッチを 0 にリセットしてカメラを水平に戻す。</summary>
+    // ピッチを 0 にリセットしてカメラを水平に戻す
     public void ResetPitch()
     {
         _currentPitch = 0f;
@@ -62,13 +63,24 @@ public class PlayerCamera : MonoBehaviour
 
     private void HandleAiming(bool isAiming) => _isAiming = isAiming;
 
-    private void HandleLook(Vector2 input)
+    /// <summary>
+    /// Look入力は1フレーム内に複数回発火することがあり、マウスのデルタ値はフレーム内で
+    /// 累積されているため、都度加算すると過剰回転になる。ここでは最新値を保持するだけにし、
+    /// 実際のPitch適用は Update で1フレームにつき1回だけ行う。
+    /// </summary>
+    private void HandleLook(Vector2 input) => _pendingLookY = input.y;
+
+    private void Update()
     {
         if (_playerMover != null && _playerMover.Frozen) return;
-        float sens = _pitchSensitivity * (_isAiming ? _aimSensitivityMultiplier : 1f);
+        if (_pendingLookY == 0f) return;
+
+        float multiplier = _isAiming ? _aimSensitivityMultiplier : 1f;
+        float sens = _pitchSensitivity * multiplier;
         // 上下回転（Pitch）のみ更新。Y軸回転はFPSMoverが制御
-        _currentPitch -= input.y * sens;
+        _currentPitch -= _pendingLookY * sens;
         _currentPitch = Mathf.Clamp(_currentPitch, _minPitch, _maxPitch);
+        _pendingLookY = 0f;
     }
 
     private void LateUpdate()

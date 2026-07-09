@@ -13,22 +13,6 @@ public class ObstructionItemHUD : MonoBehaviour
 
     private Inventory _inventory;
 
-    private void Start()
-    {
-        var player = GameObject.FindGameObjectWithTag("Player");
-        _inventory = player?.GetComponent<Inventory>();
-
-        if (_inventory == null)
-        {
-            DebugCustom.LogWarning("[ObstructionItemHUD] Inventory が見つかりません。");
-            _root?.SetActive(false);
-            return;
-        }
-
-        _inventory.OnItemCountChanged += OnCountChanged;
-        Refresh();
-    }
-
     private void OnDestroy()
     {
         if (_inventory != null)

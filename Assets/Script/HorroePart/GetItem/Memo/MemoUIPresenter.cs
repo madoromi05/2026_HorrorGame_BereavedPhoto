@@ -49,6 +49,7 @@ namespace HorrorGame.UI
             {
                 _currentPage++;
                 ApplyPage();
+                AudioManager.Instance?.PlaySe(SeType.MemoPageTurn);
                 return;
             }
 

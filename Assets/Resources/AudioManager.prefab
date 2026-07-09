@@ -59,9 +59,12 @@ MonoBehaviour:
   _seEnemyMother: {fileID: 8300000, guid: 5c48a3e414fa6314e998962551dc0036, type: 3}
   _seEnemyFather: {fileID: 8300000, guid: f568f0e9b91e9664293450b7f8e5b103, type: 3}
   _seItemPickup: {fileID: 8300000, guid: 6818605eec0bd6f4dbe2f6719af3800a, type: 3}
+  _seMemoPageTurn: {fileID: 8300000, guid: 545ac8cc75060ec4ea2f5fbf4c51501a, type: 3}
   _seAnalysisComplete: {fileID: 8300000, guid: 90d92808e646c8f4480d57bd6abf1bf8, type: 3}
   _seStartRoomExit: {fileID: 8300000, guid: 4ff90050354108b4caee8f685a9a09e1, type: 3}
   _seGameOver: {fileID: 8300000, guid: e3450250146a24a47b0dfc46b9560c6c, type: 3}
+  _seHandLightToggle: {fileID: 8300000, guid: 8f67228ddc74f5a4f87d3a284839bfcb, type: 3}
+  _seHandLightFlicker: {fileID: 0}
 --- !u!1 &3992828601510246997
 GameObject:
   m_ObjectHideFlags: 0

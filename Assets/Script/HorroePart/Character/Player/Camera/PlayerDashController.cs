@@ -6,22 +6,20 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(PlayerMover))]
 [RequireComponent(typeof(InputPlayerController))]
-[RequireComponent(typeof(PlayerCrouch))]
 public class PlayerDashController : MonoBehaviour
 {
     [Header("ダッシュゲージ設定")]
     [SerializeField] private float _dashMaxGauge = 100f;
-    [SerializeField] private float _dashConsumeRate = 30f; // 1秒間押し続けたときの消費量
+    [SerializeField] private float _dashConsumeRate = 20f;
     [SerializeField] private float _dashRegenRate = 20f;
     [SerializeField] private float _dashRegenDelay = 1.5f;
 
     [Header("疲労（息切れ）設定")]
     // ゲージを使い切ったあと、ダッシュできなくなる秒数
-    [SerializeField] private float _exhaustDuration = 3f;
+    [SerializeField] private float _exhaustDuration = 5f;
 
     private PlayerMover _mover;
     private InputPlayerController _inputController;
-    private PlayerCrouch _playerCrouch;
 
     private float _dashGauge;
     private float _regenDelayTimer;
@@ -31,14 +29,13 @@ public class PlayerDashController : MonoBehaviour
     private bool _isExhausted;
     private float _exhaustTimer;
 
-    /// <summary>ゲージ枯渇による息切れ中か。PlayerStealthStatus がノイズ増に参照する。</summary>
+    // ゲージ枯渇による息切れ中か。PlayerStealthStatus がノイズ増に参照する
     public bool IsExhausted => _isExhausted;
 
     private void Awake()
     {
         _mover = GetComponent<PlayerMover>();
         _inputController = GetComponent<InputPlayerController>();
-        _playerCrouch = GetComponent<PlayerCrouch>();
         _dashGauge = _dashMaxGauge;
     }
 
@@ -75,9 +72,6 @@ public class PlayerDashController : MonoBehaviour
 
         if (canDash)
         {
-            // しゃがみ中にダッシュしたらしゃがみを解除してから走る（CancelCrouch 内でガード）
-            _playerCrouch.CancelCrouch();
-
             _mover.IsDashing = true;
             _dashGauge -= _dashConsumeRate * Time.fixedDeltaTime;
             _regenDelayTimer = _dashRegenDelay;

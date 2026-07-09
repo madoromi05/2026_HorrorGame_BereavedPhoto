@@ -60,7 +60,7 @@ public class EnemySoundPlayer : MonoBehaviour
         _lowPassFilter.cutoffFrequency = _openCutoffHz;
 
         var identity = GetComponent<GhostIdentity>();
-        _seType = identity != null && identity.GhostType == GhostType.Father
+        _seType = identity != null && identity.GhostType == EnemyType.SmileEnemies
             ? SeType.EnemyFather
             : SeType.EnemyMother;
 

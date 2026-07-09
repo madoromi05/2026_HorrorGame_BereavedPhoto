@@ -177,12 +177,10 @@ GameObject:
   - component: {fileID: 8403319748086935930}
   - component: {fileID: 3412488961731540206}
   - component: {fileID: 7772033762108381031}
-  - component: {fileID: 2863466706399598481}
   - component: {fileID: 6920147249179006219}
   - component: {fileID: 8199233245505525648}
   - component: {fileID: 6175971953874847756}
   - component: {fileID: 712813678166292935}
-  - component: {fileID: 7136231948874468481}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -296,7 +294,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveSpeed: 5
-  _crouchSpeed: 2
   _dashSpeed: 8
   _yawSensitivity: 0.1
   _aimSensitivityMultiplier: 0.5
@@ -363,67 +360,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dashMaxGauge: 100
-  _dashConsumeRate: 30
-  _dashRegenRate: 20
+  _dashConsumeRate: 20
+  _dashRegenRate: 10
   _dashRegenDelay: 1.5
-  _exhaustDuration: 3
---- !u!114 &2863466706399598481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9653ce3e6aebffd4a83bd6576b0a3d65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cameraTransform: {fileID: 8010184895929199707}
-  _crouchHeightOffset: 0.8
-  _crouchTransitionSpeed: 4
-  _crouchCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.2568526
-      value: 0.07899271
-      inSlope: 0.6687754
-      outSlope: 0.6687754
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.18374686
-    - serializedVersion: 3
-      time: 0.7184338
-      value: 0.93311054
-      inSlope: 0.7167386
-      outSlope: 0.7167386
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.17164516
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  _exhaustDuration: 5
 --- !u!114 &6920147249179006219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,19 +438,6 @@ MonoBehaviour:
   _projectilePrefab: {fileID: 2351118879395489275, guid: 6fa60970829e9794291b8e66a0601b26, type: 3}
   _throwSpeed: 15
   _stunDuration: 5
---- !u!114 &7136231948874468481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57acb238f8c1a53409b574e5860efcc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initialObstructionItemCount: 5
 --- !u!1 &3248879358088908694
 GameObject:
   m_ObjectHideFlags: 0

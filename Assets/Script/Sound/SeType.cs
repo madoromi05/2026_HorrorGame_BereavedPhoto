@@ -4,8 +4,11 @@ public enum SeType
     EnemyMother,
     EnemyFather,
     ItemPickup,
+    MemoPageTurn,
     AnalysisComplete,
     FootStep,
     StartRoomExit,
-    GameOver
+    GameOver,
+    HandLightToggle,
+    HandLightFlicker
 }

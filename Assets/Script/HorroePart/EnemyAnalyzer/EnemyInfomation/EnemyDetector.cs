@@ -50,7 +50,6 @@ public class EnemyDetector : MonoBehaviour
         {
             _analyzer.SetCurrentEnemy(null);
             _analyzer.SetEnemyInRange(false);
-            _analyzer.SetMapEnemyInView(false);
             return;
         }
 
@@ -61,13 +60,11 @@ public class EnemyDetector : MonoBehaviour
             var root = hit.collider.GetComponentInParent<EnemyController>();
             _analyzer.SetCurrentEnemy(root != null ? root.gameObject : hit.collider.gameObject);
             _analyzer.SetEnemyInRange(true);
-            _analyzer.SetMapEnemyInView(false);
         }
         else
         {
             _analyzer.SetCurrentEnemy(null);
             _analyzer.SetEnemyInRange(false);
-            _analyzer.SetMapEnemyInView(false);
         }
     }
 

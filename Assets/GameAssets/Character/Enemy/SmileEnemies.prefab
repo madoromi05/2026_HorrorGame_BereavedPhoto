@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 1811202984501397071}
   - component: {fileID: 4845050878769780941}
   - component: {fileID: -2243931691572478503}
+  - component: {fileID: 8669889442117926404}
   m_Layer: 6
   m_Name: SmileEnemies
   m_TagString: Untagged
@@ -134,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyType: 0
   _aimPoint: {fileID: 5826340294384010155}
-  _chaseSpeed: 4
+  _chaseSpeed: 4.5
   _chaseDestUpdateInterval: 0.5
   _catchDistance: 3
 --- !u!195 &8604436980520377003
@@ -318,6 +319,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e22c818012eb3d43aadeca850c2e067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8669889442117926404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074338261638584859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6d35be8ffdcae7409aeeaa7d817390d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ghostType: 1
 --- !u!1 &6414041310043416268
 GameObject:
   m_ObjectHideFlags: 0

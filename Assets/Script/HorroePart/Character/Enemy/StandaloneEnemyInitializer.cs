@@ -16,11 +16,7 @@ public class StandaloneEnemyInitializer : MonoBehaviour
     {
         if (_player == null)
         {
-            var playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null)
-                _player = playerObj.transform;
-            else
-                DebugCustom.LogWarning("[StandaloneEnemyInitializer] Playerが見つかりません。Inspector で Player を設定してください。");
+           DebugCustom.LogWarning("[StandaloneEnemyInitializer] Playerが見つかりません。Inspector で Player を設定してください。");
         }
 
         if (TryGetComponent<EnemyController>(out var controller))

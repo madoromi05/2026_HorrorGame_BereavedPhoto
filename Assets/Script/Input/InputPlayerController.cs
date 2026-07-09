@@ -7,7 +7,6 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     public event Action<Vector2> OnMovePerformed;
     public event Action<Vector2> OnLookPerformed;
     public event Action<bool> OnCameraPerformed;
-    public event Action<bool> OnCrouchPerformed;
     public event Action<bool> OnSprintPerformed;
     public event Action OnInteractPerformed;
     public event Action OnHandLightPerformed;
@@ -77,17 +76,9 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
             OnInteractReleased?.Invoke();
     }
 
+    // しゃがみ機能は削除済み。IPlayerActions のインターフェース実装のため空メソッドとして残す。
     public void OnCrouch(InputAction.CallbackContext context)
     {
-        if (!_isPlayerInputEnabled) return;
-        if (context.performed)
-        {
-            OnCrouchPerformed?.Invoke(true);
-        }
-        else if (context.canceled)
-        {
-            OnCrouchPerformed?.Invoke(false);
-        }
     }
 
     public void OnSprint(InputAction.CallbackContext context)
