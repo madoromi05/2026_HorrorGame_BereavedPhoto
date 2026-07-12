@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Version: 2
   m_TaaSettings:
     m_Quality: 3
-    m_FrameInfluence: 0.1
+    m_FrameInfluence: 0.100000024
     m_JitterScale: 1
     m_MipBias: 0
     m_VarianceClampScale: 0.9
@@ -168,7 +168,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6538618942849279932}
-  - component: {fileID: 2212577493956498567}
   - component: {fileID: 3939201739960958374}
   - component: {fileID: 2542864235932074062}
   - component: {fileID: 2761992662877834448}
@@ -204,29 +203,6 @@ Transform:
   - {fileID: 8010184895929199707}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &2212577493956498567
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2569421474114986601}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!143 &3939201739960958374
 CharacterController:
   m_ObjectHideFlags: 0
@@ -296,8 +272,8 @@ MonoBehaviour:
   _moveSpeed: 5
   _dashSpeed: 8
   _yawSensitivity: 0.1
-  _aimSensitivityMultiplier: 0.7
-  _aimSpeedMultiplier: 0.7
+  _aimSensitivityMultiplier: 0.6
+  _aimSpeedMultiplier: 0.6
   _walkStepInterval: 0.5
   _dashStepInterval: 0.3
   _dashStepPitch: 1.4

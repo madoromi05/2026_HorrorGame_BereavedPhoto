@@ -10,8 +10,9 @@ using UnityEngine;
 public class EnemyAnalyzer : MonoBehaviour
 {
     [SerializeField] private float _analyzeSpeed = 0.3f;
+    [SerializeField] private float _completeSpeedBonus = 1f;   // 1種類の解析完了時、残る種類に加算する移動速度
     [SerializeField] private AnalyzerUI _analyzerUI;
-    [SerializeField] private AnalyzerVignetteController _vignetteController;
+    [SerializeField] private AnalyzeVignette _vignetteController;
 
     // 解析率は敵の「種類（GhostType）」ごとに共有する。
     // 同じ種類の敵が複数体いても解析率は1つにまとまり、代表1体を100%にすればその種類は完了扱い。
@@ -110,6 +111,21 @@ public class EnemyAnalyzer : MonoBehaviour
         {
             AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
             EnemyController.DespawnByType(_currentGhostType.Value);
+            BoostRemainingEnemies();
+        }
+    }
+
+    /// <summary>
+    /// まだ解析が完了していない種類の敵の移動速度を上げる。
+    /// 1種類倒すごとに残りが速くなり、緊張感を高める演出。
+    /// </summary>
+    private void BoostRemainingEnemies()
+    {
+        foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType)))
+        {
+            // すでに退場済み（完了済み）の種類は対象外
+            if (_completedTypes.Contains(type)) continue;
+            EnemyController.IncreaseSpeedByType(type, _completeSpeedBonus);
         }
     }
 
@@ -146,6 +162,7 @@ public class EnemyAnalyzer : MonoBehaviour
         {
             AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
             EnemyController.DespawnByType(type);
+            BoostRemainingEnemies();
         }
         DebugCustom.Log($"[Debug] 解析強制完了: {type}");
     }

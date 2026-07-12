@@ -91,6 +91,34 @@ public class EnemyController : MonoBehaviour
         DebugCustom.Log($"[EnemyController] {type} の敵 {removed} 体を退場させました。");
     }
 
+    /// <summary>
+    /// この敵の移動速度を amount だけ加算する。
+    /// </summary>
+    public void IncreaseSpeed(float amount)
+    {
+        _chaseSpeed += amount;
+        if (_agent != null) _agent.speed = _chaseSpeed;
+    }
+
+    /// <summary>
+    /// 指定した種類（GhostType）の敵すべての移動速度を amount だけ加算する。
+    /// 別種類の解析完了時に、残っている種類を加速させる用途で呼ぶ。
+    /// </summary>
+    public static void IncreaseSpeedByType(EnemyType type, float amount)
+    {
+        int boosted = 0;
+        foreach (var ghost in FindObjectsByType<GhostIdentity>(FindObjectsSortMode.None))
+        {
+            if (ghost.GhostType != type) continue;
+
+            var controller = ghost.GetComponentInParent<EnemyController>();
+            if (controller == null) continue;
+            controller.IncreaseSpeed(amount);
+            boosted++;
+        }
+        DebugCustom.Log($"[EnemyController] {type} の敵 {boosted} 体の速度を +{amount} しました。");
+    }
+
     public void Stun(float duration)
     {
         if (!_isActivated) return;

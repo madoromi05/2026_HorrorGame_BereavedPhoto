@@ -9,12 +9,6 @@ using UnityEngine;
 public class DetectionCameraEffects : MonoBehaviour
 {
     [SerializeField] private PlayerCamera _playerCamera;
-    [SerializeField] private AnalyzerVignetteController _vignetteController;
-
-    [Header("発見時ヴィネット追加強度")]
-    [SerializeField, Range(0f, 0.5f)] private float _detectionVignetteIntensity = 0.25f;
-    [SerializeField] private float _vignetteInSpeed  = 6f;
-    [SerializeField] private float _vignetteOutSpeed = 2f;
 
     [Header("発見時の強い揺れ（一回）")]
     [SerializeField] private float _burstDuration   = 0.6f;
@@ -39,7 +33,6 @@ public class DetectionCameraEffects : MonoBehaviour
     private float _enemyRefreshTimer;
 
     private bool  _wasChased;
-    private float _vignetteAdd;
     private float _burstTimer;
     private float _perlinSeedX;
     private float _perlinSeedY;
@@ -60,9 +53,6 @@ public class DetectionCameraEffects : MonoBehaviour
         if (_handLight != null)
             _handLightInitialLocalPos = _handLight.transform.localPosition;
 
-        if (_vignetteController == null)
-            DebugCustom.LogError("[DetectionCameraEffects] AnalyzerVignetteController が未設定です。", this);
-
         _perlinSeedX = Random.value * 100f;
         _perlinSeedY = Random.value * 100f;
     }
@@ -78,12 +68,6 @@ public class DetectionCameraEffects : MonoBehaviour
             _burstTimer = _burstDuration;
 
         _wasChased = isChased;
-
-        // ヴィネット更新
-        float vignetteTarget = isChased ? _detectionVignetteIntensity : 0f;
-        float fadeSpeed = isChased ? _vignetteInSpeed : _vignetteOutSpeed;
-        _vignetteAdd = Mathf.MoveTowards(_vignetteAdd, vignetteTarget, fadeSpeed * Time.deltaTime);
-        _vignetteController?.SetDetectionVignette(_vignetteAdd);
 
         bool isMoving = _playerMover != null &&
                         _playerMover.CurrentMoveState != PlayerMover.MoveState.Idle;

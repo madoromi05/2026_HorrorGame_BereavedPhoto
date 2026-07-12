@@ -55,6 +55,10 @@ public class StartRoomBoundary : MonoBehaviour
         foreach (var e in enemies)
             e.Activate();
 
+        // このトリガーは実行時生成されるため UsuallyVignette を事前アサインできない。
+        // シーン常駐の Volume リグ側を実行時に検索し、通常プレイ用ビネットをフェードインさせる。
+        FindFirstObjectByType<UsuallyVignette>()?.Activate();
+
         AudioManager.Instance?.PlayBgm(BgmType.GameChase);
     }
 
