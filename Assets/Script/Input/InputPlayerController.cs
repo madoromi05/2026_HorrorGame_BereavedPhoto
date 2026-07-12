@@ -45,6 +45,11 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     public void SetPlayerInputEnabled(bool enabled)
     {
         _isPlayerInputEnabled = enabled;
+
+        // 無効化した瞬間にラッチ済みの移動入力を打ち消す。
+        // これをしないと直前の移動値が PlayerMover に残り、UI表示中も滑り続ける。
+        if (!enabled)
+            OnMovePerformed?.Invoke(Vector2.zero);
     }
 
     //-------------------- コールバック群 --------------------

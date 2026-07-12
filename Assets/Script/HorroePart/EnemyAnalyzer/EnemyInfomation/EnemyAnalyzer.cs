@@ -133,10 +133,20 @@ public class EnemyAnalyzer : MonoBehaviour
     public float GetAnalyzePercent(EnemyType type)
         => _analyzePercents.TryGetValue(type, out var v) ? v : 0f;
 
-    public void DebugForceComplete()
+    /// <summary>
+    /// 指定した種類の解析を強制的に100%完了させるデバッグ用メソッド。
+    /// 実ゲームの完了時と同じく、初回完了時にSE再生とその種類の敵の退場も行う。
+    /// </summary>
+    public void DebugCompleteType(EnemyType type)
     {
-        foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType)))
-            _analyzePercents[type] = 100f;
-        DebugCustom.Log($"[Debug] 解析強制完了（{_analyzePercents.Count}種類）");
+        _analyzePercents[type] = 100f;
+
+        // 通常のUpdate内の完了検知と同じく、種類ごとに一度だけ退場・SEを実行する。
+        if (_completedTypes.Add(type))
+        {
+            AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
+            EnemyController.DespawnByType(type);
+        }
+        DebugCustom.Log($"[Debug] 解析強制完了: {type}");
     }
 }

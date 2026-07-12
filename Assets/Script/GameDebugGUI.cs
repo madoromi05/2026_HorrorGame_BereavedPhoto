@@ -36,17 +36,12 @@ public class GameDebugGUI : MonoBehaviour
     private float _refreshTimer;
     private const float kRefreshInterval = 0.5f;
 
-    // スタイル/テクスチャ
+    // スタイル
     private GUIStyle _headerStyle;
     private GUIStyle _valueStyle;
     private GUIStyle _tabActiveStyle;
     private GUIStyle _tabStyle;
-    private Texture2D _barBgTex;
-    private Texture2D _barGreenTex;
-    private Texture2D _barYellowTex;
-    private Texture2D _barRedTex;
-    private Texture2D _windowBgTex;
-    private bool      _stylesBuilt;
+    private bool     _stylesBuilt;
 
     private static readonly string[] kTabNames = { "進行", "プレイヤー", "敵", "シーン" };
 
@@ -114,36 +109,23 @@ public class GameDebugGUI : MonoBehaviour
     {
         if (_stylesBuilt) return;
 
-        _windowBgTex  = MakeTex(1, 1, new Color(0.08f, 0.08f, 0.12f, 0.94f));
-        _barBgTex     = MakeTex(1, 1, new Color(0.2f, 0.2f, 0.2f, 1f));
-        _barGreenTex  = MakeTex(1, 1, new Color(0.15f, 0.75f, 0.3f, 1f));
-        _barYellowTex = MakeTex(1, 1, new Color(0.9f, 0.75f, 0.1f, 1f));
-        _barRedTex    = MakeTex(1, 1, new Color(0.9f, 0.2f, 0.2f, 1f));
-
         _headerStyle = new GUIStyle(GUI.skin.label)
         {
             fontStyle = FontStyle.Bold,
             fontSize  = 12,
-            normal    = { textColor = new Color(0.5f, 0.85f, 1f) }
         };
 
         _valueStyle = new GUIStyle(GUI.skin.label)
         {
             fontSize = 11,
-            normal   = { textColor = Color.white }
         };
 
+        // アクティブタブは色ではなく太字で示す（色装飾を持たせない）。
         _tabStyle = new GUIStyle(GUI.skin.button);
         _tabActiveStyle = new GUIStyle(GUI.skin.button)
         {
-            normal  = { background = MakeTex(1, 1, new Color(0.25f, 0.5f, 0.85f, 1f)),
-                        textColor  = Color.white },
-            focused = { background = MakeTex(1, 1, new Color(0.25f, 0.5f, 0.85f, 1f)),
-                        textColor  = Color.white },
+            fontStyle = FontStyle.Bold,
         };
-
-        var winStyle = GUI.skin.window;
-        winStyle.normal.background = _windowBgTex;
 
         _stylesBuilt = true;
     }
@@ -153,9 +135,7 @@ public class GameDebugGUI : MonoBehaviour
         if (!_isVisible) return;
         BuildStyles();
 
-        GUI.backgroundColor = new Color(0.08f, 0.08f, 0.14f, 0.95f);
         _windowRect = GUI.Window(12345, _windowRect, DrawWindow, "■ Debug GUI");
-        GUI.backgroundColor = Color.white;
     }
 
     private void DrawWindow(int id)
@@ -191,59 +171,6 @@ public class GameDebugGUI : MonoBehaviour
 
     private void DrawTabProgress()
     {
-        var mgr = GameProgressManager.Instance;
-
-        SectionHeader("ゲームステージ");
-
-        if (mgr == null)
-        {
-            Label("GameProgressManager: 未検出", Color.red);
-        }
-        else
-        {
-            // フロー図
-            var stages = (GameProgressManager.GameStage[])System.Enum.GetValues(typeof(GameProgressManager.GameStage));
-            GUILayout.BeginHorizontal();
-            foreach (var s in stages)
-            {
-                bool cur = mgr.CurrentStage == s;
-                GUI.color = cur ? new Color(0.3f, 1f, 0.5f) : Color.gray;
-                GUILayout.Label(cur ? $"[{s}]" : $" {s} ");
-            }
-            GUI.color = Color.white;
-            GUILayout.EndHorizontal();
-
-            GUILayout.Space(4);
-            Label($"現在ステージ : {mgr.CurrentStage}", Color.white);
-            Label($"次シーン      : {mgr.GetSceneForStage(mgr.CurrentStage)}", Color.cyan);
-
-            GUILayout.Space(4);
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("▶ 次へ進む"))  { mgr.LoadNextScene(); }
-            if (GUILayout.Button("↺ リセット")) { mgr.ResetProgress(); DebugCustom.Log("[Debug] 進行リセット"); }
-            GUILayout.EndHorizontal();
-        }
-
-        GUILayout.Space(8);
-        SectionHeader("アルバムページ");
-
-        string[] pageNames = { "0:表紙", "1:母", "2:父", "3:終章" };
-        for (int i = 0; i < GameProgressManager.AlbumPageCount; i++)
-        {
-            bool unlocked = mgr != null && mgr.AlbumPages[i];
-            GUILayout.BeginHorizontal();
-            Label(unlocked ? $"[✓] {pageNames[i]}" : $"[  ] {pageNames[i]}",
-                  unlocked ? new Color(0.3f, 1f, 0.4f) : Color.gray);
-
-            if (!unlocked && mgr != null)
-            {
-                if (GUILayout.Button("解放", GUILayout.Width(44)))
-                    mgr.UnlockAlbumPage(i);
-            }
-            GUILayout.EndHorizontal();
-        }
-
-        GUILayout.Space(8);
         SectionHeader("解析状況");
         DrawAnalyzerSection();
     }
@@ -370,16 +297,6 @@ public class GameDebugGUI : MonoBehaviour
 
         SectionHeader($"シーン: {curScene}  |  ステージ: {curStage}");
 
-        // ---- ステージジャンプ（ステージ状態も正しく設定） ----
-        GUILayout.Space(4);
-        Label("ステージジャンプ（ステージも更新）:", Color.gray);
-
-        GUILayout.BeginHorizontal();
-        DrawStageButton("Title",    GameProgressManager.GameStage.Title,    mgr);
-        DrawStageButton("Horror",   GameProgressManager.GameStage.Horror,   mgr);
-        DrawStageButton("Epilogue", GameProgressManager.GameStage.Epilogue, mgr);
-        GUILayout.EndHorizontal();
-
         // ---- シーン直接遷移（ステージ変更なし） ----
         GUILayout.Space(6);
         Label("シーン直接遷移（ステージ変更なし）:", Color.gray);
@@ -398,12 +315,6 @@ public class GameDebugGUI : MonoBehaviour
         GUILayout.Space(6);
         SectionHeader("デバッグ操作");
 
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("解析100%完了"))
-        {
-            if (_analyzer != null) _analyzer.DebugForceComplete();
-            else DebugCustom.LogWarning("[Debug] EnemyAnalyzer not found");
-        }
         if (GUILayout.Button("鍵 全取得"))
         {
             if (_inventory != null)
@@ -412,23 +323,6 @@ public class GameDebugGUI : MonoBehaviour
                     _inventory.DebugAddItem(t);
             }
             else DebugCustom.LogWarning("[Debug] Inventory not found");
-        }
-        GUILayout.EndHorizontal();
-
-        if (mgr != null)
-        {
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("アルバム全解放"))
-            {
-                for (int i = 0; i < GameProgressManager.AlbumPageCount; i++)
-                    mgr.UnlockAlbumPage(i);
-            }
-            if (GUILayout.Button("進行リセット"))
-            {
-                mgr.ResetProgress();
-                DebugCustom.Log("[Debug] 進行リセット");
-            }
-            GUILayout.EndHorizontal();
         }
 
         // ---- FPS / TimeScale ----
@@ -443,18 +337,6 @@ public class GameDebugGUI : MonoBehaviour
         GUILayout.EndHorizontal();
     }
 
-    private void DrawStageButton(string label, GameProgressManager.GameStage stage, GameProgressManager mgr)
-    {
-        bool isCurrent = mgr != null && mgr.CurrentStage == stage;
-        var  prev      = GUI.enabled;
-        GUI.enabled = !isCurrent;
-        GUI.backgroundColor = isCurrent ? new Color(0.3f, 0.6f, 1f) : Color.white;
-        if (GUILayout.Button(isCurrent ? $"▶{label}" : label))
-            mgr?.DebugJumpToStage(stage);
-        GUI.backgroundColor = Color.white;
-        GUI.enabled = prev;
-    }
-
     // ================================================================
     //  解析セクション（複数タブで共有）
     // ================================================================
@@ -467,12 +349,29 @@ public class GameDebugGUI : MonoBehaviour
             return;
         }
 
-        float pct = _analyzer.AnalyzePercent;
-        bool done = _analyzer.IsComplete;
+        // 全体の完了判定（全種類が100%か）
+        bool allDone = _analyzer.IsComplete;
+        Label(allDone ? "全種類 ✓ 完了" : "解析中（未完了の種類あり）",
+              allDone ? new Color(0.3f, 1f, 0.4f) : Color.white);
 
-        Label($"解析率: {pct:F1}%  {(done ? "✓ 完了" : "進行中")}",
-              done ? new Color(0.3f, 1f, 0.4f) : Color.white);
-        DrawBar(pct, 100f, done ? _barGreenTex : (pct > 50f ? _barYellowTex : _barBgTex));
+        GUILayout.Space(4);
+
+        // 種類ごとに解析率を表示し、その種類だけを完了させる。
+        foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType)))
+        {
+            float pct  = _analyzer.GetAnalyzePercent(type);
+            bool  done = pct >= 100f;
+
+            GUILayout.BeginHorizontal();
+            Label($"{type}: {pct:F0}%", done ? new Color(0.3f, 1f, 0.4f) : Color.white);
+            GUILayout.FlexibleSpace();
+            var prev = GUI.enabled;
+            GUI.enabled = !done;
+            if (GUILayout.Button("完了", GUILayout.Width(60)))
+                _analyzer.DebugCompleteType(type);
+            GUI.enabled = prev;
+            GUILayout.EndHorizontal();
+        }
     }
 
     // ================================================================
@@ -493,23 +392,6 @@ public class GameDebugGUI : MonoBehaviour
         GUI.color = prev;
     }
 
-    private void DrawBar(float value, float max, Texture2D fillTex = null)
-    {
-        float ratio = Mathf.Clamp01(max > 0f ? value / max : 0f);
-        Rect bg = GUILayoutUtility.GetRect(0, 12, GUILayout.ExpandWidth(true));
-
-        if (_barBgTex != null) GUI.DrawTexture(bg, _barBgTex);
-        else GUI.Box(bg, GUIContent.none);
-
-        if (ratio > 0f)
-        {
-            var fill = new Rect(bg.x, bg.y, bg.width * ratio, bg.height);
-            Texture2D tex = fillTex ?? _barGreenTex;
-            if (tex != null) GUI.DrawTexture(fill, tex);
-            else GUI.Box(fill, GUIContent.none);
-        }
-    }
-
     private void DrawSceneButton(string label, string sceneName)
     {
         bool isCurrent = SceneManager.GetActiveScene().name == sceneName;
@@ -518,15 +400,5 @@ public class GameDebugGUI : MonoBehaviour
         if (GUILayout.Button(isCurrent ? $"▶ {label} (現在)" : label))
             SceneManager.LoadScene(sceneName);
         GUI.enabled = prev;
-    }
-
-    private static Texture2D MakeTex(int w, int h, Color c)
-    {
-        var pix = new Color[w * h];
-        for (int i = 0; i < pix.Length; i++) pix[i] = c;
-        var t = new Texture2D(w, h);
-        t.SetPixels(pix);
-        t.Apply();
-        return t;
     }
 }

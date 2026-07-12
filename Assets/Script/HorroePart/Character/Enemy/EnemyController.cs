@@ -57,7 +57,10 @@ public class EnemyController : MonoBehaviour
     {
         _isActivated = false;
         StopCoroutine(nameof(StunCoroutine));   // スタン中のコルーチンがあれば停止
+        if (!_agent.isOnNavMesh) return;        // 退場処理と競合しても安全に抜ける
         _agent.isStopped = true;
+        _agent.velocity  = Vector3.zero;        // 残留速度による滑走を消し、その場で即停止
+        _agent.ResetPath();                     // 追跡経路を破棄
     }
 
     /// <summary>
