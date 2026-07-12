@@ -50,7 +50,7 @@ MonoBehaviour:
   _bgmPlayer: {fileID: 3505930410932456698}
   _sePlayer: {fileID: 8118583311293399093}
   _mixerProxy: {fileID: 6131030025019342182}
-  _bgmTitle: {fileID: 8300000, guid: 9b49cdc055fc95c4193552e92cc168e1, type: 3}
+  _bgmTitle: {fileID: 8300000, guid: d84c1d0c04f82e14ebabe7a646e7928c, type: 3}
   _bgmGameNormal: {fileID: 8300000, guid: e3ba57b4f4cb25d40adff79accb9d391, type: 3}
   _bgmGameChase: {fileID: 8300000, guid: 73c574c4e71607748a888750a2a42627, type: 3}
   _bgmEnding: {fileID: 8300000, guid: ad4017d4bf3621e449cbfda1059ccd6c, type: 3}
@@ -65,6 +65,7 @@ MonoBehaviour:
   _seGameOver: {fileID: 8300000, guid: e3450250146a24a47b0dfc46b9560c6c, type: 3}
   _seHandLightToggle: {fileID: 8300000, guid: 8f67228ddc74f5a4f87d3a284839bfcb, type: 3}
   _seHandLightFlicker: {fileID: 0}
+  _seDoorOpen: {fileID: 8300000, guid: 02aada0e8d51f9045ba5e7e181b651ad, type: 3}
 --- !u!1 &3992828601510246997
 GameObject:
   m_ObjectHideFlags: 0

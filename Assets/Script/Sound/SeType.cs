@@ -10,5 +10,6 @@ public enum SeType
     StartRoomExit,
     GameOver,
     HandLightToggle,
-    HandLightFlicker
+    HandLightFlicker,
+    DoorOpen
 }

@@ -133,7 +133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dbc493d730113249855c2ae966b7fe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyType: 0
   _aimPoint: {fileID: 5826340294384010155}
   _chaseSpeed: 4.5
   _chaseDestUpdateInterval: 0.5
@@ -331,7 +330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6d35be8ffdcae7409aeeaa7d817390d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ghostType: 1
+  _ghostType: 0
 --- !u!1 &6414041310043416268
 GameObject:
   m_ObjectHideFlags: 0

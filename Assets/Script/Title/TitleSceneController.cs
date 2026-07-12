@@ -17,6 +17,9 @@ public class TitleSceneController : MonoBehaviour
     [Header("入力")]
     [SerializeField] private InputTitleController _inputTitleController;
 
+    [Header("画面演出")]
+    [SerializeField] private TitleIntroDirector _introDirector;
+
     private void OnEnable()
     {
         if (_inputTitleController != null)
@@ -40,8 +43,13 @@ public class TitleSceneController : MonoBehaviour
     {
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
-        // 進行をリセットし、ステージを Horror に設定してホラーシーンへ遷移する。
-        mgr.StartHorror();
+
+        // 暗転＋ドア音の演出を挟んでからホラーシーンへ遷移する。
+        // 演出完了コールバックで StartHorror() を呼ぶことで、暗転を見せてからロードする。
+        if (_introDirector != null)
+            _introDirector.PlayStartSequence(mgr.StartHorror);
+        else
+            mgr.StartHorror();
     }
 
     public void OnContinue()

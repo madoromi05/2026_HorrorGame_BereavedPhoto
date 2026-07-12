@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: 4845050878769780941}
   - component: {fileID: -2243931691572478503}
   - component: {fileID: -4257024236280975183}
-  - component: {fileID: -3459410862979002515}
   m_Layer: 6
   m_Name: HandEnemy
   m_TagString: Untagged
@@ -90,7 +89,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 516f7b96c8675894eb6f2387458c7c4d, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -332,22 +331,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ghostType: 1
---- !u!114 &-3459410862979002515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074338261638584859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7648b7a801cbc674980a9bf08775901a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _leadTime: 1.2
-  _maxLeadDistance: 6
-  _velocityResponse: 6
-  _navSampleRadius: 2
 --- !u!1 &6414041310043416268
 GameObject:
   m_ObjectHideFlags: 0
