@@ -64,7 +64,7 @@ MonoBehaviour:
   _seStartRoomExit: {fileID: 8300000, guid: 4ff90050354108b4caee8f685a9a09e1, type: 3}
   _seGameOver: {fileID: 8300000, guid: e3450250146a24a47b0dfc46b9560c6c, type: 3}
   _seHandLightToggle: {fileID: 8300000, guid: 8f67228ddc74f5a4f87d3a284839bfcb, type: 3}
-  _seHandLightFlicker: {fileID: 0}
+  _seHandLightFlicker: {fileID: 8300000, guid: bf3123a39892a4d4a8379d3f9bfc81c9, type: 3}
   _seDoorOpen: {fileID: 8300000, guid: 02aada0e8d51f9045ba5e7e181b651ad, type: 3}
 --- !u!1 &3992828601510246997
 GameObject:
