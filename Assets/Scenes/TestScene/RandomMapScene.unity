@@ -1217,7 +1217,6 @@ GameObject:
   - component: {fileID: 392410765}
   - component: {fileID: 392410764}
   - component: {fileID: 392410763}
-  - component: {fileID: 392410762}
   m_Layer: 0
   m_Name: Vignette
   m_TagString: Untagged
@@ -1241,20 +1240,6 @@ Transform:
   - {fileID: 628970598}
   m_Father: {fileID: 1499166755}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &392410762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 392410760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a418c5e33db6cba4abf96286906cbf4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxIntensity: 0.4
-  _resetFadeSpeed: 3
 --- !u!114 &392410763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6644,7 +6629,7 @@ MonoBehaviour:
   _analyzeSpeed: 2
   _completeSpeedBonus: 1
   _analyzerUI: {fileID: 3078745226012300514}
-  _vignetteController: {fileID: 392410762}
+  _vignetteController: {fileID: 0}
 --- !u!4 &1672135678
 Transform:
   m_ObjectHideFlags: 0

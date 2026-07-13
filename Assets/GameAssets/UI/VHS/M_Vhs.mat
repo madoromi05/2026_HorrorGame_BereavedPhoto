@@ -29,9 +29,9 @@ Material:
     - _Intensity: 0.2
     - _NoiseIntensity: 0.15
     - _Saturation: 0.75
-    - _ScanlineCount: 0
+    - _ScanlineCount: 1
     - _ScanlineIntensity: 0.082
-    - _TrackingBandHeight: 0
+    - _TrackingBandHeight: 0.5
     - _TrackingBandIntensity: 0.6
     - _TrackingBandSpeed: 0.2
     - _VignettePower: 0.5

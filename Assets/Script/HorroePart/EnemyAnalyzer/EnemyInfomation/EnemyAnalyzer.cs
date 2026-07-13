@@ -12,7 +12,6 @@ public class EnemyAnalyzer : MonoBehaviour
     [SerializeField] private float _analyzeSpeed = 0.3f;
     [SerializeField] private float _completeSpeedBonus = 1f;   // 1種類の解析完了時、残る種類に加算する移動速度
     [SerializeField] private AnalyzerUI _analyzerUI;
-    [SerializeField] private AnalyzeVignette _vignetteController;
 
     // 解析率は敵の「種類（GhostType）」ごとに共有する。
     // 同じ種類の敵が複数体いても解析率は1つにまとまり、代表1体を100%にすればその種類は完了扱い。
@@ -66,8 +65,7 @@ public class EnemyAnalyzer : MonoBehaviour
     private void Awake()
     {
         DebugCustom.ValidateFields(this,
-            (nameof(_analyzerUI), _analyzerUI),
-            (nameof(_vignetteController), _vignetteController));
+            (nameof(_analyzerUI), _analyzerUI));
     }
 
     private void Update()
@@ -77,7 +75,6 @@ public class EnemyAnalyzer : MonoBehaviour
         if (!_currentGhostType.HasValue)
         {
             _analyzerUI.OnAnalyzeUpdate(0f);
-            _vignetteController.UpdateVignette(0f);
             _analyzerUI.SetAnalyzingState(false);
             _analyzerUI.SetCompleteState(false);
             return;
@@ -100,7 +97,7 @@ public class EnemyAnalyzer : MonoBehaviour
         }
 
         _analyzerUI.OnAnalyzeUpdate(current);
-        _vignetteController.UpdateVignette(current);
+        // [Task]_vignetteController.UpdateVignette(current);
 
         _analyzerUI.SetCompleteState(isComplete);
         _analyzerUI.SetAnalyzingState(isAnalyzing && !isComplete);
@@ -142,7 +139,7 @@ public class EnemyAnalyzer : MonoBehaviour
         _enemyInRange    = false;
         _isAiming        = false;
         _analyzerUI.ResetFields();
-        _vignetteController.ResetVignette();
+        // [Task]_vignetteController.ResetVignette();
     }
 
     // 指定した種類の敵の解析率を返す
