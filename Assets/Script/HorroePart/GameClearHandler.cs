@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 全種類の敵の解析完了を監視し、完了していればクリア（次シーン）へ遷移させるコンポーネント。
@@ -48,15 +49,12 @@ public class GameClearHandler : MonoBehaviour
         }
     }
 
-    // 解析完了後、少し待ってからクリア（次シーン）へ遷移する。
+    // 全種類（＝2体）の解析完了後、少し待ってから GameClearScene へ遷移する。
     private IEnumerator TransitionToClearCoroutine()
     {
-        DebugCustom.Log("[GameClearHandler] 全敵の解析完了。クリアへ遷移します。", this);
+        DebugCustom.Log("[GameClearHandler] 全敵の解析完了。GameClearScene へ遷移します。", this);
         yield return new WaitForSeconds(_clearTransitionDelay);
 
-        if (GameProgressManager.Instance != null)
-            GameProgressManager.Instance.LoadNextScene();
-        else
-            DebugCustom.LogWarning("[GameClearHandler] GameProgressManager が見つかりません。クリア遷移できません。", this);
+        SceneManager.LoadScene(GameProgressManager.SceneGameClear);
     }
 }
