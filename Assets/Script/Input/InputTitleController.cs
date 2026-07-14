@@ -6,6 +6,7 @@ public class InputTitleController : MonoBehaviour, InputSystem_Actions.ITitleAct
 {
     private InputSystem_Actions _inputActions;
     public event Action OnMenuPerformed;
+
     //---------- —LŒø‰» ----------
     private void OnEnable()
     {

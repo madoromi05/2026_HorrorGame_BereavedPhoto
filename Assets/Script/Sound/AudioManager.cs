@@ -32,6 +32,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _seHandLightToggle;
     [SerializeField] private AudioClip _seHandLightFlicker;
     [SerializeField] private AudioClip _seDoorOpen;
+    [SerializeField] private AudioClip _seDoorClose;
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -122,6 +123,7 @@ public class AudioManager : MonoBehaviour
         SeType.HandLightToggle  => _seHandLightToggle,
         SeType.HandLightFlicker => _seHandLightFlicker,
         SeType.DoorOpen         => _seDoorOpen,
+        SeType.DoorClose        => _seDoorClose,
         _                       => null,
     };
 }

@@ -6629,7 +6629,6 @@ MonoBehaviour:
   _analyzeSpeed: 2
   _completeSpeedBonus: 1
   _analyzerUI: {fileID: 3078745226012300514}
-  _vignetteController: {fileID: 0}
 --- !u!4 &1672135678
 Transform:
   m_ObjectHideFlags: 0

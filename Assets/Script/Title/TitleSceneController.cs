@@ -8,9 +8,6 @@ using TMPro;
 /// </summary>
 public class TitleSceneController : MonoBehaviour
 {
-    [Header("アルバム")]
-    [SerializeField] private AlbumController _albumController;
-
     [Header("オプション")]
     [SerializeField] private OptionMenuController _optionController;
 
@@ -58,11 +55,6 @@ public class TitleSceneController : MonoBehaviour
         if (mgr == null) return;
         string scene = mgr.GetSceneForStage(mgr.CurrentStage);
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
-    }
-
-    public void OnAlbum()
-    {
-        _albumController?.OpenAlbum();
     }
 
     /// UI ボタンからも呼べる直接オープン。
