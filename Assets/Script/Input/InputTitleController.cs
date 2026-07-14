@@ -6,8 +6,10 @@ public class InputTitleController : MonoBehaviour, InputSystem_Actions.ITitleAct
 {
     private InputSystem_Actions _inputActions;
     public event Action OnMenuPerformed;
+    public event Action OnMenuHeld;      // æŠ¼ã—ãŸç¬é–“ï¼ˆcontext.startedï¼‰
+    public event Action OnMenuReleased;  // é›¢ã—ãŸç¬é–“ï¼ˆcontext.canceledï¼‰
 
-    //---------- —LŒø‰» ----------
+    //---------- æœ‰åŠ¹åŒ– ----------
     private void OnEnable()
     {
         if (_inputActions == null)
@@ -17,15 +19,16 @@ public class InputTitleController : MonoBehaviour, InputSystem_Actions.ITitleAct
         }
         _inputActions.Title.Enable();
     }
-    //---------- –³Œø‰» ----------
+    //---------- ç„¡åŠ¹åŒ– ----------
     private void OnDisable()
     {
         _inputActions?.Title.Disable();
     }
-    //---------- ƒR[ƒ‹ƒoƒbƒNÀ‘• ----------
+    //---------- ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å‡¦ç† ----------
     public void OnMenu(InputAction.CallbackContext context)
     {
-        if (context.performed)
-            OnMenuPerformed?.Invoke();
+        if (context.started)   OnMenuHeld?.Invoke();
+        if (context.performed) OnMenuPerformed?.Invoke();
+        if (context.canceled)  OnMenuReleased?.Invoke();
     }
 }
