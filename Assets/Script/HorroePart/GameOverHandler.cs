@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
-    /// <summary>デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える。</summary>
+    // デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える。
     public static bool DebugInvincible;
 
     [SerializeField] private float _faceTurnDuration = 0.5f;
