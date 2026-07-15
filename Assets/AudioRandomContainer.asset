@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-6073727683252786648
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{-6073727683252786648}"
+  m_AudioClip: {fileID: 8300000, guid: 3ba4d45941055e74a9e2c2b9702f8060, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AudioRandomContainer
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: -10, y: 10}
+  m_PitchRandomizationRange: {x: -20, y: 20}
+  m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: -6073727683252786648}
+  - {fileID: 8943180113615492477}
+  - {fileID: 8234696468318395282}
+  m_AvoidRepeatingLast: 0
+  m_PlaybackMode: 0
+  m_TriggerMode: 1
+  m_AutomaticTriggerMode: 1
+  m_LoopMode: 2
+  m_VolumeRandomizationEnabled: 1
+  m_PitchRandomizationEnabled: 1
+  m_AutomaticTriggerTimeRandomizationEnabled: 0
+  m_LoopCountRandomizationEnabled: 0
+--- !u!1233149941 &8234696468318395282
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "\u304A\u5316\u3051\u7236\u89AA_{8234696468318395282}"
+  m_AudioClip: {fileID: 8300000, guid: f568f0e9b91e9664293450b7f8e5b103, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &8943180113615492477
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: "\u304A\u5316\u3051\u6BCD\u89AA_{8943180113615492477}"
+  m_AudioClip: {fileID: 8300000, guid: 5c48a3e414fa6314e998962551dc0036, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
