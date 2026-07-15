@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ObstructionItemData
   m_EditorClassIdentifier: 
   _itemType: 3
-  _displayName: "\u304A\u672D"
-  _icon: {fileID: 21300000, guid: 0a27684f4c4914f4d99e7f85cf3d6c17, type: 3}
+  _displayName: "\u5F0F\u795E"
+  _icon: {fileID: 21300000, guid: 4719ec7e5292640488d16cd794069ef8, type: 3}
   _description: "\u970A\u306B\u5F53\u305F\u308B\u3068\u8DB3\u6B62\u3081\u3067\u304D\u308B\n\nR
     \u30DC\u30BF\u30F3\u3067\u4F7F\u7528"

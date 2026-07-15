@@ -557,7 +557,7 @@ MonoBehaviour:
   _ofudaParent: {fileID: 1090160843}
   _playerTransform: {fileID: 1016573261}
   _enemySpawnOffsetY: 2
-  _ofudaPrefab: {fileID: 5660436180802759865, guid: 80ad18c4a4ae606469f049d30e11fdf2, type: 3}
+  _ofudaPrefab: {fileID: 1535650644330487576, guid: da16f3bc404491d49bc556ae8461749a, type: 3}
   _ofudaCount: 10
   _ofudaSpawnOffsetY: 0.5
   _navMeshSurface: {fileID: 178392657}

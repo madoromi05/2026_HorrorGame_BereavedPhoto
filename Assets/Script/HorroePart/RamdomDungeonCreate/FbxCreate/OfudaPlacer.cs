@@ -69,7 +69,8 @@ public class OfudaPlacer
             (gridPos.y + 0.5f) * _gridSize
         );
 
-        var instance = Object.Instantiate(_ofudaPrefab, worldPos, Quaternion.identity, ofudaParent);
+        // プレハブに設定された角度をそのまま反映する（無回転で固定しない）。
+        var instance = Object.Instantiate(_ofudaPrefab, worldPos, _ofudaPrefab.transform.rotation, ofudaParent);
         instance.name = $"Ofuda_{gridPos}_{index}";
     }
 }

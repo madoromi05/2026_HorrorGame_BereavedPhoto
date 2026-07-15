@@ -51,10 +51,8 @@ namespace HorrorGame.Dungeon
             foreach (var memo in roomParent.GetComponentsInChildren<MemoItem>())
                 memo.Init(_memoUIPresenter, inventory);
 
-            foreach (var pickup in roomParent.GetComponentsInChildren<ItemPickup>())
-                pickup.Init(_itemGetUIPresenter, respawner);
-
-            // 通路にランダム配置されたお札（ItemPickup）も初期化する。
+            // アイテム（ItemPickup）は部屋には配置せず、通路にランダム配置されたお札のみ初期化する。
+            // 部屋プレハブに埋め込まれた ItemPickup は SectionPlacer 側で除去済み。
             var ofudaParent = _dungeonGenerator.OfudaParent;
             if (ofudaParent != null)
             {
