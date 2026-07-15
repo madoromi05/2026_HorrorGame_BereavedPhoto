@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 /// <summary>
 /// サウンド管理のエントリポイント（MonoBehaviour Singleton / DontDestroyOnLoad）。
@@ -20,19 +21,19 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _bgmEnding;
     [SerializeField] private AudioClip _bgmScenario;
 
-    [Header("SE クリップ")]
-    [SerializeField] private AudioClip _seFootStep;
-    [SerializeField] private AudioClip _seEnemyMother;
-    [SerializeField] private AudioClip _seEnemyFather;
-    [SerializeField] private AudioClip _seItemPickup;
-    [SerializeField] private AudioClip _seMemoPageTurn;
-    [SerializeField] private AudioClip _seAnalysisComplete;
-    [SerializeField] private AudioClip _seStartRoomExit;
-    [SerializeField] private AudioClip _seGameOver;
-    [SerializeField] private AudioClip _seHandLightToggle;
-    [SerializeField] private AudioClip _seHandLightFlicker;
-    [SerializeField] private AudioClip _seDoorOpen;
-    [SerializeField] private AudioClip _seDoorClose;
+    [Header("SE クリップ（AudioClip / AudioRandomContainer どちらも可）")]
+    [SerializeField] private AudioResource _seFootStep;
+    [SerializeField] private AudioResource _seEnemyMother;
+    [SerializeField] private AudioResource _seEnemyFather;
+    [SerializeField] private AudioResource _seItemPickup;
+    [SerializeField] private AudioResource _seMemoPageTurn;
+    [SerializeField] private AudioResource _seAnalysisComplete;
+    [SerializeField] private AudioResource _seStartRoomExit;
+    [SerializeField] private AudioResource _seGameOver;
+    [SerializeField] private AudioResource _seHandLightToggle;
+    [SerializeField] private AudioResource _seHandLightFlicker;
+    [SerializeField] private AudioResource _seDoorOpen;
+    [SerializeField] private AudioResource _seDoorClose;
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -81,13 +82,13 @@ public class AudioManager : MonoBehaviour
     public void PlaySe(SeType type, float volume = 1f, float pitch = 1f)
     {
         if(type == SeType.None) return;
-        var clip = GetSeClip(type);
-        if (clip == null)
+        var resource = GetSeResource(type);
+        if (resource == null)
         {
             DebugCustom.LogWarning($"[AudioManager] SE クリップ未設定: {type}");
             return;
         }
-        _sePlayer.Play(clip, volume, pitch);
+        _sePlayer.Play(resource, volume, pitch);
     }
 
     // ---- ボリューム / ミュート ----
@@ -109,8 +110,7 @@ public class AudioManager : MonoBehaviour
         _                  => null,
     };
 
-    
-    public AudioClip GetSeClip(SeType type) => type switch
+    public AudioResource GetSeResource(SeType type) => type switch
     {
         SeType.EnemyMother      => _seEnemyMother,
         SeType.EnemyFather      => _seEnemyFather,

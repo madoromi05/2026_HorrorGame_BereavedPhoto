@@ -50,20 +50,20 @@ MonoBehaviour:
   _bgmPlayer: {fileID: 3505930410932456698}
   _sePlayer: {fileID: 8118583311293399093}
   _mixerProxy: {fileID: 6131030025019342182}
-  _bgmTitle: {fileID: 8300000, guid: d84c1d0c04f82e14ebabe7a646e7928c, type: 3}
-  _bgmGameNormal: {fileID: 8300000, guid: e3ba57b4f4cb25d40adff79accb9d391, type: 3}
-  _bgmGameChase: {fileID: 8300000, guid: 73c574c4e71607748a888750a2a42627, type: 3}
-  _bgmEnding: {fileID: 8300000, guid: ad4017d4bf3621e449cbfda1059ccd6c, type: 3}
+  _bgmTitle: {fileID: 8300000, guid: dc34ee29917b06e42b40cf86b3aef318, type: 3}
+  _bgmGameNormal: {fileID: 8300000, guid: c31b650029eb71a4db89fdc88edc11c5, type: 3}
+  _bgmGameChase: {fileID: 8300000, guid: c7c757d9efcd0144a9c806159b569fff, type: 3}
+  _bgmEnding: {fileID: 8300000, guid: 1c3c515c2be6f094a9f43a3f74fe34b7, type: 3}
   _bgmScenario: {fileID: 0}
-  _seFootStep: {fileID: 8300000, guid: 3ba4d45941055e74a9e2c2b9702f8060, type: 3}
-  _seEnemyMother: {fileID: 8300000, guid: 5c48a3e414fa6314e998962551dc0036, type: 3}
-  _seEnemyFather: {fileID: 8300000, guid: f568f0e9b91e9664293450b7f8e5b103, type: 3}
-  _seItemPickup: {fileID: 8300000, guid: 6818605eec0bd6f4dbe2f6719af3800a, type: 3}
+  _seFootStep: {fileID: 6418180475301049370, guid: 9163b876be23fd7468c33804274cb04b, type: 2}
+  _seEnemyMother: {fileID: 0}
+  _seEnemyFather: {fileID: 0}
+  _seItemPickup: {fileID: 8300000, guid: d4db6014c8a1845448611b333bf1eec2, type: 3}
   _seMemoPageTurn: {fileID: 8300000, guid: 545ac8cc75060ec4ea2f5fbf4c51501a, type: 3}
-  _seAnalysisComplete: {fileID: 8300000, guid: 90d92808e646c8f4480d57bd6abf1bf8, type: 3}
-  _seStartRoomExit: {fileID: 8300000, guid: 4ff90050354108b4caee8f685a9a09e1, type: 3}
-  _seGameOver: {fileID: 8300000, guid: e3450250146a24a47b0dfc46b9560c6c, type: 3}
-  _seHandLightToggle: {fileID: 8300000, guid: 8f67228ddc74f5a4f87d3a284839bfcb, type: 3}
+  _seAnalysisComplete: {fileID: 0}
+  _seStartRoomExit: {fileID: 8300000, guid: 15ce48fbf0376b045abb41408d055b0b, type: 3}
+  _seGameOver: {fileID: 8300000, guid: df227d604aaaac6448db183c702f1a8c, type: 3}
+  _seHandLightToggle: {fileID: 8300000, guid: c062728afa6ddb441bcf16cad7b2a1ae, type: 3}
   _seHandLightFlicker: {fileID: 8300000, guid: bf3123a39892a4d4a8379d3f9bfc81c9, type: 3}
   _seDoorOpen: {fileID: 8300000, guid: 02aada0e8d51f9045ba5e7e181b651ad, type: 3}
   _seDoorClose: {fileID: 8300000, guid: bd720480579a1fb47b6e87e16e20cf41, type: 3}

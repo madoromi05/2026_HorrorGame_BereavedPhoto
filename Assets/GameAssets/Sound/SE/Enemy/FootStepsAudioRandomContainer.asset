@@ -16,7 +16,7 @@ AudioRandomContainer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AudioRandomContainer
+  m_Name: FootStepsAudioRandomContainer
   m_Volume: 0
   m_Pitch: 0
   m_AutomaticTriggerTime: 0

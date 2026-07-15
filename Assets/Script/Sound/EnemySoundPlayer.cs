@@ -89,9 +89,12 @@ public class EnemySoundPlayer : MonoBehaviour
 
     private void TryPlaySe()
     {
-        var clip = AudioManager.Instance?.GetSeClip(_seType);
-        if (clip != null)
-            _audioSource.PlayOneShot(clip);
+        var resource = AudioManager.Instance?.GetSeResource(_seType);
+        if (resource != null)
+        {
+            _audioSource.resource = resource;
+            _audioSource.Play();
+        }
     }
 
     private void UpdateOcclusion()

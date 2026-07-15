@@ -29,13 +29,15 @@ public class SePlayer : MonoBehaviour
         }
     }
 
-    // SE を再生する。volume は AudioSource の音量スケール（0〜1）
-    public void Play(AudioClip clip, float volume = 1f, float pitch = 1f)
+    // SE を再生する。AudioClip / AudioRandomContainer のどちらも再生可能。
+    public void Play(AudioResource resource, float volume = 1f, float pitch = 1f)
     {
-        if (clip == null) return;
+        if (resource == null) return;
         var src = GetFreeSource();
-        src.pitch = pitch;
-        src.PlayOneShot(clip, volume);
+        src.resource = resource;
+        src.volume   = volume;
+        src.pitch    = pitch;
+        src.Play();
     }
 
     private AudioSource GetFreeSource()

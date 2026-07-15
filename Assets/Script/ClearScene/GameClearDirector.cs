@@ -153,7 +153,7 @@ public class GameClearDirector : MonoBehaviour
     private IEnumerator PlaySeAndWait(SeType type, float extraWait)
     {
         AudioManager.Instance.PlaySe(type);
-        var clip = AudioManager.Instance.GetSeClip(type);
+        var clip = AudioManager.Instance.GetSeResource(type) as AudioClip;
         float clipLength = clip != null ? clip.length : 0f;
         yield return new WaitForSeconds(clipLength + extraWait);
     }
