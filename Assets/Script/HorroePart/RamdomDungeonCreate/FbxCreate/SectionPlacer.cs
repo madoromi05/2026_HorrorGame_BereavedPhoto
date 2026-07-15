@@ -59,20 +59,8 @@ public class SectionPlacer
 
         // NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
         // 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
-        RemoveEmbeddedItems(instance);
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
         return instance;
-    }
-
-    /// <summary>
-    /// ランダムマップのアイテムは通路（OfudaPlacer）にのみ配置する方針のため、
-    /// 部屋プレハブに埋め込まれた ItemPickup は配置時に取り除く。
-    /// メモ（MemoItem）は対象外。
-    /// </summary>
-    private static void RemoveEmbeddedItems(GameObject roomInstance)
-    {
-        foreach (var pickup in roomInstance.GetComponentsInChildren<ItemPickup>(true))
-            Object.Destroy(pickup.gameObject);
     }
 
     /// <summary>
@@ -105,7 +93,7 @@ public class SectionPlacer
 
         if (marker == null)
         {
-            Debug.LogWarning(
+            DebugCustom.LogWarning(
                 "SectionPlacer: StartルームにPlayerSpawnPointマーカーが見つかりません。" +
                 "StartルームのPrefabにPlayerSpawnPointを配置してください。" +
                 "プレイヤーの位置は変更しません。");
