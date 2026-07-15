@@ -56,8 +56,8 @@ MonoBehaviour:
   _bgmEnding: {fileID: 8300000, guid: 1c3c515c2be6f094a9f43a3f74fe34b7, type: 3}
   _bgmScenario: {fileID: 0}
   _seFootStep: {fileID: 6418180475301049370, guid: 9163b876be23fd7468c33804274cb04b, type: 2}
-  _seEnemyMother: {fileID: 0}
-  _seEnemyFather: {fileID: 0}
+  _seEnemyMother: {fileID: 6418180475301049370, guid: 0667753f8dc552144b6a1fa625b85d0e, type: 2}
+  _seEnemyFather: {fileID: 6418180475301049370, guid: 33934cc3710a2b8408144c3d8537a940, type: 2}
   _seItemPickup: {fileID: 8300000, guid: d4db6014c8a1845448611b333bf1eec2, type: 3}
   _seMemoPageTurn: {fileID: 8300000, guid: 545ac8cc75060ec4ea2f5fbf4c51501a, type: 3}
   _seAnalysisComplete: {fileID: 0}

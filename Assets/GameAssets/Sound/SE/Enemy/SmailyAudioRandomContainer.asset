@@ -6,8 +6,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{-7795315499166394068}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{-7795315499166394068}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &-6073727683252786648
@@ -16,8 +16,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{-6073727683252786648}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{-6073727683252786648}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &-4977953287018669380
@@ -26,8 +26,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{-4977953287018669380}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{-4977953287018669380}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &-3092904889970215197
@@ -36,8 +36,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{-3092904889970215197}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{-3092904889970215197}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &196450780233826129
@@ -46,8 +46,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{196450780233826129}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{196450780233826129}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &2292958472491525370
@@ -56,8 +56,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{2292958472491525370}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{2292958472491525370}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &3754354893563916554
@@ -66,8 +66,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{3754354893563916554}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{3754354893563916554}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &5873760766114294381
@@ -76,8 +76,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{5873760766114294381}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{5873760766114294381}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1307931743 &6418180475301049370
@@ -86,13 +86,13 @@ AudioRandomContainer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FootStepsAudioRandomContainer
+  m_Name: SmailyAudioRandomContainer
   m_Volume: 0
   m_Pitch: 0
   m_AutomaticTriggerTime: 0
   m_LoopCount: 1
-  m_VolumeRandomizationRange: {x: -5, y: 5}
-  m_PitchRandomizationRange: {x: -20, y: 20}
+  m_VolumeRandomizationRange: {x: -10, y: 10}
+  m_PitchRandomizationRange: {x: -130, y: 150}
   m_AutomaticTriggerTimeRandomizationRange: {x: 0, y: 0}
   m_LoopCountRandomizationRange: {x: 0, y: 0}
   m_Elements:
@@ -121,8 +121,8 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{8234696468318395282}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{8234696468318395282}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
 --- !u!1233149941 &8943180113615492477
@@ -131,7 +131,7 @@ AudioContainerElement:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u90E8\u5C4B\u306E\u8DB3\u97F3_{8943180113615492477}"
-  m_AudioClip: {fileID: 8300000, guid: 8ce9659ecd1f46b4fbd5ab1521cfc1fa, type: 3}
+  m_Name: Smaily_{8943180113615492477}
+  m_AudioClip: {fileID: 8300000, guid: 7a756391ec2ad9d46ab28f833d1d1874, type: 3}
   m_Volume: 0
   m_Enabled: 1
