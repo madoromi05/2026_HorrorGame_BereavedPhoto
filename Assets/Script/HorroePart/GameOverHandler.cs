@@ -3,9 +3,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ゲームオーバーを受け取り GameOverScene へ遷移するコンポーネント。
+/// ゲームオーバー時の演出とタイトル遷移を担うコンポーネント。
 /// Player にアタッチし、EnemyController から TriggerGameOver() を呼ぶ。
-/// GameProgressManager のステージは変更しない（リトライで同じシーンに戻れるようにするため）。
+///
+/// 演出は「操作を止める → 敵の方を向く → 静止 → VHS がホワイトノイズへ崩れる → タイトルへ」の順で進む。
+/// ホワイトノイズは専用のシーンや UI ではなく、本編で常時掛かっている VHS ポストエフェクトの
+/// 信号消失量（<see cref="VhsFeature.SetSignalLoss"/>）を上げて作るため、現在の画面からそのまま繋がる。
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
@@ -14,6 +17,12 @@ public class GameOverHandler : MonoBehaviour
 
     [SerializeField] private float _faceTurnDuration = 0.5f;
     [SerializeField] private float _holdDuration = 1.0f;
+
+    [Header("信号消失（ホワイトノイズ）")]
+    [Tooltip("通常の VHS からホワイトノイズへ移行しきるまでの時間（秒）。")]
+    [SerializeField] private float _signalLossDuration = 0.8f;
+    [Tooltip("移行後、ホワイトノイズだけを見せてからタイトルへ戻るまでの時間（秒）。")]
+    [SerializeField] private float _noiseHoldDuration = 3.0f;
 
     private bool _triggered;
     private PlayerMover _playerMover;
@@ -102,6 +111,24 @@ public class GameOverHandler : MonoBehaviour
 
         yield return new WaitForSeconds(_holdDuration);
 
-        SceneManager.LoadScene(GameProgressManager.SceneGameOver);
+        yield return SignalLossOut();
+
+        SceneManager.LoadScene(GameProgressManager.SceneTitleName);
+    }
+
+    // 信号消失量を 0→1 へ時間で送り、ホワイトノイズへ移行しきってから見せ続ける。
+    // 見た目そのものはシェーダー Custom/Vhs 側の責務なので、ここは進行度を渡すだけに留める。
+    private IEnumerator SignalLossOut()
+    {
+        float elapsed = 0f;
+        while (elapsed < _signalLossDuration)
+        {
+            elapsed += Time.deltaTime;
+            VhsFeature.SetSignalLoss(elapsed / _signalLossDuration);
+            yield return null;
+        }
+        VhsFeature.SetSignalLoss(1f);
+
+        yield return new WaitForSeconds(_noiseHoldDuration);
     }
 }

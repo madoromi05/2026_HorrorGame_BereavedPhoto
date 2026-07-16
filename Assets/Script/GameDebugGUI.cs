@@ -32,6 +32,7 @@ public class GameDebugGUI : MonoBehaviour
     private PlayerDashController _dash;
     private HandLightController  _light;
     private EnemyController[]    _enemies;
+    private GameOverHandler      _gameOverHandler;
 
     private float _refreshTimer;
     private const float kRefreshInterval = 0.5f;
@@ -67,6 +68,7 @@ public class GameDebugGUI : MonoBehaviour
         _dash        = null;
         _light       = null;
         _enemies     = null;
+        _gameOverHandler = null;
     }
 
     private void Start()
@@ -103,6 +105,8 @@ public class GameDebugGUI : MonoBehaviour
         _dash      ??= FindFirstObjectByType<PlayerDashController>();
         _light     ??= FindFirstObjectByType<HandLightController>();
         _enemies   = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+        // ゲームオーバー発生後は自身を enabled=false にするため、取り直せるうちにキャッシュしておく。
+        _gameOverHandler ??= FindFirstObjectByType<GameOverHandler>();
     }
 
     private void BuildStyles()
@@ -192,6 +196,20 @@ public class GameDebugGUI : MonoBehaviour
         if (GUILayout.Button(GameOverHandler.DebugInvincible ? "無敵 OFF" : "無敵 ON", GUILayout.Width(90)))
             GameOverHandler.DebugInvincible = !GameOverHandler.DebugInvincible;
         GUILayout.EndHorizontal();
+
+        // ゲームオーバー演出（静止 → ホワイトノイズ → タイトル）を敵に捕まらずに確認するためのボタン。
+        // 敵を渡さないため「敵の方を向く」段は飛び、静止から先だけが再生される。
+        bool canTriggerGameOver = _gameOverHandler != null && !GameOverHandler.DebugInvincible;
+        GUI.enabled = canTriggerGameOver;
+        if (GUILayout.Button("ゲームオーバー発生（演出確認）"))
+            _gameOverHandler.TriggerGameOver();
+        GUI.enabled = true;
+
+        // 押しても無反応に見える条件は理由を出す（無敵中は TriggerGameOver 自体が弾かれるため）。
+        if (GameOverHandler.DebugInvincible)
+            Label("※ 無敵 ON の間は発生しません", Color.gray);
+        else if (_gameOverHandler == null)
+            Label("※ このシーンに GameOverHandler がありません", Color.gray);
 
         if (_mover != null)
         {
@@ -307,7 +325,7 @@ public class GameDebugGUI : MonoBehaviour
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         DrawSceneButton("HorrorScene", GameProgressManager.SceneHorrorName);
-        DrawSceneButton("GameOver",    GameProgressManager.SceneGameOver);
+        DrawSceneButton("GameClear",   GameProgressManager.SceneGameClear);
         GUILayout.EndHorizontal();
 
         // ---- デバッグ操作 ----

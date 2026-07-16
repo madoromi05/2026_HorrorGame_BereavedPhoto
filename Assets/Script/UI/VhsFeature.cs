@@ -27,6 +27,7 @@ public class VhsFeature : ScriptableRendererFeature
         public static readonly int TrackingBandIntensity = Shader.PropertyToID("_TrackingBandIntensity");
         public static readonly int Saturation            = Shader.PropertyToID("_Saturation");
         public static readonly int VignettePower         = Shader.PropertyToID("_VignettePower");
+        public static readonly int SignalLoss            = Shader.PropertyToID("_SignalLoss");
     }
 
     [SerializeField] private Material vhsMaterial;
@@ -77,6 +78,22 @@ public class VhsFeature : ScriptableRendererFeature
         _current?.ApplyActiveProfile();
     }
 
+    /// <summary>
+    /// 信号消失（ホワイトノイズ）の進行度を設定する実行時の入口。0 で通常の VHS、1 で完全な砂嵐。
+    /// ゲームオーバー演出から毎フレーム呼んで映像を殺す用途を想定している。
+    /// プロファイルで VHS を無効にしたシーンでは VHS パス自体が走らないため何も映らない。
+    /// </summary>
+    public static void SetSignalLoss(float progress)
+    {
+        _current?.ApplySignalLoss(progress);
+    }
+
+    private void ApplySignalLoss(float progress)
+    {
+        if (_runtimeMaterial == null) return;
+        _runtimeMaterial.SetFloat(PropertyId.SignalLoss, Mathf.Clamp01(progress));
+    }
+
     // 保存済みプロファイルを実行時マテリアルへ反映する。
     // profile.enabled=false または未割り当てなら、そのシーンでは VHS を無効化する。
     private void ApplyActiveProfile()
@@ -97,6 +114,11 @@ public class VhsFeature : ScriptableRendererFeature
         _runtimeMaterial.SetFloat(PropertyId.TrackingBandIntensity, p.trackingBandIntensity);
         _runtimeMaterial.SetFloat(PropertyId.Saturation, p.saturation);
         _runtimeMaterial.SetFloat(PropertyId.VignettePower, p.vignettePower);
+
+        // 実行時マテリアルは RendererFeature 側に属しシーンを跨いで生き残るため、
+        // ゲームオーバーで 1 にした信号消失をここで戻さないと次のシーンへ砂嵐が残る。
+        // プロファイル適用＝シーン切り替えの契機なので、この位置でリセットする。
+        _runtimeMaterial.SetFloat(PropertyId.SignalLoss, 0f);
     }
 
     private class VhsPass : ScriptableRenderPass

@@ -21,7 +21,6 @@ public class GameProgressManager : MonoBehaviour
     public const string SceneTitleName  = "TitleScene";
     public const string SceneStoryName  = "ScenarioPart";    // Epilogue（クリア）で使用
     public const string SceneHorrorName = "RandomMapScene";  // 単一のホラーシーン
-    public const string SceneGameOver   = "GameOverScene";
     public const string SceneGameClear  = "GameClearScene";  // 全敵解析クリア時の遷移先
 
     public const int AlbumPageCount = 4;
