@@ -332,7 +332,38 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Engineer\nEIKI\u3000MATSUI"
+  m_text: '2D Artist
+
+    Raiki Ihara
+
+
+
+
+
+
+    Sound Creater
+
+    Kousei Takatsuika
+
+
+
+
+
+    Engineer
+
+    Eiki
+    Matui
+
+
+
+
+
+
+    Specla Thanks
+
+    Yuki Yamaguti
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ebc4ab8a9345c274dafbcc670fb69ef6, type: 2}
   m_sharedMaterial: {fileID: -9066021628946840733, guid: ebc4ab8a9345c274dafbcc670fb69ef6, type: 2}
