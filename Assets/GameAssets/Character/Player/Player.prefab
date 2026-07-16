@@ -159,6 +159,37 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!1 &2125111458170547310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1002705123656268, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
+  m_PrefabInstance: {fileID: 2125248674768088610}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2120807700160315126}
+  m_Layer: 0
+  m_Name: 'Flashlight (Missing Prefab with guid: d86ca2f4159e6a942abd8dfc52b38395)'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2120807700160315126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
+  m_PrefabInstance: {fileID: 2125248674768088610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125111458170547310}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7335832, y: -0, z: -0, w: 0.67959964}
+  m_LocalPosition: {x: -1.033, y: -0.59319997, z: 0.77700007}
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8010184895929199707}
+  m_LocalEulerAnglesHint: {x: 94.375, y: 0, z: 0}
 --- !u!1 &2569421474114986601
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,6 +403,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceTurnDuration: 0.5
   _holdDuration: 0.5
+  _signalLossDuration: 0.8
+  _noiseHoldDuration: 3
 --- !u!114 &6175971953874847756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,10 +418,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerCamera: {fileID: 2761992662877834448}
-  _vignetteController: {fileID: 0}
-  _detectionVignetteIntensity: 0.25
-  _vignetteInSpeed: 6
-  _vignetteOutSpeed: 2
   _burstDuration: 0.6
   _burstMagnitude: 5
   _burstFrequency: 22
@@ -411,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cc85dce03795da49823dab9aadd5ce4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectilePrefab: {fileID: 2351118879395489275, guid: 6fa60970829e9794291b8e66a0601b26, type: 3}
+  _projectilePrefab: {fileID: 1535650644330487576, guid: da16f3bc404491d49bc556ae8461749a, type: 3}
   _throwSpeed: 15
   _stunDuration: 5
 --- !u!1 &3248879358088908694
@@ -653,13 +682,3 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
---- !u!4 &2120807700160315126 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4777606630871252, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
-  m_PrefabInstance: {fileID: 2125248674768088610}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2125111458170547310 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1002705123656268, guid: d86ca2f4159e6a942abd8dfc52b38395, type: 3}
-  m_PrefabInstance: {fileID: 2125248674768088610}
-  m_PrefabAsset: {fileID: 0}
