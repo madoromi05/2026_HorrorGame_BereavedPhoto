@@ -43,6 +43,7 @@ public class GameClearDirector : MonoBehaviour
     [SerializeField] private float _scrollEndY = 2000f;
     [SerializeField] private float _scrollSpeed = 100f;
 
+    [Header("クレジットスキップ")]
     // スキップ進捗を表示するプログレスバー（Image / Image Type: Filled）
     [SerializeField] private Image _skipProgressImage;
     [SerializeField] private CanvasGroup _skipCanvasGroup;

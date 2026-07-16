@@ -533,7 +533,7 @@ MonoBehaviour:
   _scrollSpeed: 100
   _skipProgressImage: {fileID: 1309716335}
   _skipCanvasGroup: {fileID: 1212325407}
-  _skipHoldDuration: 3
+  _skipHoldDuration: 2
   _skipFadeDuration: 0.25
   _skipVisibleAlpha: 0.5
 --- !u!114 &874601285
@@ -609,7 +609,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7bdca1cefff686d44a7489333208f73e, type: 3}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
