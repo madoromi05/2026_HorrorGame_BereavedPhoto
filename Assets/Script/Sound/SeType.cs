@@ -12,5 +12,6 @@ public enum SeType
     HandLightToggle,
     HandLightFlicker,
     DoorOpen,
-    DoorClose
+    DoorClose,
+    ObstructionItemHit
 }

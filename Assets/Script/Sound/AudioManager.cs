@@ -33,6 +33,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioResource _seHandLightFlicker;
     [SerializeField] private AudioResource _seDoorOpen;
     [SerializeField] private AudioResource _seDoorClose;
+    [SerializeField] private AudioResource _seObstructionItemHit;
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -77,17 +78,27 @@ public class AudioManager : MonoBehaviour
     public void StopBgm(float fadeOut = 0.8f) => _bgmPlayer.Stop(fadeOut);
 
     // ---- SE ----
-    /// SE を再生する（複数同時可）。
+    /// SE を 2D で再生する（複数同時可）。
     public void PlaySe(SeType type, float volume = 1f, float pitch = 1f)
     {
-        if(type == SeType.None) return;
+        var resource = TryGetSeResource(type);
+        if (resource != null) _sePlayer.Play(resource, volume, pitch);
+    }
+
+    /// SE を指定座標の 3D 音源として再生する（複数同時可）。
+    public void PlaySe3D(SeType type, Vector3 position, float volume = 1f, float pitch = 1f)
+    {
+        var resource = TryGetSeResource(type);
+        if (resource != null) _sePlayer.Play3D(resource, position, volume, pitch);
+    }
+
+    private AudioResource TryGetSeResource(SeType type)
+    {
+        if (type == SeType.None) return null;
         var resource = GetSeResource(type);
         if (resource == null)
-        {
             DebugCustom.LogWarning($"[AudioManager] SE クリップ未設定: {type}");
-            return;
-        }
-        _sePlayer.Play(resource, volume, pitch);
+        return resource;
     }
 
     // ---- ボリューム / ミュート ----
@@ -122,6 +133,7 @@ public class AudioManager : MonoBehaviour
         SeType.HandLightFlicker => _seHandLightFlicker,
         SeType.DoorOpen         => _seDoorOpen,
         SeType.DoorClose        => _seDoorClose,
+        SeType.ObstructionItemHit => _seObstructionItemHit,
         _                       => null,
     };
 }

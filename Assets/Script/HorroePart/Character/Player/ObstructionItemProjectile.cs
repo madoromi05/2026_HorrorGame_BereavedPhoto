@@ -21,6 +21,7 @@ public class ObstructionItemProjectile : MonoBehaviour
         if (enemy != null)
         {
             enemy.Stun(_stunDuration);
+            AudioManager.Instance?.PlaySe3D(SeType.ObstructionItemHit, enemy.transform.position);
             DebugCustom.Log($"[ObstructionItemProjectile] {enemy.name} を{_stunDuration}秒停止");
         }
         Destroy(gameObject);

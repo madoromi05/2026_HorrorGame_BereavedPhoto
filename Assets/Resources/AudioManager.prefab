@@ -53,8 +53,7 @@ MonoBehaviour:
   _bgmTitle: {fileID: 8300000, guid: dc34ee29917b06e42b40cf86b3aef318, type: 3}
   _bgmGameNormal: {fileID: 8300000, guid: c31b650029eb71a4db89fdc88edc11c5, type: 3}
   _bgmGameChase: {fileID: 8300000, guid: c7c757d9efcd0144a9c806159b569fff, type: 3}
-  _bgmEnding: {fileID: 8300000, guid: 887d9406de09b4a489fe2e76f078a131, type: 3}
-  _bgmScenario: {fileID: 0}
+  _bgmEnding: {fileID: 8300000, guid: 1c3c515c2be6f094a9f43a3f74fe34b7, type: 3}
   _seFootStep: {fileID: 6418180475301049370, guid: 9163b876be23fd7468c33804274cb04b, type: 2}
   _seEnemyMother: {fileID: 6418180475301049370, guid: 0667753f8dc552144b6a1fa625b85d0e, type: 2}
   _seEnemyFather: {fileID: 6418180475301049370, guid: 33934cc3710a2b8408144c3d8537a940, type: 2}
@@ -67,6 +66,7 @@ MonoBehaviour:
   _seHandLightFlicker: {fileID: 8300000, guid: bf3123a39892a4d4a8379d3f9bfc81c9, type: 3}
   _seDoorOpen: {fileID: 8300000, guid: 02aada0e8d51f9045ba5e7e181b651ad, type: 3}
   _seDoorClose: {fileID: 8300000, guid: bd720480579a1fb47b6e87e16e20cf41, type: 3}
+  _seObstructionItemHit: {fileID: 8300000, guid: b019c1a5e0178b0439326538ba91f29e, type: 3}
 --- !u!1 &3992828601510246997
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,3 +302,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _outputGroup: {fileID: 1721987743784798108, guid: 2511d6248d6ee7649ad2a3ef2c3543d1, type: 2}
   _channelCount: 8
+  _minDistance: 1
+  _maxDistance: 35

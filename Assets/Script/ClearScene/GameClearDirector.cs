@@ -94,6 +94,9 @@ public class GameClearDirector : MonoBehaviour
         _whiteOverlay.alpha = 0f;
 
         _doorImage.sprite = _doorClosed;
+        // クレジットは Canvas 上でドア画像より手前に描画されるため、
+        // 開始位置へ送るまで無効化しておく（ドア演出中に文字が透けて見えるのを防ぐ）。
+        _creditRoot.gameObject.SetActive(false);
         StartCoroutine(EndingSequence());
     }
 
@@ -197,6 +200,7 @@ public class GameClearDirector : MonoBehaviour
     // クレジットを画面下の開始位置へ送る。白で覆われている間に呼び、瞬間移動を見せない。
     private void MoveCreditToStart()
     {
+        _creditRoot.gameObject.SetActive(true);
         Vector2 pos = _creditRoot.anchoredPosition;
         pos.y = _scrollStartY;
         _creditRoot.anchoredPosition = pos;
