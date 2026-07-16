@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1157871478893653756}
   - component: {fileID: 2863812642928861529}
   - component: {fileID: 25536316990870931}
-  - component: {fileID: 4071246690780413727}
   - component: {fileID: -8339822106783921963}
   m_Layer: 0
   m_Name: MetalTable
@@ -88,28 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4071246690780413727
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1970964019002176582}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4615220794530784993, guid: 1c77c68a06728d143a0320dfcc126c48, type: 3}
 --- !u!65 &-8339822106783921963
 BoxCollider:
   m_ObjectHideFlags: 0
