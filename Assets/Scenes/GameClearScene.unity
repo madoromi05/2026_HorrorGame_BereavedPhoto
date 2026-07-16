@@ -332,67 +332,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    2D Artist
-
-    Raiki Ihara
-
-
-
-
-
-    Sound
-    Creater
-
-    Kousei Takatsuika
-
-
-
-
-    Engineer
-
-    Eiki Matui
-
-
-
-
-
-    Specla
-    Thanks
-
-    Yuki Yamaguti'
+  m_text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n2D Artist\nRaiki
+    Ihara\n\n\n\n\nSound Creater\nKousei Takatsuika\n\n\n\n\nEngineer\nEiki Matui\n\n\n\n\nSpecla
+    Thanks\nYuki Yamaguti\n\n\n\n\n\u52B9\u679C\u97F3\u63D0\u4F9B: OtoLogic"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ebc4ab8a9345c274dafbcc670fb69ef6, type: 2}
   m_sharedMaterial: {fileID: -9066021628946840733, guid: ebc4ab8a9345c274dafbcc670fb69ef6, type: 2}
