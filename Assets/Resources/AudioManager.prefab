@@ -53,7 +53,7 @@ MonoBehaviour:
   _bgmTitle: {fileID: 8300000, guid: dc34ee29917b06e42b40cf86b3aef318, type: 3}
   _bgmGameNormal: {fileID: 8300000, guid: c31b650029eb71a4db89fdc88edc11c5, type: 3}
   _bgmGameChase: {fileID: 8300000, guid: c7c757d9efcd0144a9c806159b569fff, type: 3}
-  _bgmEnding: {fileID: 8300000, guid: 1c3c515c2be6f094a9f43a3f74fe34b7, type: 3}
+  _bgmEnding: {fileID: 8300000, guid: 887d9406de09b4a489fe2e76f078a131, type: 3}
   _bgmScenario: {fileID: 0}
   _seFootStep: {fileID: 6418180475301049370, guid: 9163b876be23fd7468c33804274cb04b, type: 2}
   _seEnemyMother: {fileID: 6418180475301049370, guid: 0667753f8dc552144b6a1fa625b85d0e, type: 2}

@@ -321,7 +321,6 @@ public class GameDebugGUI : MonoBehaviour
 
         GUILayout.BeginHorizontal();
         DrawSceneButton("TitleScene",   GameProgressManager.SceneTitleName);
-        DrawSceneButton("ScenarioPart", GameProgressManager.SceneStoryName);
         GUILayout.EndHorizontal();
         GUILayout.BeginHorizontal();
         DrawSceneButton("HorrorScene", GameProgressManager.SceneHorrorName);

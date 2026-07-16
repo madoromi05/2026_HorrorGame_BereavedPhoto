@@ -19,7 +19,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _bgmGameNormal;
     [SerializeField] private AudioClip _bgmGameChase;
     [SerializeField] private AudioClip _bgmEnding;
-    [SerializeField] private AudioClip _bgmScenario;
 
     [Header("SE クリップ（AudioClip / AudioRandomContainer どちらも可）")]
     [SerializeField] private AudioResource _seFootStep;
@@ -106,7 +105,6 @@ public class AudioManager : MonoBehaviour
         BgmType.GameNormal => _bgmGameNormal,
         BgmType.GameChase  => _bgmGameChase,
         BgmType.Ending     => _bgmEnding,
-        BgmType.Scenario   => _bgmScenario,
         _                  => null,
     };
 

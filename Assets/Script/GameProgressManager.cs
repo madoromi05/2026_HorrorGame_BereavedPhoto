@@ -19,7 +19,6 @@ public class GameProgressManager : MonoBehaviour
 
     // シーン名定数（Build Settings に登録必須）
     public const string SceneTitleName  = "TitleScene";
-    public const string SceneStoryName  = "ScenarioPart";    // Epilogue（クリア）で使用
     public const string SceneHorrorName = "RandomMapScene";  // 単一のホラーシーン
     public const string SceneGameClear  = "GameClearScene";  // 全敵解析クリア時の遷移先
 
@@ -88,7 +87,6 @@ public class GameProgressManager : MonoBehaviour
     {
         GameStage.Title    => SceneTitleName,
         GameStage.Horror   => SceneHorrorName,
-        GameStage.Epilogue => SceneStoryName,
         _                  => SceneTitleName,
     };
 

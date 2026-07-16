@@ -5,5 +5,4 @@ public enum BgmType
     GameNormal,
     GameChase,
     Ending,
-    Scenario,
 }
