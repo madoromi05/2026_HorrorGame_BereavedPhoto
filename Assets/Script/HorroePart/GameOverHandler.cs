@@ -5,23 +5,31 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// ゲームオーバー時の演出とタイトル遷移を担うコンポーネント。
 /// Player にアタッチし、EnemyController から TriggerGameOver() を呼ぶ。
-///
-/// 演出は「操作を止める → 敵の方を向く → 静止 → VHS がホワイトノイズへ崩れる → タイトルへ」の順で進む。
-/// ホワイトノイズは専用のシーンや UI ではなく、本編で常時掛かっている VHS ポストエフェクトの
-/// 信号消失量（<see cref="VhsFeature.SetSignalLoss"/>）を上げて作るため、現在の画面からそのまま繋がる。
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
     // デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える。
     public static bool DebugInvincible;
 
-    [SerializeField] private float _faceTurnDuration = 0.5f;
     [SerializeField] private float _holdDuration = 1.0f;
 
-    [Header("信号消失（ホワイトノイズ）")]
-    [Tooltip("通常の VHS からホワイトノイズへ移行しきるまでの時間（秒）。")]
+    [Header("ジャンプスケア")]
+    [Tooltip("敵が自機に近づききるまでの時間")]
+    [SerializeField] private float _jumpscareDuration = 0.12f;
+
+    [Tooltip("捕獲判定")]
+    [SerializeField] private float _jumpscareStartDistance = 4.0f;
+
+    [Tooltip("最終的な敵との距離")]
+    [SerializeField] private float _jumpscareDistance = 2.5f;
+
+    [Tooltip("敵オブジェクトの高さ")]
+    [SerializeField] private float _jumpscareHeightOffset = -0.2f;
+
+    [Header("砂嵐")]
+    [Tooltip("砂嵐表示までの時間")]
     [SerializeField] private float _signalLossDuration = 0.8f;
-    [Tooltip("移行後、ホワイトノイズだけを見せてからタイトルへ戻るまでの時間（秒）。")]
+    [Tooltip("砂嵐表示時間")]
     [SerializeField] private float _noiseHoldDuration = 3.0f;
 
     private bool _triggered;
@@ -37,10 +45,6 @@ public class GameOverHandler : MonoBehaviour
             _mainCameraTransform = Camera.main.transform;
     }
 
-    /// <summary>
-    /// ゲームオーバーをトリガーする。
-    /// 敵の Transform を渡すと、まず敵の真正面を向いてから遷移する。
-    /// </summary>
     public void TriggerGameOver(Transform enemy = null, Transform aimPoint = null)
     {
         if (DebugInvincible) return;   // デバッグ無敵中はゲームオーバーにしない
@@ -57,56 +61,61 @@ public class GameOverHandler : MonoBehaviour
     private IEnumerator GameOverSequence(Transform enemy, Transform aimPoint)
     {
         if (_playerMover != null) _playerMover.enabled = false;
-        if (_playerCamera != null) _playerCamera.enabled = false;   // 入力を即座に遮断（ResetPitch は呼ばない）
+        if (_playerCamera != null) _playerCamera.enabled = false;
 
         foreach (var e in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
             e.Stop();
 
         if (enemy != null)
         {
-            // ── Yaw: 体を敵の方向へ水平回転 ──
-            float startYaw = transform.eulerAngles.y;
             Vector3 toEnemy = enemy.position - transform.position;
             toEnemy.y = 0f;
-            float targetYaw = toEnemy.sqrMagnitude > 0.001f
-                ? Quaternion.LookRotation(toEnemy).eulerAngles.y
-                : startYaw;
+            if (toEnemy.sqrMagnitude > 0.001f)
+            {
+                float targetYaw = Quaternion.LookRotation(toEnemy).eulerAngles.y;
+                transform.eulerAngles = new Vector3(0f, targetYaw, 0f);
+            }
 
-            // ── Pitch: カメラを敵の注視点へ垂直回転 ──
             var camTransform = _mainCameraTransform;
-            float startPitch = 0f;
-            float targetPitch = 0f;
+
+            //ジャンプスケア
             if (camTransform != null)
             {
-                // localEulerAngles.x は [0, 360] で返るため [-180, 180] に正規化
-                float rawPitch = camTransform.localEulerAngles.x;
-                startPitch = rawPitch > 180f ? rawPitch - 360f : rawPitch;
+                camTransform.localEulerAngles = new Vector3(0f, 0f, 0f);
 
-                Vector3 aimTarget = aimPoint.position;
+                // カメラの正面方向
+                Vector3 camForward = camTransform.forward;
+                camForward.y = 0f;
+                camForward.Normalize();
 
-                // camTransform は Player 直下の子なので、Yaw 回転後にカメラが実際に移動する位置を
-                // 先に予測してからピッチを計算する（回転前の位置で計算すると、体の回転量が
-                // 大きいほどカメラのオフセット分だけ狙点がズレる）。
-                Vector3 futureCamPos = transform.position + Quaternion.Euler(0f, targetYaw, 0f) * camTransform.localPosition;
-                Vector3 toAim = aimTarget - futureCamPos;
-                float hDist = new Vector2(toAim.x, toAim.z).magnitude;
-                // ローカル X 正 = 下向き（Unity FPS 慣例）なので符号反転
-                targetPitch = Mathf.Clamp(-Mathf.Atan2(toAim.y, hDist) * Mathf.Rad2Deg, -90f, 90f);
+                //敵の捕獲判定
+                Vector3 startPos = camTransform.position + camForward * _jumpscareStartDistance;
+                startPos.y = camTransform.position.y + _jumpscareHeightOffset;
+                enemy.position = startPos;
+
+                // 最終的に止まる目標位置
+                Vector3 targetPos = camCamForwardTarget(camTransform);
+
+                float jumpElapsed = 0f;
+                while (jumpElapsed < _jumpscareDuration)
+                {
+                    jumpElapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(jumpElapsed / _jumpscareDuration);
+                    float tCurve = t * t; // 後半加速
+
+                    enemy.position = Vector3.Lerp(startPos, targetPos, tCurve);
+
+                    Vector3 lookDir = camTransform.position - enemy.position;
+                    lookDir.y = 0f;
+                    if (lookDir.sqrMagnitude > 0.001f)
+                    {
+                        enemy.rotation = Quaternion.LookRotation(lookDir);
+                    }
+
+                    yield return null;
+                }
+                enemy.position = targetPos;
             }
-
-            float elapsed = 0f;
-            while (elapsed < _faceTurnDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / _faceTurnDuration);
-                transform.eulerAngles = new Vector3(0f, Mathf.LerpAngle(startYaw, targetYaw, t), 0f);
-                if (camTransform != null)
-                    camTransform.localEulerAngles = new Vector3(Mathf.LerpAngle(startPitch, targetPitch, t), 0f, 0f);
-                yield return null;
-            }
-            transform.eulerAngles = new Vector3(0f, targetYaw, 0f);
-            if (camTransform != null)
-                camTransform.localEulerAngles = new Vector3(targetPitch, 0f, 0f);
         }
 
         yield return new WaitForSeconds(_holdDuration);
@@ -116,8 +125,33 @@ public class GameOverHandler : MonoBehaviour
         SceneManager.LoadScene(GameProgressManager.SceneTitleName);
     }
 
-    // 信号消失量を 0→1 へ時間で送り、ホワイトノイズへ移行しきってから見せ続ける。
-    // 見た目そのものはシェーダー Custom/Vhs 側の責務なので、ここは進行度を渡すだけに留める。
+    /// <summary>
+    /// カメラの水平正面かつ目の前の、敵が移動すべきターゲット位置を計算する
+    /// </summary>
+    private Vector3 camCamForwardTarget(Transform camTransform)
+    {
+        Vector3 camPos = camTransform.position;
+
+        // カメラの正面方向
+        Vector3 camForward = camTransform.forward;
+        camForward.y = 0f;
+        camForward.Normalize();
+
+        float finalDistance = _jumpscareDistance;
+
+        // 最低限カメラから 0.3m 前方には置くように制限
+        if (finalDistance < 0.3f)
+        {
+            finalDistance = 0.3f;
+        }
+
+        Vector3 targetPos = camPos + camForward * finalDistance;
+
+        targetPos.y = camPos.y + _jumpscareHeightOffset;
+
+        return targetPos;
+    }
+
     private IEnumerator SignalLossOut()
     {
         float elapsed = 0f;
