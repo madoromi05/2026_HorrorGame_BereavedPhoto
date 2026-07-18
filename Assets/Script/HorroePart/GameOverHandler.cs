@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -31,6 +32,14 @@ public class GameOverHandler : MonoBehaviour
     [SerializeField] private float _signalLossDuration = 0.8f;
     [Tooltip("砂嵐表示時間")]
     [SerializeField] private float _noiseHoldDuration = 3.0f;
+    [Tooltip("ホワイトノイズの再生速度（ピッチ）。1で等速、0.8で遅く低く。")]
+    [SerializeField] private float _noisePitch = 0.8f;
+
+    [Header("テレビOFF（黒フェード）")]
+    [Tooltip("黒く覆いきってタイトルへ遷移するまでの時間（秒）。この間に OFF 音を聞かせる。")]
+    [SerializeField] private float _darkenDuration = 1.0f;
+    [Tooltip("黒く覆いきった後、タイトルへ遷移するまで黒画面を保持する時間（秒）。")]
+    [SerializeField] private float _blackHoldDuration = 0.5f;
 
     private bool _triggered;
     private PlayerMover _playerMover;
@@ -164,6 +173,8 @@ public class GameOverHandler : MonoBehaviour
 
     private IEnumerator SignalLossOut()
     {
+        AudioManager.Instance?.StartGameOverNoise(_noisePitch);   // ホワイトノイズ開始（速度 _noisePitch）
+
         float elapsed = 0f;
         while (elapsed < _signalLossDuration)
         {
@@ -173,6 +184,45 @@ public class GameOverHandler : MonoBehaviour
         }
         VhsFeature.SetSignalLoss(1f);
 
-        yield return new WaitForSeconds(_noiseHoldDuration);
+        yield return new WaitForSeconds(_noiseHoldDuration);   // 砂嵐＋ノイズ保持
+
+        AudioManager.Instance?.StopGameOverNoise();               // ノイズをブツッと停止
+        AudioManager.Instance?.PlayGameOverSe(SeType.TvPowerOff); // テレビOFF音
+        yield return FadeToBlack();                               // 黒フェード（OFF音の余韻も兼ねる）
+        yield return new WaitForSeconds(_blackHoldDuration);      // 黒画面を保持してからタイトルへ
+    }
+
+    // 画面を黒く覆いきる。黒オーバーレイは DisableAllUI の後にここで生成するため、
+    // 無効化の影響を受けず確実に最前面へ出る（GameClearDirector の alpha 補間と同方針）。
+    private IEnumerator FadeToBlack()
+    {
+        var overlay = CreateDarkenOverlay();
+
+        float elapsed = 0f;
+        while (elapsed < _darkenDuration)
+        {
+            elapsed += Time.deltaTime;
+            overlay.alpha = Mathf.Clamp01(elapsed / _darkenDuration);
+            yield return null;
+        }
+        overlay.alpha = 1f;
+    }
+
+    // 全画面の黒フェード用オーバーレイを最前面 Canvas として実行時生成する。
+    // シーン遷移で自動破棄されるため後始末は不要。
+    private CanvasGroup CreateDarkenOverlay()
+    {
+        var go = new GameObject("GameOverDarkenOverlay");
+        var canvas = go.AddComponent<Canvas>();
+        canvas.renderMode   = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = short.MaxValue;   // 他の全 UI より手前に描画する
+
+        var group = go.AddComponent<CanvasGroup>();
+        group.alpha = 0f;                        // 透明から開始
+        group.blocksRaycasts = true;             // フェード中の入力を遮断する
+
+        var image = go.AddComponent<Image>();
+        image.color = Color.black;               // 不透明な黒（全画面）
+        return group;
     }
 }

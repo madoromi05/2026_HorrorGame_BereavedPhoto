@@ -31,6 +31,11 @@ public class TitleSceneController : MonoBehaviour
 
     private void Start()
     {
+        // ゲームオーバー／クリア画面はカーソルを固定・非表示にするため、
+        // タイトルへ戻った時点で必ずマウス操作を有効化しておく。
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible   = true;
+
         AudioManager.Instance?.PlayBgm(BgmType.Title);
     }
 

@@ -67,6 +67,8 @@ MonoBehaviour:
   _seDoorOpen: {fileID: 8300000, guid: 02aada0e8d51f9045ba5e7e181b651ad, type: 3}
   _seDoorClose: {fileID: 8300000, guid: bd720480579a1fb47b6e87e16e20cf41, type: 3}
   _seObstructionItemHit: {fileID: 8300000, guid: b019c1a5e0178b0439326538ba91f29e, type: 3}
+  _seSignalNoise: {fileID: 8300000, guid: 961cf89d0ea7b9841914f4cb64a23a45, type: 3}
+  _seTvPowerOff: {fileID: 8300000, guid: 59ba3b291ecc7d343bcc17964d742da3, type: 3}
 --- !u!1 &3992828601510246997
 GameObject:
   m_ObjectHideFlags: 0

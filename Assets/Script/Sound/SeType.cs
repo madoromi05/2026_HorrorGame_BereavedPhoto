@@ -13,5 +13,7 @@ public enum SeType
     HandLightFlicker,
     DoorOpen,
     DoorClose,
-    ObstructionItemHit
+    ObstructionItemHit,
+    SignalNoise,   // ゲームオーバー時のホワイトノイズ（砂嵐）
+    TvPowerOff     // テレビの電源を切る音
 }

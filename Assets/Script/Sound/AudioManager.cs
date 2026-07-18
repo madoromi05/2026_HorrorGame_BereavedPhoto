@@ -42,6 +42,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioResource _seDoorOpen;
     [SerializeField] private AudioResource _seDoorClose;
     [SerializeField] private AudioResource _seObstructionItemHit;
+    [SerializeField] private AudioResource _seSignalNoise;   // ゲームオーバー時のホワイトノイズ
+    [SerializeField] private AudioResource _seTvPowerOff;     // テレビを消す音
 
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -86,6 +88,24 @@ public class AudioManager : MonoBehaviour
         StopBgm(0f);
         PlaySe(gameOverSe);   // 抑止フラグを立てる前に鳴らすことで、この SE だけは再生する
         _seSuppressed = true;
+    }
+
+    // ---- ゲームオーバー演出音（SE 抑止をバイパスして鳴らす）----
+    /// ホワイトノイズ（砂嵐）のループ再生を開始する。
+    public void StartGameOverNoise(float pitch = 1f)
+    {
+        var resource = TryGetSeResource(SeType.SignalNoise);
+        if (resource != null) _sePlayer.PlayLoop(resource, 1f, pitch);
+    }
+
+    /// ホワイトノイズを即停止する（テレビを消す瞬間に呼ぶ）。
+    public void StopGameOverNoise() => _sePlayer.StopLoop();
+
+    /// テレビ OFF 音など、演出音を抑止を無視して 1 回鳴らす。
+    public void PlayGameOverSe(SeType type)
+    {
+        var resource = TryGetSeResource(type);
+        if (resource != null) _sePlayer.Play(resource);
     }
 
     // ---- BGM ----（複数同時不可）
@@ -164,6 +184,8 @@ public class AudioManager : MonoBehaviour
         SeType.DoorOpen         => _seDoorOpen,
         SeType.DoorClose        => _seDoorClose,
         SeType.ObstructionItemHit => _seObstructionItemHit,
+        SeType.SignalNoise        => _seSignalNoise,
+        SeType.TvPowerOff         => _seTvPowerOff,
         _                       => null,
     };
 }
