@@ -21,6 +21,7 @@ public class AnalyzerUI : MonoBehaviour
             DebugCustom.LogError($"[AnalyzerUI] _barFill が未設定です。", this);
 
         // 初期状態は非表示にする
+        if (_barFill != null) _barFill.fillAmount = 0f;   // バーを0%で初期化（構えるまで更新されないため）
         if (_analyzingIcon != null) _analyzingIcon.SetActive(false);
         if (_completeUI != null) _completeUI.SetActive(false);
     }

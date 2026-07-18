@@ -51,11 +51,21 @@ public class GameOverHandler : MonoBehaviour
         if (_triggered) return;
         _triggered = true;
 
-        AudioManager.Instance?.StopBgm(0.5f);
-        AudioManager.Instance?.PlaySe(SeType.GameOver);
+        // BGM 停止＋ゲームオーバー SE 再生＋以降の SE 抑止を一括で行う。
+        AudioManager.Instance?.EnterGameOver(SeType.GameOver);
+        DisableAllUI();
         enabled = false;
 
         StartCoroutine(GameOverSequence(enemy, aimPoint));
+    }
+
+    // ゲームオーバー確定時に画面上の全 UI を消す。UI は単一の親にまとまっていないため、
+    // シーン内の全ルート Canvas を無効化する。ジャンプスケア（3D）と VHS ノイズ（描画エフェクト）は
+    // Canvas ではないため残る。
+    private void DisableAllUI()
+    {
+        foreach (var canvas in FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+            if (canvas.isRootCanvas) canvas.enabled = false;
     }
 
     private IEnumerator GameOverSequence(Transform enemy, Transform aimPoint)

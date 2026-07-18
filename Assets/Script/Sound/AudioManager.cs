@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// サウンド管理のエントリポイント（MonoBehaviour Singleton / DontDestroyOnLoad）。
@@ -8,6 +9,13 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
+
+    // ゲームオーバー確定後、ゲームオーバー SE 以外の SE 再生を抑止する状態。
+    // シーンをまたいで持続しないよう、次シーンのロードで自動解除する。
+    private bool _seSuppressed;
+
+    /// SE 抑止中か（EnemySoundPlayer など AudioManager を経由しない音源が参照する）。
+    public bool IsSeSuppressed => _seSuppressed;
 
     [Header("サブシステム")]
     [SerializeField] private BgmPlayer       _bgmPlayer;
@@ -58,6 +66,26 @@ public class AudioManager : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // 次シーンへ移った時点で SE 抑止を解除する（遷移先の SE を巻き込まないため）。
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => _seSuppressed = false;
+
+    // ---- ゲームオーバー ----
+    /// ゲームオーバー確定時の音声処理。BGM を即停止し、ゲームオーバー SE を鳴らしてから
+    /// 以降の SE 再生を抑止する（抑止は次シーンのロードで自動解除）。
+    public void EnterGameOver(SeType gameOverSe)
+    {
+        StopBgm(0f);
+        PlaySe(gameOverSe);   // 抑止フラグを立てる前に鳴らすことで、この SE だけは再生する
+        _seSuppressed = true;
     }
 
     // ---- BGM ----（複数同時不可）
@@ -81,6 +109,7 @@ public class AudioManager : MonoBehaviour
     /// SE を 2D で再生する（複数同時可）。
     public void PlaySe(SeType type, float volume = 1f, float pitch = 1f)
     {
+        if (_seSuppressed) return;
         var resource = TryGetSeResource(type);
         if (resource != null) _sePlayer.Play(resource, volume, pitch);
     }
@@ -88,6 +117,7 @@ public class AudioManager : MonoBehaviour
     /// SE を指定座標の 3D 音源として再生する（複数同時可）。
     public void PlaySe3D(SeType type, Vector3 position, float volume = 1f, float pitch = 1f)
     {
+        if (_seSuppressed) return;
         var resource = TryGetSeResource(type);
         if (resource != null) _sePlayer.Play3D(resource, position, volume, pitch);
     }

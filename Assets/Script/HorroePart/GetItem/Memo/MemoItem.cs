@@ -18,7 +18,7 @@ namespace HorrorGame.Interaction
         [SerializeField][TextArea(3, 10)] private string[] _memoPages;
         [SerializeField] private ItemData _itemData;
         public bool CanInteract => true;
-        public string HintText => "【E】メモを読む";
+        public string HintText => "【E】本を読む";
 
         private MemoUIPresenter _uiPresenter;
         private Inventory _inventory;

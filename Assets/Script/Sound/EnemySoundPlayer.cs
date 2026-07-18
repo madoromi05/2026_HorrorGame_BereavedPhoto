@@ -77,6 +77,13 @@ public class EnemySoundPlayer : MonoBehaviour
 
     private void Update()
     {
+        // ゲームオーバー確定後は敵の SE を止める（AudioManager を経由しない音源のため個別に抑止する）。
+        if (AudioManager.Instance != null && AudioManager.Instance.IsSeSuppressed)
+        {
+            if (_audioSource.isPlaying) _audioSource.Stop();
+            return;
+        }
+
         UpdateOcclusion();
 
         _seTimer -= Time.deltaTime;

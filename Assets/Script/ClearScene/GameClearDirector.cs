@@ -91,6 +91,10 @@ public class GameClearDirector : MonoBehaviour
 
     private void Start()
     {
+        // 前シーンの BGM が DontDestroyOnLoad の AudioManager 経由で鳴り続けるため、
+        // ClearScene 開始時に即停止する。エンディング BGM は EndingSequence 内で改めて鳴らす。
+        AudioManager.Instance?.StopBgm(0f);
+
         LockCursor();
 
         // スキップ用プログレスバーは初期状態で非表示（押している間だけフェードインさせる）。
