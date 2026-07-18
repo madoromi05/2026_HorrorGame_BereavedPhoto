@@ -34,6 +34,12 @@ public class GameClearDirector : MonoBehaviour
     [Tooltip("白が引いてクレジット背景が現れるまでの時間（秒）。")]
     [SerializeField] private float _whiteFadeOutDuration = 1.5f;
 
+    [Header("タイトル暗転")]
+    [Tooltip("タイトルへ戻る前に全画面を黒く覆う CanvasGroup（黒 Image・alpha 0 開始）。")]
+    [SerializeField] private CanvasGroup _darkenOverlay;
+    [Tooltip("黒く覆いきってタイトルへ遷移するまでの時間（秒）。")]
+    [SerializeField] private float _darkenDuration = 1.5f;
+
     [Header("クレジット")]
     [Tooltip("スクロールさせるクレジット全体の RectTransform。")]
     [SerializeField] private RectTransform _creditRoot;
@@ -63,6 +69,7 @@ public class GameClearDirector : MonoBehaviour
             (nameof(_doorClosed),        _doorClosed),
             (nameof(_doorOpened),        _doorOpened),
             (nameof(_whiteOverlay),      _whiteOverlay),
+            (nameof(_darkenOverlay),     _darkenOverlay),
             (nameof(_creditRoot),        _creditRoot),
             (nameof(_skipProgressImage), _skipProgressImage),
             (nameof(_skipCanvasGroup),   _skipCanvasGroup));
@@ -92,6 +99,8 @@ public class GameClearDirector : MonoBehaviour
 
         // 白転はドアが開いた後に始めるため、初回描画フレームから透明を確定させる。
         _whiteOverlay.alpha = 0f;
+        // タイトル暗転もタイトル遷移時まで使わないため、初回描画前に透明を確定させる。
+        _darkenOverlay.alpha = 0f;
 
         _doorImage.sprite = _doorClosed;
         // クレジットは Canvas 上でドア画像より手前に描画されるため、
@@ -157,7 +166,7 @@ public class GameClearDirector : MonoBehaviour
 
         // 開いたドアを白で塗り潰す。ドアが閉まる音は画面外の出来事として白転と重ねて鳴らす。
         AudioManager.Instance.PlaySe(SeType.DoorClose);
-        yield return FadeWhiteOverlay(0f, 1f, _whitenDuration);
+        yield return FadeOverlay(_whiteOverlay, 0f, 1f, _whitenDuration);
         yield return new WaitForSeconds(_holdWhiteDuration);
 
         // 白で覆われている間に舞台を整えてから白を引く。位置決めを白の裏で済ませないと、
@@ -165,27 +174,27 @@ public class GameClearDirector : MonoBehaviour
         _doorImage.gameObject.SetActive(false);
         MoveCreditToStart();
         AudioManager.Instance.PlayBgm(BgmType.Ending);
-        yield return FadeWhiteOverlay(1f, 0f, _whiteFadeOutDuration);
+        yield return FadeOverlay(_whiteOverlay, 1f, 0f, _whiteFadeOutDuration);
 
         yield return ScrollCredit();
 
         GoToTitle();
     }
 
-    // 白オーバーレイの alpha を from → to へ補間する（ScreenFadeIn と同じく alpha 補間のみを担う）。
-    private IEnumerator FadeWhiteOverlay(float from, float to, float duration)
+    // 指定オーバーレイの alpha を from → to へ補間する（ScreenFadeIn と同じく alpha 補間のみを担う）。
+    private IEnumerator FadeOverlay(CanvasGroup overlay, float from, float to, float duration)
     {
-        _whiteOverlay.alpha = from;
+        overlay.alpha = from;
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            _whiteOverlay.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
+            overlay.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
             yield return null;
         }
 
-        _whiteOverlay.alpha = to;
+        overlay.alpha = to;
     }
 
     // SE を鳴らし、そのクリップ長＋余韻ぶん待機する。クリップ未設定ならクリップ長は 0 扱い。
@@ -223,11 +232,19 @@ public class GameClearDirector : MonoBehaviour
     private void BeginSkipHold() => _isHoldingSkip = true;
     private void EndSkipHold()   => _isHoldingSkip = false;
 
-    // タイトルへ遷移する（二重実行防止）。
+    // タイトルへ遷移する（二重実行防止）。暗転しきってからロードする。
     private void GoToTitle()
     {
         if (_isFinishing) return;
         _isFinishing = true;
+        StartCoroutine(FadeOutAndLoadTitle());
+    }
+
+    // 全画面を黒く覆いきってからタイトルシーンをロードする。
+    private IEnumerator FadeOutAndLoadTitle()
+    {
+        _darkenOverlay.blocksRaycasts = true; // 暗転中の入力を遮断する
+        yield return FadeOverlay(_darkenOverlay, 0f, 1f, _darkenDuration);
         SceneManager.LoadScene(GameProgressManager.SceneTitleName);
     }
 }
