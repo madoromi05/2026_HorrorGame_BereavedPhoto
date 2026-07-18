@@ -15,5 +15,5 @@ MonoBehaviour:
   OneGridSize: 8
   MapSize: {x: 36, y: 36}
   SectionDivide: {x: 3, y: 3}
-  MaxCorridorLength: 8
   MinExtraCorridorLength: 8
+  MaxStraightSightWorld: 60

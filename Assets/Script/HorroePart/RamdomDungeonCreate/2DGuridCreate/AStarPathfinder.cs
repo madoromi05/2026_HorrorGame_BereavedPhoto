@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ƒOƒŠƒbƒhã‚Ì A* Œo˜H’TõBSectionConnector ‚Æ IsolatedDoorRepairer ‚ª‹¤—L‚·‚éB
+/// ï¿½Oï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½ A* ï¿½oï¿½Hï¿½Tï¿½ï¿½ï¿½BSectionConnector ï¿½ï¿½ IsolatedDoorRepairer ï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½B
 /// </summary>
 public class AStarPathfinder
 {
     /// <summary>
-    /// ’Tõƒm[ƒh‚Ìó‘Ô‚ğ•\‚·\‘¢‘Ì
-    /// ˆÊ’uAis•ûŒüA’¼üŒp‘±”‚ğ•Û‚·‚éB
+    /// ï¿½Tï¿½ï¿½ï¿½mï¿½[ï¿½hï¿½Ìï¿½Ô‚ï¿½\ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
+    /// ï¿½Ê’uï¿½Aï¿½iï¿½sï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ûï¿½ï¿½ï¿½ï¿½ï¿½B
     /// </summary>
     private struct PathState : System.IEquatable<PathState>
     {
         public readonly Vector2Int Pos;
         public readonly Vector2Int Dir;
-        public readonly int Straight;   // ’¼üŒp‘±”
+        public readonly int Straight;   // ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½
 
         public PathState(Vector2Int pos, Vector2Int dir, int straight)
         { Pos = pos; Dir = dir; Straight = straight; }
@@ -24,7 +24,7 @@ public class AStarPathfinder
         public override bool Equals(object obj) => obj is PathState s && Equals(s);
         public override int GetHashCode()
         {
-            //ƒnƒbƒVƒ…’l‚ğ‡¬‚·‚éÛ‚Ìæ”‚Æ‚µ‚Ä397
+            //ï¿½nï¿½bï¿½Vï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û‚Ìæ”ï¿½Æ‚ï¿½ï¿½ï¿½397
             unchecked
             {
                 int h = Pos.x;
@@ -36,22 +36,23 @@ public class AStarPathfinder
         }
     }
 
-    // •ûŒü‚Ì’è‹`iã‰º¶‰Ej
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½`ï¿½iï¿½ã‰ºï¿½ï¿½ï¿½Eï¿½j
     private static readonly Vector2Int[] kDirs =
     {
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
     };
 
     /// <summary>
-    /// A* ‚Å start ‚©‚ç end ‚Ü‚Å‚ÌŒo˜H‚ğ•Ô‚·BŒo˜H‚ª‘¶İ‚µ‚È‚¢ê‡‚Í nullB
-    /// maxStraight: ’¼üŒp‘±‚ÌãŒÀi0 = –³§ŒÀjB
-    /// avoidCorridorAdjacency: Šù‘¶’Ê˜H‚É—×Ú‚·‚éƒZƒ‹‚ÌƒRƒXƒg‚ğã‚°‚Ä’Ê˜H‚Ì–§’…‚ğ—}§‚·‚éB
+    /// A* ï¿½ï¿½ start ï¿½ï¿½ï¿½ï¿½ end ï¿½Ü‚Å‚ÌŒoï¿½Hï¿½ï¿½Ô‚ï¿½ï¿½Bï¿½oï¿½Hï¿½ï¿½ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ï¿½ nullï¿½B
+    /// maxStraight: ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½i0 = ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½jï¿½B
+    /// avoidCorridorAdjacency: ï¿½ï¿½ï¿½ï¿½ï¿½Ê˜Hï¿½É—×Ú‚ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½ÌƒRï¿½Xï¿½gï¿½ï¿½ï¿½ã‚°ï¿½Ä’Ê˜Hï¿½Ì–ï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
     /// </summary>
     public List<Vector2Int> FindPath(
         GridType[,] grid,
         Vector2Int start,
         Vector2Int end,
-        bool avoidCorridorAdjacency = false)
+        bool avoidCorridorAdjacency = false,
+        int maxStraight = 0)
     {
         var openSet = new SortedSet<(float f, int id)>(
             Comparer<(float f, int id)>.Create((a, b) =>
@@ -89,7 +90,18 @@ public class AStarPathfinder
                 if (cellType == GridType.Wall) continue;
                 if (cellType == GridType.Floor) continue;
 
-                int newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
+                int newStraight;
+                if (maxStraight <= 0)
+                {
+                    newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
+                }
+                else
+                {
+                    newStraight = ComputeStraight(grid, cur, dir, start);
+                    // Span of the whole straight open run: path so far + existing open cells ahead.
+                    int span = newStraight + CountOpenCells(grid, nPos + dir, dir, maxStraight);
+                    if (span > maxStraight) continue;
+                }
 
                 float moveCost = cellType switch
                 {
@@ -121,6 +133,9 @@ public class AStarPathfinder
             }
         }
 
+        // No path under the straight-run limit: retry unconstrained so we always connect.
+        if (maxStraight > 0)
+            return FindPath(grid, start, end, avoidCorridorAdjacency, 0);
         return null;
     }
 
@@ -140,6 +155,32 @@ public class AStarPathfinder
         path.Reverse();
         return path;
     }
+
+    // Straight-run length ending at the next cell. On the first step it seeds the
+    // count with open cells (the Door and room Floor) behind the start, so a corridor
+    // leaving a door also counts the room it looks straight back into.
+    private int ComputeStraight(GridType[,] grid, PathState cur, Vector2Int dir, Vector2Int start)
+    {
+        if (cur.Dir == Vector2Int.zero)
+            return CountOpenCells(grid, start, -dir, int.MaxValue) + 1;
+        return (dir == cur.Dir) ? cur.Straight + 1 : 1;
+    }
+
+    // Counts contiguous open cells (Corridor/Door/Floor) from 'from' along 'dir', up to 'limit'.
+    private int CountOpenCells(GridType[,] grid, Vector2Int from, Vector2Int dir, int limit)
+    {
+        int count = 0;
+        var p = from;
+        while (count < limit && IsInGrid(grid, p) && IsOpenCell(grid[p.x, p.y]))
+        {
+            count++;
+            p += dir;
+        }
+        return count;
+    }
+
+    private bool IsOpenCell(GridType type)
+        => type == GridType.Corridor || type == GridType.Door || type == GridType.Floor;
 
     private bool IsInGrid(GridType[,] grid, Vector2Int pos)
         => pos.x >= 0 && pos.x < grid.GetLength(0)

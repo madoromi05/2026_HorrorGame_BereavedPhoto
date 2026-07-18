@@ -52,10 +52,10 @@ public class DungeonGridBuilder
                 _sectionConnector.ConnectTwoSections(sections[i], sections[i + 1]);
         }
 
-        _isolatedDoorRepairer.Repair(grid, sectionDoorMap);
+        _isolatedDoorRepairer.Repair(grid, sectionDoorMap, bluePrint.MaxStraightCells);
         LogGridStats(grid, "After ConnectUnconnectedDoors");
 
-        _deadEndConnector.Connect(grid);
+        _deadEndConnector.Connect(grid, bluePrint.MaxStraightCells);
         LogGridStats(grid, "After ConnectDeadEnds");
 
         return (grid, sections);

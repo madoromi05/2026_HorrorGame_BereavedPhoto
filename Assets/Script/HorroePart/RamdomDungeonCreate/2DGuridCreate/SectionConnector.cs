@@ -2,8 +2,8 @@
 /// セクション間を A* で接続する通路生成クラス。
 /// MST（最小全域木）による全セクション接続、追加分岐の生成、
 /// 行き止まり（接続数1本）セクションへの補強接続を担当する。
-/// MaxCorridorLength は「一直線に進める最大マス数」を意味し、
-/// 超過した場合は自動的に曲がって迂回し、必ず接続する（スキップしない）。
+/// FieldBluePrint.MaxStraightSightWorld から算出した直進マス上限を A* に渡し、
+/// 上限を超える一直線は探索段階で曲げて迂回させる（超過時は自動で折れ、必ず接続する）。
 /// 追加通路は MinExtraCorridorLength 条件を満たすセクションペアのみ生成する。
 /// A* は avoidCorridorAdjacency を有効にして探索するため、
 /// 既存通路とほぼ平行に隣接する新規通路（＝見た目上2列の通路）が作られにくくなる。
@@ -19,6 +19,7 @@ public class SectionConnector
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
     private Dictionary<SectionData, HashSet<SectionData>> _adjacency;
+    private int _maxStraight;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     /// <summary>
@@ -37,6 +38,7 @@ public class SectionConnector
         _sections = sections;
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
+        _maxStraight = bluePrint.MaxStraightCells;
 
         _adjacency = new Dictionary<SectionData, HashSet<SectionData>>();
         foreach (var section in sections)
@@ -155,7 +157,7 @@ public class SectionConnector
 
     /// <summary>
     /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む。
-    /// MaxCorridorLength を超える直線は A* 内で禁止されるため、
+    /// 直進マス上限を超える直線は A* 内で禁止されるため、
     /// 経路は自動的に曲がって既存通路に合流・分岐しながら必ず接続される。
     /// </summary>
     public bool ConnectTwoSections(SectionData from, SectionData to)
@@ -163,7 +165,7 @@ public class SectionConnector
         var startPos = GetConnectionPoint(from, to);
         var endPos   = GetConnectionPoint(to, from);
 
-        var path = _pathfinder.FindPath(_grid, startPos, endPos, avoidCorridorAdjacency: true);
+        var path = _pathfinder.FindPath(_grid, startPos, endPos, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
         if (path == null)
         {
             DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");

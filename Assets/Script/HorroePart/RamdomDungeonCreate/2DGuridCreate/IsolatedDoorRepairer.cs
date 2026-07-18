@@ -10,6 +10,7 @@ using UnityEngine;
 public class IsolatedDoorRepairer
 {
     private GridType[,] _grid;
+    private int _maxStraight;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     /// <summary>
@@ -18,9 +19,11 @@ public class IsolatedDoorRepairer
     /// </summary>
     public void Repair(
         GridType[,] grid,
-        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap)
+        Dictionary<SectionData, List<Vector2Int>> sectionDoorMap,
+        int maxStraight)
     {
         _grid = grid;
+        _maxStraight = maxStraight;
 
         var corridorCells = CollectCorridorCells();
         if (corridorCells.Count == 0)
@@ -60,7 +63,7 @@ public class IsolatedDoorRepairer
             return;
         }
 
-        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value, avoidCorridorAdjacency: true);
+        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
         if (path == null)
         {
             DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door A* 失敗: {exitCell.Value} -> {target.Value}");

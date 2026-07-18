@@ -11,6 +11,7 @@ using UnityEngine;
 public class DeadEndConnector
 {
     private GridType[,] _grid;
+    private int _maxStraight;
     private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
 
     private static readonly Vector2Int[] kDirs =
@@ -18,9 +19,10 @@ public class DeadEndConnector
         Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
     };
 
-    public void Connect(GridType[,] grid)
+    public void Connect(GridType[,] grid, int maxStraight)
     {
         _grid = grid;
+        _maxStraight = maxStraight;
 
         const int kMaxPasses = 20;
         for (int pass = 0; pass < kMaxPasses; pass++)
@@ -53,7 +55,7 @@ public class DeadEndConnector
             var target = FindNearest(exitCell, corridorCells, deadEnd);
             if (target == null) continue;
 
-            var path = _pathfinder.FindPath(_grid, exitCell, target.Value, avoidCorridorAdjacency: true);
+            var path = _pathfinder.FindPath(_grid, exitCell, target.Value, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
             if (path == null) continue;
 
             _grid[exitCell.x, exitCell.y] = GridType.Corridor;
