@@ -10,7 +10,6 @@ using UnityEngine;
 public class EnemyAnalyzer : MonoBehaviour
 {
     [SerializeField] private float _analyzeSpeed = 0.3f;
-    [SerializeField] private float _completeSpeedBonus = 1f;   // 1種類の解析完了時、残る種類に加算する移動速度
     [SerializeField] private AnalyzerUI _analyzerUI;
 
     // 解析率は敵の「種類（GhostType）」ごとに共有する。
@@ -115,6 +114,7 @@ public class EnemyAnalyzer : MonoBehaviour
     /// <summary>
     /// まだ解析が完了していない種類の敵の移動速度を上げる。
     /// 1種類倒すごとに残りが速くなり、緊張感を高める演出。
+    /// 実際の速度値は各 EnemyController の _speedAfterAnalysis で設定する。
     /// </summary>
     private void BoostRemainingEnemies()
     {
@@ -122,7 +122,7 @@ public class EnemyAnalyzer : MonoBehaviour
         {
             // すでに退場済み（完了済み）の種類は対象外
             if (_completedTypes.Contains(type)) continue;
-            EnemyController.IncreaseSpeedByType(type, _completeSpeedBonus);
+            EnemyController.ApplySpeedAfterAnalysisByType(type);
         }
     }
 

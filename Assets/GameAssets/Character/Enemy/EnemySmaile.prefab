@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: 8295323369513282290}
   - component: {fileID: 7830219958225823820}
   - component: {fileID: 6334024101769448232}
-  - component: {fileID: 3500857839708471038}
   - component: {fileID: 5240728324867124945}
   - component: {fileID: 314247789553021384}
   - component: {fileID: 401765894737810294}
@@ -176,24 +175,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _aimPoint: {fileID: 4363124946709930663}
   _chaseSpeed: 4
+  _speedAfterAnalysis: 4.6
   _chaseDestUpdateInterval: 0.6
   _catchDistance: 3
---- !u!114 &3500857839708471038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4249624240167772651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7648b7a801cbc674980a9bf08775901a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _leadTime: 1.2
-  _maxLeadDistance: 6
-  _velocityResponse: 6
-  _navSampleRadius: 2
 --- !u!82 &5240728324867124945
 AudioSource:
   m_ObjectHideFlags: 0

@@ -218,6 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _aimPoint: {fileID: 7696352253654489107}
   _chaseSpeed: 4
+  _speedAfterAnalysis: 4.6
   _chaseDestUpdateInterval: 0.6
   _catchDistance: 3
 --- !u!114 &8612596458474995649

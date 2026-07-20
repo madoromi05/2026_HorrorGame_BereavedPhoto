@@ -29,7 +29,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BodyBrightness: 0.2
+    - _BodyBrightness: 0.3
     - _Cull: 2
     - _RimIntensity: 1
     - _RimPower: 2

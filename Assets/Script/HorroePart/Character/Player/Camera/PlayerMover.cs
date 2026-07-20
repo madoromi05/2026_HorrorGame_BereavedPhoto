@@ -28,7 +28,7 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float _dashSpeed = 8f;
 
     [Header("感度、調整用設定")]
-    [SerializeField] private float _yawSensitivity = 0.1f;
+    [SerializeField] private float _yawSensitivity = 0.5f;
     [SerializeField] private float _aimSensitivityMultiplier = 0.5f;
     [SerializeField] private float _aimSpeedMultiplier = 0.6f;
 

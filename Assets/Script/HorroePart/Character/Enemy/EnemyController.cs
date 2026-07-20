@@ -14,6 +14,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("追跡")]
     [SerializeField] private float _chaseSpeed = 4f;
+    [SerializeField] private float _speedAfterAnalysis = 5.5f;          // 別種類の解析完了時に切り替える移動速度
     [SerializeField] private float _chaseDestUpdateInterval = 0.6f;     // 目的地再計算
     [SerializeField] private float _catchDistance = 3.0f;               // 捕まえる判定の距離
 
@@ -92,19 +93,19 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// この敵の移動速度を amount だけ加算する。
+    /// この敵の移動速度を、別種類の解析完了時用の速度（_speedAfterAnalysis）に切り替える。
     /// </summary>
-    public void IncreaseSpeed(float amount)
+    public void ApplySpeedAfterAnalysis()
     {
-        _chaseSpeed += amount;
+        _chaseSpeed = _speedAfterAnalysis;
         if (_agent != null) _agent.speed = _chaseSpeed;
     }
 
     /// <summary>
-    /// 指定した種類（GhostType）の敵すべての移動速度を amount だけ加算する。
+    /// 指定した種類（GhostType）の敵すべての移動速度を、各自の _speedAfterAnalysis に切り替える。
     /// 別種類の解析完了時に、残っている種類を加速させる用途で呼ぶ。
     /// </summary>
-    public static void IncreaseSpeedByType(EnemyType type, float amount)
+    public static void ApplySpeedAfterAnalysisByType(EnemyType type)
     {
         int boosted = 0;
         foreach (var ghost in FindObjectsByType<GhostIdentity>(FindObjectsSortMode.None))
@@ -113,10 +114,10 @@ public class EnemyController : MonoBehaviour
 
             var controller = ghost.GetComponentInParent<EnemyController>();
             if (controller == null) continue;
-            controller.IncreaseSpeed(amount);
+            controller.ApplySpeedAfterAnalysis();
             boosted++;
         }
-        DebugCustom.Log($"[EnemyController] {type} の敵 {boosted} 体の速度を +{amount} しました。");
+        DebugCustom.Log($"[EnemyController] {type} の敵 {boosted} 体の速度を切り替えました。");
     }
 
     public void Stun(float duration)

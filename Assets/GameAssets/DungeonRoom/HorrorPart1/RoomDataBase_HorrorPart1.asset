@@ -23,8 +23,6 @@ MonoBehaviour:
     EnemyEntries:
     - EnemyPrefab: {fileID: 340286086608756400, guid: 8feddebfa228c1542a5acfe02783c7e6, type: 3}
       SpawnCount: 1
-    - EnemyPrefab: {fileID: 477752560515438417, guid: 1dab813ccecb685459e0234793c70b0e, type: 3}
-      SpawnCount: 1
   - RoomType: 1
     Prefab: {fileID: 3469361202669048594, guid: ccb4432a23a78e4468c154760ef92553, type: 3}
     RoomGridDatas: {fileID: 11400000, guid: 4358c923c18599f4c9ef37eea20f144f, type: 2}

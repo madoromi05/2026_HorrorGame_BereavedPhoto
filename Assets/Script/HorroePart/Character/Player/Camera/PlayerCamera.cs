@@ -8,7 +8,7 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
-    [SerializeField] private float _pitchSensitivity = 0.1f;
+    [SerializeField] private float _pitchSensitivity = 0.5f;
     [SerializeField] private float _aimSensitivityMultiplier = 0.5f;
     [SerializeField] private float _minPitch = -90f;
     [SerializeField] private float _maxPitch = 90f;

@@ -55,4 +55,17 @@ public class GameMenuController : MonoBehaviour
         Cursor.visible   = false;
         _inputController?.SetPlayerInputEnabled(true);
     }
+
+    /// <summary>
+    /// オプション画面の「タイトルへ戻る」ボタンから呼ぶ。
+    /// メニューを開いている間は Time.timeScale=0 で停止しているため、
+    /// シーン遷移前に必ず 1 へ戻す（LoadScene は timeScale をリセットしないため、
+    /// このリセットを怠るとタイトルシーンが停止状態で読み込まれる）。
+    /// カーソルはタイトル側の TitleSceneController.Start で再設定される。
+    /// </summary>
+    public void OnReturnToTitle()
+    {
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(GameProgressManager.SceneTitleName);
+    }
 }
