@@ -31,8 +31,8 @@ Material:
     m_Floats:
     - _BodyBrightness: 0.3
     - _Cull: 2
-    - _RimIntensity: 1
-    - _RimPower: 2
+    - _RimIntensity: 2
+    - _RimPower: 3
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColor: {r: 0.55, g: 0.75, b: 1, a: 1}
