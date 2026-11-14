@@ -23,6 +23,7 @@ public class EnemyController : MonoBehaviour
     private GameOverHandler _gameOverHandler;
     private float           _chaseDestTimer;
     private bool            _isActivated;
+    private Coroutine       _stunCoroutine;		// 動いているスタン。null ならスタン中ではない
 
     // 目的地の決め方を差し替える拡張点（HandEnemy の先回りなど）。無ければ現在位置を追う。
     private IChaseDestinationProvider _destinationProvider;
@@ -57,7 +58,11 @@ public class EnemyController : MonoBehaviour
     public void Stop()
     {
         _isActivated = false;
-        StopCoroutine(nameof(StunCoroutine));   // スタン中のコルーチンがあれば停止
+        if (_stunCoroutine != null)				// スタンが明けたときに追跡へ戻らないように止める
+        {
+            StopCoroutine(_stunCoroutine);
+            _stunCoroutine = null;
+        }
         if (!_agent.isOnNavMesh) return;        // 退場処理と競合しても安全に抜ける
         _agent.isStopped = true;
         _agent.velocity  = Vector3.zero;        // 残留速度による滑走を消し、その場で即停止
@@ -123,7 +128,7 @@ public class EnemyController : MonoBehaviour
     public void Stun(float duration)
     {
         if (!_isActivated) return;
-        StartCoroutine(StunCoroutine(duration));
+        _stunCoroutine = StartCoroutine(StunCoroutine(duration));
     }
 
     private System.Collections.IEnumerator StunCoroutine(float duration)
@@ -134,6 +139,7 @@ public class EnemyController : MonoBehaviour
         if (this == null || _agent == null) yield break;
         _agent.isStopped = false;
         _isActivated = true;
+        _stunCoroutine = null;
     }
 
     private void Update()

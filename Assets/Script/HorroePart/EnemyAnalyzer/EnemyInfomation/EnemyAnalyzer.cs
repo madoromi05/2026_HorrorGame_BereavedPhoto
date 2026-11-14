@@ -133,7 +133,7 @@ public class EnemyAnalyzer : MonoBehaviour
     }
 
     // エイムを外したときの状態リセット。種類ごとの解析率は保持される。
-    public void Reset()
+    public void ResetAimState()
     {
         _currentGhostType = null;
         _enemyInRange    = false;

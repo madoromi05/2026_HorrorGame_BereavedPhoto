@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class EnemyAnalyzerController : MonoBehaviour
 {
-    private static readonly int BarrelPowerId = Shader.PropertyToID("_BarrelPower");
-
     [SerializeField] private InputPlayerController _inputController;
     [SerializeField] private EnemyAnalyzer _analyzer;
     [SerializeField] private CanvasGroup _analyzerUIGroup;
@@ -17,7 +15,6 @@ public class EnemyAnalyzerController : MonoBehaviour
     [SerializeField] private float _uiFadeSpeed = 8f;
 
     [Header("魚眼レンズ")]
-    [SerializeField] private Material _fisheyeMaterial;                 // RendererFeatureと同じ魚眼マテリアル
     [SerializeField] private float _aimBarrelPower = 0.2f;              // 構えたときの魚眼レンズの強さ
 
     private bool _isAiming = false;
@@ -29,16 +26,13 @@ public class EnemyAnalyzerController : MonoBehaviour
             (nameof(_analyzer), _analyzer),
             (nameof(_analyzerUIGroup), _analyzerUIGroup),
             (nameof(_detector), _detector),
-            (nameof(_handLightController), _handLightController),
-            (nameof(_fisheyeMaterial), _fisheyeMaterial));
+            (nameof(_handLightController), _handLightController));
 
         _analyzerUIGroup.alpha          = 0f;
         _analyzerUIGroup.interactable   = false;
         _analyzerUIGroup.blocksRaycasts = false;
 
-        // ゲーム開始時は魚眼レンズを無効化（マテリアルの値は前回実行から残るため確実にリセット）
-        if (_fisheyeMaterial != null)
-            _fisheyeMaterial.SetFloat(BarrelPowerId, 0f);
+        FisheyeDistortionFeature.SetBarrelPower(0f);	// 実行時の複製はシーンを跨いで残るため、始めに戻す
     }
 
     private void OnEnable()
@@ -49,6 +43,7 @@ public class EnemyAnalyzerController : MonoBehaviour
     private void OnDisable()
     {
         _inputController.OnCameraPerformed -= HandleCamera;
+        FisheyeDistortionFeature.SetBarrelPower(0f);	// 構えたままシーンを抜けても次のシーンへ残さない
     }
 
     private void Update()
@@ -74,14 +69,12 @@ public class EnemyAnalyzerController : MonoBehaviour
         _detector.SetAiming(isAiming);
         _analyzer.SetAiming(isAiming);
 
-        // 構えているときだけ魚眼レンズを有効化（一瞬で切り替え）
-        if (_fisheyeMaterial != null)
-            _fisheyeMaterial.SetFloat(BarrelPowerId, isAiming ? _aimBarrelPower : 0f);
+        FisheyeDistortionFeature.SetBarrelPower(isAiming ? _aimBarrelPower : 0f);	// 構えているときだけ歪ませる
 
         // 構えを解除したらリセット
         if (isAiming)
             _handLightController.ForceOff();
         else
-            _analyzer.Reset();
+            _analyzer.ResetAimState();
     }
 }

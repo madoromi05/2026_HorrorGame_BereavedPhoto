@@ -9,16 +9,34 @@ public class FisheyeDistortionFeature : ScriptableRendererFeature
     [SerializeField] private Material fisheyeMaterial;
     [SerializeField] private RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
+    private static readonly int kBarrelPowerId = Shader.PropertyToID("_BarrelPower");
+
+    private static FisheyeDistortionFeature _current;	// å…¨ç”»é¢ã« 1 ã¤ã ã‘ã®åŠ¹æœãªã®ã§ã€å€¤ã‚’æ¸¡ã™å…¥å£ã¨ã—ã¦è‡ªèº«ã‚’æŒã¤
+    private Material _runtimeMaterial;					// å…±æœ‰ã®ã‚¢ã‚»ãƒƒãƒˆã‚’æ›¸ãæ›ãˆãªã„ãŸã‚ã®å®Ÿè¡Œæ™‚ã®è¤‡è£½
     private FisheyePass _pass;
 
     public override void Create()
     {
-        _pass = new FisheyePass(fisheyeMaterial) { renderPassEvent = renderPassEvent };
+        _runtimeMaterial = fisheyeMaterial != null ? new Material(fisheyeMaterial) : null;
+        _pass = new FisheyePass(_runtimeMaterial) { renderPassEvent = renderPassEvent };
+        _current = this;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (_runtimeMaterial != null) CoreUtils.Destroy(_runtimeMaterial);
+        if (_current == this) _current = null;
+    }
+
+    public static void SetBarrelPower(float power)	// é­šçœ¼ã®å¼·ã•ã‚’è¨­å®šã™ã‚‹ã€‚0 ãªã‚‰æ­ªã¾ãªã„
+    {
+        if (_current == null || _current._runtimeMaterial == null) return;
+        _current._runtimeMaterial.SetFloat(kBarrelPowerId, power);
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (fisheyeMaterial == null) return;
+        if (_runtimeMaterial == null) return;
         renderer.EnqueuePass(_pass);
     }
 
@@ -26,25 +44,25 @@ public class FisheyeDistortionFeature : ScriptableRendererFeature
     {
         private readonly Material _material;
 
-        public FisheyePass(Material material) => _material = material;
+        public FisheyePass(Material material)
+        {
+            _material = material;
+            requiresIntermediateTexture = true;
+        }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            // ƒeƒNƒXƒ`ƒƒæ“¾
             var resourceData = frameData.Get<UniversalResourceData>();
             var source = resourceData.cameraColor;
 
-            // V‚µ‚¢ƒeƒNƒXƒ`ƒƒì¬
             var desc = renderGraph.GetTextureDesc(source);
             desc.name = "_FisheyeTarget";
             desc.clearBuffer = false;
             TextureHandle destination = renderGraph.CreateTexture(desc);
 
-            // ƒeƒNƒXƒ`ƒƒ‚Ìbit‚Ì”Ô†‚ğ“n‚·
             RenderGraphUtils.BlitMaterialParameters blitParams = new(source, destination, _material, 0);
             renderGraph.AddBlitPass(blitParams, "Fisheye Distortion");
 
-            // ƒJƒ‰[ƒoƒbƒtƒ@‚ÌQÆ‚ğ©“®‰»
             resourceData.cameraColor = destination;
         }
     }

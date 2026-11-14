@@ -100,7 +100,13 @@ public class VhsFeature : ScriptableRendererFeature
     {
         var p = _activeProfile;
         _isEnabled = p != null && p.enabled;
-        if (!_isEnabled || _runtimeMaterial == null) return;
+        if (_runtimeMaterial == null) return;
+
+        // 実行時マテリアルは RendererFeature 側に属しシーンを跨いで生き残るため、
+        // ゲームオーバーで 1 にした信号消失をここで戻さないと次のシーンへ砂嵐が残る。
+        // VHS を無効にしたシーンでも、次に有効なシーンへ持ち越さないよう先に戻す。
+        _runtimeMaterial.SetFloat(PropertyId.SignalLoss, 0f);
+        if (!_isEnabled) return;
 
         _runtimeMaterial.SetFloat(PropertyId.Intensity, p.intensity);
         _runtimeMaterial.SetFloat(PropertyId.ChromaticOffset, p.chromaticOffset);
@@ -114,11 +120,6 @@ public class VhsFeature : ScriptableRendererFeature
         _runtimeMaterial.SetFloat(PropertyId.TrackingBandIntensity, p.trackingBandIntensity);
         _runtimeMaterial.SetFloat(PropertyId.Saturation, p.saturation);
         _runtimeMaterial.SetFloat(PropertyId.VignettePower, p.vignettePower);
-
-        // 実行時マテリアルは RendererFeature 側に属しシーンを跨いで生き残るため、
-        // ゲームオーバーで 1 にした信号消失をここで戻さないと次のシーンへ砂嵐が残る。
-        // プロファイル適用＝シーン切り替えの契機なので、この位置でリセットする。
-        _runtimeMaterial.SetFloat(PropertyId.SignalLoss, 0f);
     }
 
     private class VhsPass : ScriptableRenderPass

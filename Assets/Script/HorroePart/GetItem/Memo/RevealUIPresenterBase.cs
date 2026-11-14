@@ -23,7 +23,7 @@ namespace HorrorGame.UI
         private float _holdElapsed = 0f;
         private bool _isHolding = false;
         private Coroutine _revealCoroutine;
-        private Material _revealMaterialInstance;
+        private Material _revealMaterialInstance;		// アセットを書き換えないための複製。初めて開くときに作る
 
         private const float kHoldDuration = 1f;
         private const float kRevealDuration = 0.6f;
@@ -52,6 +52,11 @@ namespace HorrorGame.UI
         {
             _inputController.OnInteractHeld -= OnInteractHeld;
             _inputController.OnInteractReleased -= OnInteractReleased;
+        }
+
+        private void OnDestroy()
+        {
+            if (_revealMaterialInstance != null) Destroy(_revealMaterialInstance);
         }
 
         private void Update()
@@ -137,7 +142,11 @@ namespace HorrorGame.UI
         /// </summary>
         private IEnumerator PlayRevealAnimation()
         {
-            _revealMaterialInstance = _revealImage.material;
+            if (_revealMaterialInstance == null)
+            {
+                _revealMaterialInstance = new Material(_revealImage.material);
+                _revealImage.material = _revealMaterialInstance;
+            }
             _revealMaterialInstance.SetFloat(kShaderRadius, 0f);
 
             float elapsed = 0f;
