@@ -3,7 +3,7 @@ using UnityEngine;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// OperationCanvas にアタッチする。
+    /// OperationCanvas にアタッチする
     /// </summary>
     public class OperationTutorialUI : MonoBehaviour
     {

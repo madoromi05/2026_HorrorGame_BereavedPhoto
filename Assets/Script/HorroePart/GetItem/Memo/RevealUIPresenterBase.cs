@@ -4,9 +4,9 @@ using UnityEngine.UI;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// 円形リビールアニメーションで表示・クローズする共通基底クラス。
-    /// MemoUIPresenter・ItemAcquiredUIPresenterが継承する。
-    /// Show()/Hide()のオーバーライドで各UIの表示内容を設定すること。
+    /// 円形リビールアニメーションで表示・クローズする共通基底クラス
+    /// MemoUIPresenter・ItemGetUIPresenterが継承する
+    /// Show()/Hide()のオーバーライドで各UIの表示内容を設定すること
     ///
     /// ここが持つのは、オーバーレイの開け閉め（入力・ライト・ヒントの切り替え）と拡張点（ShowBase・Hide・OnHoldComplete）だけ
     /// 長押しの数え方は HoldProgressGauge、円形リビールは CircleRevealAnimator に任せる（委譲）
@@ -68,9 +68,9 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// ホールド完了時に呼ばれる。デフォルトは閉じる。
+        /// ホールド完了時に呼ばれる。デフォルトは閉じる
         /// 派生クラスでオーバーライドすれば、複数ページ送りなど
-        /// 別の挙動に差し替えられる（最後は base.OnHoldComplete() で閉じる）。
+        /// 別の挙動に差し替えられる（最後は base.OnHoldComplete() で閉じる）
         /// </summary>
         protected virtual void OnHoldComplete()
         {
@@ -90,9 +90,9 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// オーバーレイ表示して円形リビールアニメーションを再生する。
+        /// オーバーレイ表示して円形リビールアニメーションを再生する
         /// 派生クラスはこのメソッドをオーバーライドして表示内容をセットした後、
-        /// base.ShowBase()を呼ぶこと。
+        /// base.ShowBase()を呼ぶこと
         /// </summary>
         protected void ShowBase()
         {

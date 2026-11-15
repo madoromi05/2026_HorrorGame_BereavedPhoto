@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// スポットライトの光線を粒子エフェクトで可視化する。
-/// 広い空間でもライトが点いているのがわかるようにする。
-/// HandLightController と同じ GameObject にアタッチすること。
+/// スポットライトの光線を粒子エフェクトで可視化する
+/// 広い空間でもライトが点いているのがわかるようにする
+/// HandLightController と同じ GameObject にアタッチすること
 /// </summary>
 [RequireComponent(typeof(HandLightController))]
 public class LightBeamEffect : MonoBehaviour

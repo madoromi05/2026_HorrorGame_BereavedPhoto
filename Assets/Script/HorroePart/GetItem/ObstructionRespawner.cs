@@ -6,8 +6,8 @@ namespace HorrorGame.Item
 {
     /// <summary>
     /// 妨害アイテム取得時に、プレイヤーから一定マス数以上離れた
-    /// 歩行可能セルへ再配置するためのワールド座標を計算するクラス。
-    /// グリッド座標系は OfudaPlacer / CorridorPlacer と同じ「セル中心」規約に従う。
+    /// 歩行可能セルへ再配置するためのワールド座標を計算するクラス
+    /// グリッド座標系は OfudaPlacer / CorridorPlacer と同じ「セル中心」規約に従う
     /// </summary>
     public class ObstructionRespawner
     {
@@ -24,9 +24,9 @@ namespace HorrorGame.Item
 
         /// <summary>
         /// プレイヤーから minTiles マス以上離れた歩行可能セルをランダムに1つ選び、
-        /// そのセル中心のワールド座標（Y は呼び出し元指定）を返す。
-        /// 条件を満たすセルが無い場合は最も遠いセルを採用する。
-        /// 歩行可能セルが全く無い場合のみ false。
+        /// そのセル中心のワールド座標（Y は呼び出し元指定）を返す
+        /// 条件を満たすセルが無い場合は最も遠いセルを採用する
+        /// 歩行可能セルが全く無い場合のみ false
         /// </summary>
         public bool TryGetRespawnPosition(float y, int minTiles, out Vector3 position)
         {

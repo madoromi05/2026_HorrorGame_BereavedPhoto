@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// ダッシュの入力とゲージ管理を行う。
-/// キーを押している間だけダッシュ状態にする。
+/// ダッシュの入力とゲージ管理を行う
+/// キーを押している間だけダッシュ状態にする
 /// </summary>
 [RequireComponent(typeof(PlayerMover))]
 [RequireComponent(typeof(InputPlayerController))]
@@ -29,8 +29,7 @@ public class PlayerDashController : MonoBehaviour
     private bool _isExhausted;
     private float _exhaustTimer;
 
-    // ゲージ枯渇による息切れ中か。PlayerStealthStatus がノイズ増に参照する
-    public bool IsExhausted => _isExhausted;
+    public bool IsExhausted => _isExhausted;	// ゲージ枯渇による息切れ中か。PlayerStealthStatus がノイズ増に参照する
 
     private void Awake()
     {
@@ -53,8 +52,7 @@ public class PlayerDashController : MonoBehaviour
 
     private void HandleMove(Vector2 input) => _moveInput = input;
 
-    // キーが押されている間は true、離されたら false が渡される想定
-    private void HandleSprint(bool isPressed) => _isSprintKeyHeld = isPressed;
+    private void HandleSprint(bool isPressed) => _isSprintKeyHeld = isPressed;	// キーが押されている間は true、離されたら false が渡される想定
 
     private void FixedUpdate()
     {

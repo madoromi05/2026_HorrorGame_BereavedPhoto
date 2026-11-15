@@ -9,8 +9,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameOverHandler : MonoBehaviour
 {
-    // デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える。
-    public static bool DebugInvincible;
+    public static bool DebugInvincible;	// デバッグ用：true の間はゲームオーバーにならない（無敵）。GameDebugGUI から切り替える
 
     [SerializeField] private float _holdDuration = 1.0f;
 
@@ -60,7 +59,7 @@ public class GameOverHandler : MonoBehaviour
         if (_triggered) return;
         _triggered = true;
 
-        // BGM 停止＋ゲームオーバー SE 再生＋以降の SE 抑止を一括で行う。
+        // BGM 停止＋ゲームオーバー SE 再生＋以降の SE 抑止を一括で行う
         AudioManager.Instance?.EnterGameOver(SeType.GameOver);
         GameOverScreen.HideAllUI();
         enabled = false;

@@ -39,15 +39,15 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
     }
 
     /// <summary>
-    /// メモ表示など、プレイヤー操作を封じる必要があるときに呼ぶ。
-    /// Move・Look・Interactのイベントを止める。
+    /// メモ表示など、プレイヤー操作を封じる必要があるときに呼ぶ
+    /// Move・Look・Interactのイベントを止める
     /// </summary>
     public void SetPlayerInputEnabled(bool enabled)
     {
         _isPlayerInputEnabled = enabled;
 
-        // 無効化した瞬間にラッチ済みの移動入力を打ち消す。
-        // これをしないと直前の移動値が PlayerMover に残り、UI表示中も滑り続ける。
+        // 無効化した瞬間にラッチ済みの移動入力を打ち消す
+        // これをしないと直前の移動値が PlayerMover に残り、UI表示中も滑り続ける
         if (!enabled)
             OnMovePerformed?.Invoke(Vector2.zero);
     }
@@ -81,7 +81,7 @@ public class InputPlayerController : MonoBehaviour, InputSystem_Actions.IPlayerA
             OnInteractReleased?.Invoke();
     }
 
-    // しゃがみ機能は削除済み。IPlayerActions のインターフェース実装のため空メソッドとして残す。
+    // しゃがみ機能は削除済み。IPlayerActions のインターフェース実装のため空メソッドとして残す
     public void OnCrouch(InputAction.CallbackContext context)
     {
     }

@@ -4,17 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// タイトル画面のフルスクリーン演出を司るコンポーネント。
+/// タイトル画面のフルスクリーン演出を司るコンポーネント
 /// 責務は二つの画面トランジションのみ:
-///   ・導入：ぼやけた状態から鮮明へフォーカスインする。
-///   ・開始：ドアを開ける音とともに暗転させ、完了を呼び出し元へ通知する。
+///   ・導入：ぼやけた状態から鮮明へフォーカスインする
+///   ・開始：ドアを開ける音とともに暗転させ、完了を呼び出し元へ通知する
 /// シーン遷移そのものは扱わず、演出の完了を <see cref="PlayStartSequence"/> の
-/// コールバックで通知して呼び出し側に委譲する。
+/// コールバックで通知して呼び出し側に委譲する
 /// </summary>
 public class TitleIntroDirector : MonoBehaviour
 {
     // Image.material は共有アセットを指すため、_BlurSize をここから変更すると
-    // .mat アセットごと書き換わってしまう。Awake で複製に差し替えて回避する。
+    // .mat アセットごと書き換わってしまう。Awake で複製に差し替えて回避する
     [Header("オーバーレイ")]
     [Tooltip("ぼかし用の全画面 Image。UITitleBlur マテリアルを割り当てる。")]
     [SerializeField] private Image _blurOverlay;
@@ -35,7 +35,7 @@ public class TitleIntroDirector : MonoBehaviour
     [Tooltip("メニューがフェードインしきるまでの時間（秒）。")]
     [SerializeField] private float _menuFadeInDuration = 1.0f;
 
-    // UITitleBlur が公開するぼかし強度プロパティ。
+    // UITitleBlur が公開するぼかし強度プロパティ
     private const string kBlurSizeProperty = "_BlurSize";
     private static readonly int kBlurSizeId = Shader.PropertyToID(kBlurSizeProperty);
 
@@ -53,7 +53,7 @@ public class TitleIntroDirector : MonoBehaviour
         if (_darkenOverlay != null)
             _darkenOverlay.alpha = 0f;
 
-        // フォーカスイン完了までメニューは隠し、誤クリックも防ぐ。
+        // フォーカスイン完了までメニューは隠し、誤クリックも防ぐ
         if (_menuGroup != null)
         {
             _menuGroup.alpha = 0f;
@@ -67,7 +67,7 @@ public class TitleIntroDirector : MonoBehaviour
         StartCoroutine(IntroSequence());
     }
 
-    // 導入：ぼかし→鮮明化の後にメニュー UI をフェードインさせる。
+    // 導入：ぼかし→鮮明化の後にメニュー UI をフェードインさせる
     private IEnumerator IntroSequence()
     {
         yield return FocusIn();
@@ -75,8 +75,8 @@ public class TitleIntroDirector : MonoBehaviour
     }
 
     /// <summary>
-    /// 開始演出を再生する。ドア音を鳴らしつつ暗転させ、暗転後に <paramref name="onComplete"/> を呼ぶ。
-    /// 二重に呼ばれても最初の一回だけ実行する（ボタン連打でのシーン多重ロードを防ぐ）。
+    /// 開始演出を再生する。ドア音を鳴らしつつ暗転させ、暗転後に <paramref name="onComplete"/> を呼ぶ
+    /// 二重に呼ばれても最初の一回だけ実行する（ボタン連打でのシーン多重ロードを防ぐ）
     /// </summary>
     public void PlayStartSequence(Action onComplete)
     {
@@ -88,7 +88,7 @@ public class TitleIntroDirector : MonoBehaviour
         StartCoroutine(Darken(onComplete));
     }
 
-    // 導入：ぼかしを _startBlurAmount から 0 へ補間し、鮮明になったらオーバーレイを無効化する。
+    // 導入：ぼかしを _startBlurAmount から 0 へ補間し、鮮明になったらオーバーレイを無効化する
     private IEnumerator FocusIn()
     {
         if (_blurMaterial == null || _blurOverlay == null)
@@ -101,7 +101,7 @@ public class TitleIntroDirector : MonoBehaviour
         _blurOverlay.enabled = false;	// 鮮明になった後は、全画面のブラーを描かないように隠す
     }
 
-    // メニュー UI の alpha を 0 → 1 へ補間し、表示しきってから操作可能にする。
+    // メニュー UI の alpha を 0 → 1 へ補間し、表示しきってから操作可能にする
     private IEnumerator FadeInMenu()
     {
         if (_menuGroup == null)
@@ -113,7 +113,7 @@ public class TitleIntroDirector : MonoBehaviour
         _menuGroup.blocksRaycasts = true;
     }
 
-    // 開始：黒オーバーレイの alpha を 0 → 1 へ補間し、暗転しきってから完了を通知する。
+    // 開始：黒オーバーレイの alpha を 0 → 1 へ補間し、暗転しきってから完了を通知する
     private IEnumerator Darken(Action onComplete)
     {
         if (_darkenOverlay != null)

@@ -4,9 +4,9 @@ using UnityEngine;
 
 /// <summary>
 /// ダンジョン生成後に Door セルを走査し、
-/// 部屋 NavMesh（Floor 側）と廊下 NavMesh（Corridor 側）を NavMeshLink で接続する。
+/// 部屋 NavMesh（Floor 側）と廊下 NavMesh（Corridor 側）を NavMeshLink で接続する
 /// DungeonGenerator と同じ GameObject にアタッチし、
-/// Generate() 完了後に BuildLinks() を呼ぶこと。
+/// Generate() 完了後に BuildLinks() を呼ぶこと
 /// </summary>
 public class DungeonNavMeshLinker : MonoBehaviour
 {
@@ -43,8 +43,7 @@ public class DungeonNavMeshLinker : MonoBehaviour
             if (!GridUtil.IsInGrid(grid, n)) continue;
 
             var ct  = grid[n.x, n.y];
-            // 隣接セルの中心へのオフセット（セル境界ではなく中心がNavMesh上に確実に乗る）
-            var off = new Vector3(d.x * gridSize, 0f, d.y * gridSize);
+            var off = new Vector3(d.x * gridSize, 0f, d.y * gridSize);	// 隣接セルの中心へのオフセット（セル境界ではなく中心がNavMesh上に確実に乗る）
 
             if ((ct == GridType.Floor || ct == GridType.PlayerPosition) && !hasRoom)
             {

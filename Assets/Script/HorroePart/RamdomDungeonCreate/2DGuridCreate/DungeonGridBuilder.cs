@@ -1,6 +1,6 @@
 /// <summary>
-/// FieldBluePrint をもとに 2D ダンジョングリッドを構築するオーケストレーター。
-/// 各フェーズの実行順序を制御するのみで、ロジックは各専門クラスに委譲する。
+/// FieldBluePrint をもとに 2D ダンジョングリッドを構築するオーケストレーター
+/// 各フェーズの実行順序を制御するのみで、ロジックは各専門クラスに委譲する
 ///
 /// フェーズ順:
 ///   1. SectionGenerator    - セクション生成（分割・役割割り当て）
@@ -30,7 +30,7 @@ public class DungeonGridBuilder
     }
 
     /// <summary>
-    /// ダンジョングリッドを構築して返す。
+    /// ダンジョングリッドを構築して返す
     /// </summary>
     public (GridType[,] grid, SectionData[] sections) Build(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {

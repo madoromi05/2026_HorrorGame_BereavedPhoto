@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// スタートルームを出て通常プレイに入った後、常時加算されるビネット。
-/// Activate() で一度フェードインし、以降は最大強度を維持する。
-/// トリガーは StartRoomBoundary（スタートルーム退出）から呼ばれる。
+/// スタートルームを出て通常プレイに入った後、常時加算されるビネット
+/// Activate() で一度フェードインし、以降は最大強度を維持する
+/// トリガーは StartRoomBoundary（スタートルーム退出）から呼ばれる
 /// </summary>
 public class UsuallyVignette : MonoBehaviour, IVignetteSource
 {

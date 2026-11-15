@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// キャラクターの水平移動とY軸回転を制御する。
-/// CharacterController を使用するためコリジョンが有効。
-/// 移動速度は歩き・ダッシュの 2 段階のみ（MoveState で管理）。
+/// キャラクターの水平移動とY軸回転を制御する
+/// CharacterController を使用するためコリジョンが有効
+/// 移動速度は歩き・ダッシュの 2 段階のみ（MoveState で管理）
 /// 足音は PlayerFootsteps が持つ。ここは移動した後に MoveState を渡すだけ
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
@@ -11,7 +11,7 @@ using UnityEngine;
 public class PlayerMover : MonoBehaviour
 {
     /// <summary>
-    /// 移動状態の列挙型。速度の選択と PlayerStealthStatus の参照に使う。
+    /// 移動状態の列挙型。速度の選択と PlayerStealthStatus の参照に使う
     /// </summary>
     public enum MoveState
     {
@@ -65,9 +65,9 @@ public class PlayerMover : MonoBehaviour
     private void SetSensitivity(float v) => _yawSensitivity = v;	// オプション画面で変えた感度をすぐ反映する
 
     /// <summary>
-    /// スポーン時などに向き（Yaw）を外部から設定する。
+    /// スポーン時などに向き（Yaw）を外部から設定する
     /// HandleLook が基準にする _currentYaw も更新しないと、最初の視点入力で
-    /// Awake 時点の値に戻ってしまうため、Transform と内部状態を同時に合わせる。
+    /// Awake 時点の値に戻ってしまうため、Transform と内部状態を同時に合わせる
     /// </summary>
     public void SetYaw(float yaw)
     {
@@ -75,12 +75,11 @@ public class PlayerMover : MonoBehaviour
         transform.eulerAngles = new Vector3(0f, _currentYaw, 0f);
     }
 
-    // 現在の基本移動速度（デバッグ表示用）
-    public float MoveSpeed => _moveSpeed;
+    public float MoveSpeed => _moveSpeed;	// 現在の基本移動速度（デバッグ表示用）
 
     /// <summary>
-    /// デバッグ用：基本移動速度を即時変更する。
-    /// ダッシュ速度が基本速度を下回らないよう、必要に応じてダッシュ速度も引き上げる。
+    /// デバッグ用：基本移動速度を即時変更する
+    /// ダッシュ速度が基本速度を下回らないよう、必要に応じてダッシュ速度も引き上げる
     /// </summary>
     public void SetMoveSpeed(float speed)
     {
@@ -152,7 +151,7 @@ public class PlayerMover : MonoBehaviour
     }
 
     /// <summary>
-    /// 現在の入力・フラグから MoveState を判定する。
+    /// 現在の入力・フラグから MoveState を判定する
     /// 優先順位: Dash > Walk > Idle
     /// </summary>
     private MoveState GetMoveState()

@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// EnemyAnalyzer から受け取った解析率をもとに各UIパーツを更新する。
-/// フェードや項目開示のタイミングは Inspector から変更可能。
+/// EnemyAnalyzer から受け取った解析率をもとに各UIパーツを更新する
+/// フェードや項目開示のタイミングは Inspector から変更可能
 /// </summary>
 public class AnalyzerUI : MonoBehaviour
 {

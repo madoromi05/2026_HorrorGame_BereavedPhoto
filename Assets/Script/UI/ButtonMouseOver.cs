@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Button の SpriteSwapを使ってマウスオーバー時のスプライトを設定するためのコンポーネント。
+/// Button の SpriteSwapを使ってマウスオーバー時のスプライトを設定するためのコンポーネント
 /// </summary>
 [RequireComponent(typeof(Button))]
 public sealed class ButtonMouseOver : MonoBehaviour

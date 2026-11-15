@@ -6,8 +6,8 @@ using HorrorGame.Item;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// プレイヤーの所持アイテムを常時表示するHUD。
-    /// アイテムを持っているスロットのみ表示し、0になったら非表示にする。
+    /// プレイヤーの所持アイテムを常時表示するHUD
+    /// アイテムを持っているスロットのみ表示し、0になったら非表示にする
     /// </summary>
     public class InventoryDisplayUI : MonoBehaviour
     {

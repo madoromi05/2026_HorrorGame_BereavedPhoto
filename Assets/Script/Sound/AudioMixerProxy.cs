@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// AudioMixer のパラメーター操作を一箇所に集約するラッパー。
-/// Inspector で AudioMixer を未設定のまま使ってもエラーにならない。
+/// AudioMixer のパラメーター操作を一箇所に集約するラッパー
+/// Inspector で AudioMixer を未設定のまま使ってもエラーにならない
 /// </summary>
 public class AudioMixerProxy : MonoBehaviour
 {

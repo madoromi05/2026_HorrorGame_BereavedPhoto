@@ -3,8 +3,8 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// 妨害アイテムの所持数とアイコンを表示する HUD コンポーネント。
-/// 所持数が 1 個以上のときのみ表示する。Canvas にアタッチして使用する。
+/// 妨害アイテムの所持数とアイコンを表示する HUD コンポーネント
+/// 所持数が 1 個以上のときのみ表示する。Canvas にアタッチして使用する
 /// </summary>
 public class ObstructionItemHUD : MonoBehaviour
 {

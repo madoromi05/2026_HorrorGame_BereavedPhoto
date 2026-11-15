@@ -2,10 +2,10 @@ using DungeonSystem;
 using UnityEngine;
 
 /// <summary>
-/// DebugMode 時のみ Grid セルと Section を Gizmos で色分けして可視化するクラス。
+/// DebugMode 時のみ Grid セルと Section を Gizmos で色分けして可視化するクラス
 /// Grid 表示: Floor=緑, Wall=赤, Door=黄, Corridor=水色, Empty=暗灰
-/// Section 表示: インデックスごとに色を変えた床面。Start は白枠付き。
-/// Scene ビューの Gizmos ボタンを ON にすること。
+/// Section 表示: インデックスごとに色を変えた床面。Start は白枠付き
+/// Scene ビューの Gizmos ボタンを ON にすること
 /// </summary>
 public class DungeonDebugVisualizer
 {

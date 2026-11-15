@@ -3,8 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// 妨害アイテム使用処理。UseItem入力でカメラ前方にアイテムを投げ、
-/// 当たった敵を一定時間停止させる。
-/// Playerプレハブにアタッチして使用する。
+/// 当たった敵を一定時間停止させる
+/// Playerプレハブにアタッチして使用する
 /// </summary>
 public class PlayerItemUser : MonoBehaviour
 {

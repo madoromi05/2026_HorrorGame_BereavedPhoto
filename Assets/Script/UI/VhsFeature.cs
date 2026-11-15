@@ -3,14 +3,14 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>
-/// VHS（ビデオテープ風）ポストエフェクトを画面全体に適用する RendererFeature。
-/// 魚眼レンズ（FisheyeDistortionFeature）と同じく、FullscreenBlitPass で Blit を 1 パス行う。
-/// 効果は全画面に 1 つだけのため、シーン別設定の入口として static Apply を公開する。
-/// 各シーンの VhsController が自分の VhsProfile をここへ渡す。
+/// VHS（ビデオテープ風）ポストエフェクトを画面全体に適用する RendererFeature
+/// 魚眼レンズ（FisheyeDistortionFeature）と同じく、FullscreenBlitPass で Blit を 1 パス行う
+/// 効果は全画面に 1 つだけのため、シーン別設定の入口として static Apply を公開する
+/// 各シーンの VhsController が自分の VhsProfile をここへ渡す
 /// </summary>
 public class VhsFeature : ScriptableRendererFeature
 {
-    // シェーダー Custom/Vhs のプロパティ ID（文字列直書きを避けるためまとめて保持）。
+    // シェーダー Custom/Vhs のプロパティ ID（文字列直書きを避けるためまとめて保持）
     private static class PropertyId
     {
         public static readonly int Intensity            = Shader.PropertyToID("_Intensity");
@@ -31,18 +31,15 @@ public class VhsFeature : ScriptableRendererFeature
     [SerializeField] private Material vhsMaterial;
     [SerializeField] private RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
 
-    // 全画面に 1 つだけの効果なので、シーンから設定を渡す唯一の入口として自身を公開する。
-    private static VhsFeature _current;
+    private static VhsFeature _current;	// 全画面に 1 つだけの効果なので、シーンから設定を渡す唯一の入口として自身を公開する
 
-    // 共有マテリアルアセットを汚さないための実行時インスタンス。
+    // 共有マテリアルアセットを汚さないための実行時インスタンス
     private Material _runtimeMaterial;
     private FullscreenBlitPass _pass;
 
-    // 最後にシーンから指定されたプロファイル。Create と Apply の順序に依存しないよう static で保持する。
-    private static VhsProfile _activeProfile;
+    private static VhsProfile _activeProfile;	// 最後にシーンから指定されたプロファイル。Create と Apply の順序に依存しないよう static で保持する
 
-    // 現在のシーンで VHS を描画するか。_activeProfile の内容から決まる。
-    private bool _isEnabled;
+    private bool _isEnabled;	// 現在のシーンで VHS を描画するか。_activeProfile の内容から決まる
 
     public override void Create()
     {
@@ -63,15 +60,15 @@ public class VhsFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        // マテリアル未設定、または現在のシーンで無効ならパスごと停止する。
+        // マテリアル未設定、または現在のシーンで無効ならパスごと停止する
         if (_runtimeMaterial == null || !_isEnabled) return;
         renderer.EnqueuePass(_pass);
     }
 
     /// <summary>
-    /// シーンの VhsController から呼ぶ、設定適用の入口。
-    /// 指定プロファイルを保存し、フィーチャ生成済みなら即マテリアルへ反映する。
-    /// Create より先に呼ばれても保存分は Create 側で反映される（順序非依存）。
+    /// シーンの VhsController から呼ぶ、設定適用の入口
+    /// 指定プロファイルを保存し、フィーチャ生成済みなら即マテリアルへ反映する
+    /// Create より先に呼ばれても保存分は Create 側で反映される（順序非依存）
     /// </summary>
     public static void Apply(VhsProfile profile)
     {
@@ -80,9 +77,9 @@ public class VhsFeature : ScriptableRendererFeature
     }
 
     /// <summary>
-    /// 信号消失（ホワイトノイズ）の進行度を設定する実行時の入口。0 で通常の VHS、1 で完全な砂嵐。
-    /// ゲームオーバー演出から毎フレーム呼んで映像を殺す用途を想定している。
-    /// プロファイルで VHS を無効にしたシーンでは VHS パス自体が走らないため何も映らない。
+    /// 信号消失（ホワイトノイズ）の進行度を設定する実行時の入口。0 で通常の VHS、1 で完全な砂嵐
+    /// ゲームオーバー演出から毎フレーム呼んで映像を殺す用途を想定している
+    /// プロファイルで VHS を無効にしたシーンでは VHS パス自体が走らないため何も映らない
     /// </summary>
     public static void SetSignalLoss(float progress)
     {
@@ -95,8 +92,8 @@ public class VhsFeature : ScriptableRendererFeature
         _runtimeMaterial.SetFloat(PropertyId.SignalLoss, Mathf.Clamp01(progress));
     }
 
-    // 保存済みプロファイルを実行時マテリアルへ反映する。
-    // profile.enabled=false または未割り当てなら、そのシーンでは VHS を無効化する。
+    // 保存済みプロファイルを実行時マテリアルへ反映する
+    // profile.enabled=false または未割り当てなら、そのシーンでは VHS を無効化する
     private void ApplyActiveProfile()
     {
         var p = _activeProfile;
@@ -104,8 +101,8 @@ public class VhsFeature : ScriptableRendererFeature
         if (_runtimeMaterial == null) return;
 
         // 実行時マテリアルは RendererFeature 側に属しシーンを跨いで生き残るため、
-        // ゲームオーバーで 1 にした信号消失をここで戻さないと次のシーンへ砂嵐が残る。
-        // VHS を無効にしたシーンでも、次に有効なシーンへ持ち越さないよう先に戻す。
+        // ゲームオーバーで 1 にした信号消失をここで戻さないと次のシーンへ砂嵐が残る
+        // VHS を無効にしたシーンでも、次に有効なシーンへ持ち越さないよう先に戻す
         _runtimeMaterial.SetFloat(PropertyId.SignalLoss, 0f);
         if (!_isEnabled) return;
 

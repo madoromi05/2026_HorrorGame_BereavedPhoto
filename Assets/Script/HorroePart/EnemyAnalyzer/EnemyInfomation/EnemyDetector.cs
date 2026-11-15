@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// カメラの正面に向けてSphereCastを飛ばし、敵を検知するクラス。
-/// 検知結果はEnemyAnalyzerに通知される。
-/// 検知範囲や距離はInspectorから調整可能。
+/// カメラの正面に向けてSphereCastを飛ばし、敵を検知するクラス
+/// 検知結果はEnemyAnalyzerに通知される
+/// 検知範囲や距離はInspectorから調整可能
 /// </summary>
 public class EnemyDetector : MonoBehaviour
 {
@@ -37,7 +37,7 @@ public class EnemyDetector : MonoBehaviour
     }
 
     /// <summary>
-    /// エイム状態を設定する。
+    /// エイム状態を設定する
     /// </summary>
     public void SetAiming(bool isAiming) => _isAiming = isAiming;
 
@@ -69,8 +69,8 @@ public class EnemyDetector : MonoBehaviour
     }
 
     /// <summary>
-    /// カメラの正面に向けてSphereCastを飛ばし、敵の検知を行う。
-    /// outパラメータでヒット情報を返すため、呼び出し側で詳細な座標や対象を取得可能。
+    /// カメラの正面に向けてSphereCastを飛ばし、敵の検知を行う
+    /// outパラメータでヒット情報を返すため、呼び出し側で詳細な座標や対象を取得可能
     /// </summary>
     private bool TryDetectEnemy(out RaycastHit hit)
     {

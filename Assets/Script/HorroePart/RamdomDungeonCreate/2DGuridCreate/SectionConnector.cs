@@ -1,12 +1,12 @@
 /// <summary>
-/// セクション間を A* で接続する通路生成クラス。
+/// セクション間を A* で接続する通路生成クラス
 /// MST（最小全域木）による全セクション接続、追加分岐の生成、
-/// 行き止まり（接続数1本）セクションへの補強接続を担当する。
+/// 行き止まり（接続数1本）セクションへの補強接続を担当する
 /// FieldBluePrint.MaxStraightSightWorld から算出した直進マス上限を A* に渡し、
-/// 上限を超える一直線は探索段階で曲げて迂回させる（超過時は自動で折れ、必ず接続する）。
-/// 追加通路は MinExtraCorridorLength 条件を満たすセクションペアのみ生成する。
+/// 上限を超える一直線は探索段階で曲げて迂回させる（超過時は自動で折れ、必ず接続する）
+/// 追加通路は MinExtraCorridorLength 条件を満たすセクションペアのみ生成する
 /// A* は avoidCorridorAdjacency を有効にして探索するため、
-/// 既存通路とほぼ平行に隣接する新規通路（＝見た目上2列の通路）が作られにくくなる。
+/// 既存通路とほぼ平行に隣接する新規通路（＝見た目上2列の通路）が作られにくくなる
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -21,9 +21,9 @@ public class SectionConnector
     private CorridorCarver _carver;
 
     /// <summary>
-    /// MST で全セクションを接続したあと、追加分岐を生成する。
+    /// MST で全セクションを接続したあと、追加分岐を生成する
     /// 最後に、接続数が 1 本しかない（行き止まりになる）セクションへ
-    /// 追加のループ通路を張って行き止まりを解消する。
+    /// 追加のループ通路を張って行き止まりを解消する
     /// </summary>
     public void Connect(
         GridType[,] grid,
@@ -48,7 +48,7 @@ public class SectionConnector
 
     /// <summary>
     /// 接続数が 1 本以下のセクションを検出し、最も近い未接続のセクションへ
-    /// 追加通路を張ることで行き止まりを解消する。
+    /// 追加通路を張ることで行き止まりを解消する
     /// </summary>
     private void EnsureMinimumDegree()
     {
@@ -116,7 +116,7 @@ public class SectionConnector
     }
 
     // 全セクションペアを検査し、どちらの接続点から見ても MinExtraCorridorLength 以上
-    // 離れているペアのみ追加通路を生成する。
+    // 離れているペアのみ追加通路を生成する
     private void AddExtraBranches(FieldBluePrint bluePrint)
     {
         int minLength = bluePrint.MinExtraCorridorLength;
@@ -147,9 +147,9 @@ public class SectionConnector
     }
 
     /// <summary>
-    /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む。
+    /// 2 セクション間を A* で接続し、経路上のセルを Corridor として書き込む
     /// 直進マス上限を超える直線は A* 内で禁止されるため、
-    /// 経路は自動的に曲がって既存通路に合流・分岐しながら必ず接続される。
+    /// 経路は自動的に曲がって既存通路に合流・分岐しながら必ず接続される
     /// </summary>
     public bool ConnectTwoSections(SectionData from, SectionData to)
     {

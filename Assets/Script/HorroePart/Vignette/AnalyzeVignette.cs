@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// 敵の解析率に応じて加算されるビネット。
-/// 解析中は率に比例して強め、リセット時はフェードアウトする。
-/// EnemyAnalyzer から解析率を受け取る（UpdateVignette / ResetVignette）。
+/// 敵の解析率に応じて加算されるビネット
+/// 解析中は率に比例して強め、リセット時はフェードアウトする
+/// EnemyAnalyzer から解析率を受け取る（UpdateVignette / ResetVignette）
 /// </summary>
 public class AnalyzeVignette : MonoBehaviour, IVignetteSource
 {
@@ -18,7 +18,7 @@ public class AnalyzeVignette : MonoBehaviour, IVignetteSource
     public float Intensity => _current;
 
     /// <summary>
-    /// 解析率（0〜100）を受け取りビネット強度へ反映する。EnemyAnalyzer の Update から毎フレーム呼ぶ想定。
+    /// 解析率（0〜100）を受け取りビネット強度へ反映する。EnemyAnalyzer の Update から毎フレーム呼ぶ想定
     /// </summary>
     public void UpdateVignette(float pct)
     {

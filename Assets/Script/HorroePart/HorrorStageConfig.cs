@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// ホラーシーン1つ分の設定をまとめた ScriptableObject。
+/// ホラーシーン1つ分の設定をまとめた ScriptableObject
 /// HorrorSceneConfigurator の Inspector に直接アサインすることで、
-/// GameProgressManager のランタイム状態に依存せずシーンを構成できる。
+/// GameProgressManager のランタイム状態に依存せずシーンを構成できる
 /// </summary>
 [CreateAssetMenu(fileName = "HorrorStageConfig", menuName = "Horror/HorrorStageConfig")]
 public class HorrorStageConfig : ScriptableObject

@@ -7,8 +7,8 @@ namespace HorrorGame.UI
     /// <summary>
     /// PlayerInteractor.OnFocusChangedを購読し、
     /// インタラクト可能なオブジェクトに近づいたときに
-    /// そのヒントをテキストで表示するUIコンポーネント。
-    /// Canvasの下のGameObjectにアタッチし、InspectorでPlayerInteractorをアサインすること。
+    /// そのヒントをテキストで表示するUIコンポーネント
+    /// Canvasの下のGameObjectにアタッチし、InspectorでPlayerInteractorをアサインすること
     /// </summary>
     public class InteractHintUI : MonoBehaviour
     {
@@ -40,8 +40,8 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// OnFocusChangedのハンドラ。
-        /// hint が null または空のときはフォーカスが外れたと判断して非表示にする。
+        /// OnFocusChangedのハンドラ
+        /// hint が null または空のときはフォーカスが外れたと判断して非表示にする
         /// </summary>
         private void HandleFocusChanged(string hint)
         {
@@ -60,8 +60,8 @@ namespace HorrorGame.UI
         private bool _suppressed = false;
 
         /// <summary>
-        /// UI表示中など、ヒントを強制非表示にしたいときに呼ぶ。
-        /// true にすると OnFocusChanged を無視して非表示を維持する。
+        /// UI表示中など、ヒントを強制非表示にしたいときに呼ぶ
+        /// true にすると OnFocusChanged を無視して非表示を維持する
         /// </summary>
         public void SetSuppressed(bool suppressed)
         {

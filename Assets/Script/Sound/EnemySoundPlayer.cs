@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// 敵に取り付けて周期的に SE を 3D 音源で再生し、Raycast による壁オクルージョンを適用する。
+/// 敵に取り付けて周期的に SE を 3D 音源で再生し、Raycast による壁オクルージョンを適用する
 /// AudioSource と AudioLowPassFilter を RequireComponent で自動追加するため、
-/// 既存の Prefab にこのコンポーネントを追加するだけで動作する。
+/// 既存の Prefab にこのコンポーネントを追加するだけで動作する
 ///
 /// オクルージョン：
 ///   壁による減衰の見積もりと適用は SoundOcclusion が持つ。ここは Inspector の値で作り、毎フレーム呼ぶだけ
@@ -60,8 +60,7 @@ public class EnemySoundPlayer : MonoBehaviour
             ? SeType.EnemyFather
             : SeType.EnemyMother;
 
-        // 複数の敵の SE が同時に鳴らないようランダムオフセットを付ける
-        _seTimer = Random.Range(0f, _seInterval);
+        _seTimer = Random.Range(0f, _seInterval);	// 複数の敵の SE が同時に鳴らないようランダムオフセットを付ける
     }
 
     private void Start()
@@ -73,7 +72,7 @@ public class EnemySoundPlayer : MonoBehaviour
 
     private void Update()
     {
-        // ゲームオーバー確定後は敵の SE を止める（AudioManager を経由しない音源のため個別に抑止する）。
+        // ゲームオーバー確定後は敵の SE を止める（AudioManager を経由しない音源のため個別に抑止する）
         if (AudioManager.Instance != null && AudioManager.Instance.IsSeSuppressed)
         {
             if (_audioSource.isPlaying) _audioSource.Stop();

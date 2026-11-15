@@ -1,7 +1,7 @@
 /// <summary>
-/// RoomDataBase の設定に従い、各セクションに敵を配置する。
-/// SectionPlacer から敵生成責務を分離したクラス。
-/// プレイヤー参照の付与は EnemyPlayerLinker が OnRoomPlaced 経由で行う。
+/// RoomDataBase の設定に従い、各セクションに敵を配置する
+/// SectionPlacer から敵生成責務を分離したクラス
+/// プレイヤー参照の付与は EnemyPlayerLinker が OnRoomPlaced 経由で行う
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -28,7 +28,7 @@ public class EnemySpawner
         {
             if (section.RoomGridData == null) continue;
 
-            // 敵は部屋（バリエーション）ごとに設定できるよう RoomGridData をキーに引く。
+            // 敵は部屋（バリエーション）ごとに設定できるよう RoomGridData をキーに引く
             var enemyEntries = _roomDataBase.GetEnemyEntries(section.RoomGridData);
             foreach (var entry in enemyEntries)
             {

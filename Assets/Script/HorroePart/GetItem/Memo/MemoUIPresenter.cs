@@ -4,10 +4,10 @@ using UnityEngine;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// メモの本文を画面中央にオーバーレイ表示するUIクラス。
-    /// Canvasの下のパネルにアタッチし、MemoItem から Show() を呼ぶ。
+    /// メモの本文を画面中央にオーバーレイ表示するUIクラス
+    /// Canvasの下のパネルにアタッチし、MemoItem から Show() を呼ぶ
     /// 複数ページに対応し、Eキー長押しで次のページへ、
-    /// 最終ページで長押しすると閉じる。
+    /// 最終ページで長押しすると閉じる
     /// </summary>
     public class MemoUIPresenter : RevealUIPresenterBase
     {
@@ -24,7 +24,7 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// メモ本文（複数ページ）を受け取りオーバーレイを表示する。MemoItemから呼ばれる。
+        /// メモ本文（複数ページ）を受け取りオーバーレイを表示する。MemoItemから呼ばれる
         /// </summary>
         public void Show(string[] pages)
         {
@@ -41,7 +41,7 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// 長押し完了時。次のページがあれば送り、無ければ閉じる。
+        /// 長押し完了時。次のページがあれば送り、無ければ閉じる
         /// </summary>
         protected override void OnHoldComplete()
         {

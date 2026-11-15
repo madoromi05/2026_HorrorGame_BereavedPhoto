@@ -1,6 +1,6 @@
 /// <summary>
-/// SectionData をもとに部屋・パスポイントをグリッドへ書き込むクラス。
-/// グリッドへの書き込みと、後工程が必要とする接続情報の生成のみを担当する。
+/// SectionData をもとに部屋・パスポイントをグリッドへ書き込むクラス
+/// グリッドへの書き込みと、後工程が必要とする接続情報の生成のみを担当する
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using UnityEngine;
 public class RoomGridPlacer
 {
     /// <summary>
-    /// 全セクションをグリッドに書き込み、接続情報を返す。
+    /// 全セクションをグリッドに書き込み、接続情報を返す
     /// </summary>
     public void Place(
         GridType[,] grid,
@@ -30,8 +30,8 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// RoomGridData のセル情報をグリッドに書き込む。
-    /// セクション内でランダムオフセットを設定し、壁との間に 1 セルのマージンを確保する。
+    /// RoomGridData のセル情報をグリッドに書き込む
+    /// セクション内でランダムオフセットを設定し、壁との間に 1 セルのマージンを確保する
     /// </summary>
     private void PlaceRoomGrid(
         GridType[,] grid,
@@ -67,7 +67,7 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// ローカル座標のセルタイプを RoomGridData から解決する。
+    /// ローカル座標のセルタイプを RoomGridData から解決する
     /// 優先順位: Door > Wall > PlayerPosition > Floor
     /// </summary>
     private GridType ResolveCellType(RoomGridData roomData, Vector2Int localPos)
@@ -79,7 +79,7 @@ public class RoomGridPlacer
     }
 
     /// <summary>
-    /// 部屋を持たないセクションの中心点を通路接続の起点として登録する。
+    /// 部屋を持たないセクションの中心点を通路接続の起点として登録する
     /// </summary>
     private void PlacePath(SectionData section, Dictionary<SectionData, Vector2Int> pathPointMap)
     {

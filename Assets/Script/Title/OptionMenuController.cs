@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// タイトル・ゲーム中共用のオプションパネル。
-/// タブ（音声 / 操作）をマウスで切替え、設定は PlayerPrefs で永続化する。
+/// タイトル・ゲーム中共用のオプションパネル
+/// タブ（音声 / 操作）をマウスで切替え、設定は PlayerPrefs で永続化する
 /// ここはパネルの開閉の窓口（Facade）。音量スライダーは VolumeSliders、感度スライダーは SensitivitySlider、
 /// 音量を音へ映すのは VolumeApplier、SE の試し鳴らしは SePreviewDebouncer が持つ
 /// </summary>

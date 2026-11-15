@@ -6,7 +6,7 @@ namespace HorrorGame.Player
 {
     /// <summary>
     /// カメラ前方にRayを飛ばしてIInteractableを検出し、
-    /// インタラクトキーが押されたときに対象の操作を行う。
+    /// インタラクトキーが押されたときに対象の操作を行う
     /// </summary>
     public class PlayerInteractor : MonoBehaviour
     {
@@ -20,8 +20,7 @@ namespace HorrorGame.Player
         private float _elapsedTime;
         private const float kDetectInterval = 0.1f;
 
-        // 外部から強制表示するヒント（null = 通常検出に戻る）
-        private string _forcedHint;
+        private string _forcedHint;	// 外部から強制表示するヒント（null = 通常検出に戻る）
 
         private void Awake()
         {
@@ -41,8 +40,8 @@ namespace HorrorGame.Player
         }
 
         /// <summary>
-        /// ヒントを強制表示する。null を渡すと通常の Raycast 検出に戻る。
-        /// コンポーネントが無効化されていても呼び出せる。
+        /// ヒントを強制表示する。null を渡すと通常の Raycast 検出に戻る
+        /// コンポーネントが無効化されていても呼び出せる
         /// </summary>
         public void SetForcedHint(string hint)
         {
@@ -62,8 +61,8 @@ namespace HorrorGame.Player
         }
 
         /// <summary>
-        /// 前方にRayを飛ばして直前のIInteractableを検出する。
-        /// 変化があったときのみ OnFocus/OnLoseFocus を発火。
+        /// 前方にRayを飛ばして直前のIInteractableを検出する
+        /// 変化があったときのみ OnFocus/OnLoseFocus を発火
         /// </summary>
         private void DetectTarget()
         {

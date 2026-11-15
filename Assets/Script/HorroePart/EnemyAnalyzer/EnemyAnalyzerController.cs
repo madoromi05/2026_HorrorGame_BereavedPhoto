@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// カメラ構えの入力を受け取り、解析の開始・停止とUIの表示切替を管理する。
-/// InputPlayerController と EnemyAnalyzer の橋渡し役。
+/// カメラ構えの入力を受け取り、解析の開始・停止とUIの表示切替を管理する
+/// InputPlayerController と EnemyAnalyzer の橋渡し役
 /// </summary>
 public class EnemyAnalyzerController : MonoBehaviour
 {

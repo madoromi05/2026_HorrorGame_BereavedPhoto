@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// 妨害アイテムの投擲物。敵に当たったらStunし、自身は破壊される。
-/// RigidbodyとColliderを持つプレハブにアタッチして使用する。
+/// 妨害アイテムの投擲物。敵に当たったらStunし、自身は破壊される
+/// RigidbodyとColliderを持つプレハブにアタッチして使用する
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
 public class ObstructionItemProjectile : MonoBehaviour

@@ -4,8 +4,8 @@ using DungeonSystem;
 using UnityEngine;
 
 /// <summary>
-/// ダンジョンのグリッド座標の計算をまとめる係。
-/// 範囲の判定・4 方向・セルの収集・最近傍・セル中心のワールド座標を、生成の段ごとに書き直さないために置く。
+/// ダンジョンのグリッド座標の計算をまとめる係
+/// 範囲の判定・4 方向・セルの収集・最近傍・セル中心のワールド座標を、生成の段ごとに書き直さないために置く
 /// </summary>
 public static class GridUtil
 {
@@ -22,7 +22,7 @@ public static class GridUtil
         && pos.y >= 0 && pos.y < grid.GetLength(1);
 
     /// <summary>
-    /// type のセルを、x の列ごとに y の順で返す。
+    /// type のセルを、x の列ごとに y の順で返す
     /// </summary>
     public static IEnumerable<Vector2Int> CellsOf(GridType[,] grid, GridType type)
     {
@@ -33,8 +33,8 @@ public static class GridUtil
     }
 
     /// <summary>
-    /// from に最も近い候補を返す。距離が同じなら先に見つけた方を返す。
-    /// 候補が無ければ null を返す。
+    /// from に最も近い候補を返す。距離が同じなら先に見つけた方を返す
+    /// 候補が無ければ null を返す
     /// </summary>
     public static Vector2Int? FindNearest(Vector2Int from, IEnumerable<Vector2Int> candidates, Vector2Int? exclude = null)
     {

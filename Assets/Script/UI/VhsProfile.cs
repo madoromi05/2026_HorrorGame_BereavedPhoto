@@ -1,17 +1,16 @@
 using UnityEngine;
 
 /// <summary>
-/// VHS ポストエフェクトのシーン別プリセット。
-/// 各値はシェーダー Custom/Vhs のプロパティに対応し、enabled で有効/無効を切り替える。
-/// シーンごとにこのアセットを作り、VhsController に割り当てて使う。
+/// VHS ポストエフェクトのシーン別プリセット
+/// 各値はシェーダー Custom/Vhs のプロパティに対応し、enabled で有効/無効を切り替える
+/// シーンごとにこのアセットを作り、VhsController に割り当てて使う
 /// </summary>
 [CreateAssetMenu(fileName = "VhsProfile", menuName = "PostEffect/VHS Profile")]
 public class VhsProfile : ScriptableObject
 {
-    // このプロファイルを適用したシーンで VHS を有効にするか。false なら GPU パスごと停止する。
-    public bool enabled = true;
+    public bool enabled = true;	// このプロファイルを適用したシーンで VHS を有効にするか。false なら GPU パスごと停止する
 
-    // 既定値はシェーダー Custom/Vhs の既定値に合わせている。
+    // 既定値はシェーダー Custom/Vhs の既定値に合わせている
     [Range(0, 1)]     public float intensity = 1.0f;
     [Range(0, 0.02f)] public float chromaticOffset = 0.004f;
     public float scanlineCount = 480f;

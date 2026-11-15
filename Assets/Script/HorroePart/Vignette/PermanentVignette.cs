@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// ゲーム中つねに表示される、ビネットのベースライン強度。
-/// 状況によらず一定値を返す、最も基本的な IVignetteSource。
+/// ゲーム中つねに表示される、ビネットのベースライン強度
+/// 状況によらず一定値を返す、最も基本的な IVignetteSource
 /// （通常プレイ突入後に加算される演出は UsuallyVignette が担当し、本クラスとは責務が別。）
 /// </summary>
 public class PermanentVignette : MonoBehaviour, IVignetteSource

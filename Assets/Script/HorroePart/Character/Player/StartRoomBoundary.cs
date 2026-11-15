@@ -3,9 +3,9 @@ using System.Collections;
 using HorrorGame.UI;
 
 /// <summary>
-/// スタートルームの出口に配置するトリガー。
-/// プレイヤーが通過した瞬間に全敵の追跡を開始する。
-/// BoxCollider(isTrigger=true) と共にアタッチして使用する。
+/// スタートルームの出口に配置するトリガー
+/// プレイヤーが通過した瞬間に全敵の追跡を開始する
+/// BoxCollider(isTrigger=true) と共にアタッチして使用する
 /// </summary>
 [RequireComponent(typeof(Collider))]
 public class StartRoomBoundary : MonoBehaviour
@@ -26,16 +26,14 @@ public class StartRoomBoundary : MonoBehaviour
         if (other.gameObject.layer != LayerMask.NameToLayer("Player")) return;
         _triggered = true;
 
-        // スタートルームを出た時、チュートリアル用の操作UIが有効なら非表示にしてから処理を開始する。
-        OperationTutorialUI.HideIfActive();
+        OperationTutorialUI.HideIfActive();	// スタートルームを出た時、チュートリアル用の操作UIが有効なら非表示にしてから処理を開始する
 
         StartCoroutine(RevealAndActivate(other.GetComponent<PlayerMover>()));
     }
 
     private IEnumerator RevealAndActivate(PlayerMover mover)
     {
-        // Player を止める
-        if (mover != null) mover.Frozen = true;
+        if (mover != null) mover.Frozen = true;	// Player を止める
 
         // 敵の画像・SE を一瞬出す
         if (_enemyRevealUI != null) _enemyRevealUI.SetActive(true);
@@ -59,8 +57,8 @@ public class StartRoomBoundary : MonoBehaviour
         foreach (var e in enemies)
             e.Activate();
 
-        // このトリガーは実行時生成されるため UsuallyVignette を事前アサインできない。
-        // シーン常駐の Volume リグ側を実行時に検索し、通常プレイ用ビネットをフェードインさせる。
+        // このトリガーは実行時生成されるため UsuallyVignette を事前アサインできない
+        // シーン常駐の Volume リグ側を実行時に検索し、通常プレイ用ビネットをフェードインさせる
         FindFirstObjectByType<UsuallyVignette>()?.Activate();
 
         AudioManager.Instance?.PlayBgm(BgmType.GameChase);

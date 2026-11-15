@@ -2,15 +2,15 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// ホラーシーン開始時に真っ黒な状態から明転（フェードイン）させる演出コンポーネント。
-/// 責務は「開始時の暗転維持」と「明転」のみで、シーン遷移やダンジョン生成の知識は持たない。
+/// ホラーシーン開始時に真っ黒な状態から明転（フェードイン）させる演出コンポーネント
+/// 責務は「開始時の暗転維持」と「明転」のみで、シーン遷移やダンジョン生成の知識は持たない
 ///
-/// タイトル側の <see cref="TitleIntroDirector.Darken"/>（明→暗）と対になる暗→明の演出。
+/// タイトル側の <see cref="TitleIntroDirector.Darken"/>（明→暗）と対になる暗→明の演出
 /// タイトルの暗転オーバーレイはシーン破棄で消えるため、遷移先のこのシーンで
-/// 改めて真っ黒から始めることで「暗転を挟んでフェード開始」を成立させる。
+/// 改めて真っ黒から始めることで「暗転を挟んでフェード開始」を成立させる
 ///
-/// 明転の起点はダンジョン生成完了（<see cref="DungeonGenerator.OnRoomPlaced"/>）に合わせる。
-/// これにより将来生成を非同期化しても、生成過程を黒で隠したまま完了後に明転できる。
+/// 明転の起点はダンジョン生成完了（<see cref="DungeonGenerator.OnRoomPlaced"/>）に合わせる
+/// これにより将来生成を非同期化しても、生成過程を黒で隠したまま完了後に明転できる
 /// </summary>
 public class ScreenFadeIn : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class ScreenFadeIn : MonoBehaviour
 
     private void Awake()
     {
-        // 別オブジェクト配置を許容し、未割当ならシーンから取得する（GameClearHandler と同方針）。
+        // 別オブジェクト配置を許容し、未割当ならシーンから取得する（GameClearHandler と同方針）
         if (_dungeonGenerator == null)
             _dungeonGenerator = FindFirstObjectByType<DungeonGenerator>();
 
@@ -38,14 +38,14 @@ public class ScreenFadeIn : MonoBehaviour
             (nameof(_darkenOverlay), _darkenOverlay),
             (nameof(_dungeonGenerator), _dungeonGenerator));
 
-        // 初回描画フレームより前に真っ黒を確定させ、シーンの一瞬の映り込みを防ぐ。
+        // 初回描画フレームより前に真っ黒を確定させ、シーンの一瞬の映り込みを防ぐ
         if (_darkenOverlay != null)
         {
             _darkenOverlay.alpha = 1f;
             _darkenOverlay.blocksRaycasts = true; // 明転しきるまで入力を遮断する
         }
 
-        // DungeonGenerator.Start() での OnRoomPlaced 発火を取りこぼさないよう Awake で購読する。
+        // DungeonGenerator.Start() での OnRoomPlaced 発火を取りこぼさないよう Awake で購読する
         if (_dungeonGenerator != null)
             _dungeonGenerator.OnRoomPlaced += OnGenerationComplete;
     }
@@ -56,19 +56,19 @@ public class ScreenFadeIn : MonoBehaviour
             _dungeonGenerator.OnRoomPlaced -= OnGenerationComplete;
     }
 
-    // 生成完了を受けて明転を開始する。以後の発火は無視する。
+    // 生成完了を受けて明転を開始する。以後の発火は無視する
     private void OnGenerationComplete(Transform _)
     {
         if (_fadeStarted)
             return;
         _fadeStarted = true;
 
-        // 開始後は不要な購読を解除し、コルーチンで明転させる。
+        // 開始後は不要な購読を解除し、コルーチンで明転させる
         _dungeonGenerator.OnRoomPlaced -= OnGenerationComplete;
         StartCoroutine(FadeIn());
     }
 
-    // 黒オーバーレイの alpha を 1 → 0 へ補間し、明転しきってからオーバーレイを無効化する。
+    // 黒オーバーレイの alpha を 1 → 0 へ補間し、明転しきってからオーバーレイを無効化する
     private IEnumerator FadeIn()
     {
         if (_darkenOverlay == null)
@@ -77,7 +77,6 @@ public class ScreenFadeIn : MonoBehaviour
         yield return Tween.FadeAlpha(_darkenOverlay, 1f, 0f, _fadeInDuration);
 
         _darkenOverlay.blocksRaycasts = false;
-        // 明転後は全画面オーバーレイの描画コストを避けるため無効化する。
-        _darkenOverlay.gameObject.SetActive(false);
+        _darkenOverlay.gameObject.SetActive(false);	// 明転後は全画面オーバーレイの描画コストを避けるため無効化する
     }
 }

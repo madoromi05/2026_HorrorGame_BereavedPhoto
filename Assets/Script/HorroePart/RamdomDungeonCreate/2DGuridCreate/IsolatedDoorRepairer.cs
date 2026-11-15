@@ -1,7 +1,7 @@
 /// <summary>
 /// セクション接続後も通路と繋がっていない Door を検出し、
-/// 最近傍の通路セルへ向けて A* で通路を延伸する後処理クラス。
-/// 全 Door が必ず通路ネットワークに参加することを保証する。
+/// 最近傍の通路セルへ向けて A* で通路を延伸する後処理クラス
+/// 全 Door が必ず通路ネットワークに参加することを保証する
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -13,8 +13,8 @@ public class IsolatedDoorRepairer
     private CorridorCarver _carver;
 
     /// <summary>
-    /// 孤立 Door の補修を実行する。
-    /// ConnectSections が全失敗した場合に備え、corridorCells が空なら強制接続を先行する。
+    /// 孤立 Door の補修を実行する
+    /// ConnectSections が全失敗した場合に備え、corridorCells が空なら強制接続を先行する
     /// </summary>
     public void Repair(
         GridType[,] grid,
@@ -39,10 +39,10 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// 孤立している Door を 1 つ補修する。
-    /// Door はFloor（部屋内部）に囲まれているため A* の起点にできない。
+    /// 孤立している Door を 1 つ補修する
+    /// Door はFloor（部屋内部）に囲まれているため A* の起点にできない
     /// 隣接する Empty セル（部屋外側方向）を起点に延伸することで
-    /// 通路が部屋内部をすり抜けずに繋がる。
+    /// 通路が部屋内部をすり抜けずに繋がる
     /// </summary>
     private void TryRepairDoor(Vector2Int doorPos, HashSet<Vector2Int> corridorCells)
     {
@@ -73,7 +73,7 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// Door の N/E/S/W 方向に Corridor が隣接していれば接続済みと判定する。
+    /// Door の N/E/S/W 方向に Corridor が隣接していれば接続済みと判定する
     /// </summary>
     private bool IsDoorConnected(Vector2Int doorPos)
     {
@@ -87,8 +87,8 @@ public class IsolatedDoorRepairer
     }
 
     /// <summary>
-    /// Door に隣接する Empty セル（部屋外側方向の出口）を返す。
-    /// 全方向 Empty でなければ null を返す。
+    /// Door に隣接する Empty セル（部屋外側方向の出口）を返す
+    /// 全方向 Empty でなければ null を返す
     /// </summary>
     private Vector2Int? FindExitCell(Vector2Int doorPos)
     {

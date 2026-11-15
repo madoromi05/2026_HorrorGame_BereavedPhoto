@@ -1,10 +1,10 @@
 /// <summary>
-/// 配置済みの通路(Corridor)GameObject群をマテリアルごとに結合し、描画コール数を削減する。
+/// 配置済みの通路(Corridor)GameObject群をマテリアルごとに結合し、描画コール数を削減する
 /// 通路メッシュが複数サブメッシュ(複数マテリアル)を持つ場合でも、サブメッシュ単位で
-/// 対応マテリアルに振り分けて結合する。
+/// 対応マテリアルに振り分けて結合する
 /// 1メッシュの頂点数が16bitインデックス上限(65535)を超えるとジオメトリが破損するため、
-/// マテリアルごとに頂点数の上限でチャンク分割しながら結合する。
-/// 元の通路GameObjectはColliderをNavMeshベイク用に残すため、MeshFilter/MeshRendererのみ破棄する。
+/// マテリアルごとに頂点数の上限でチャンク分割しながら結合する
+/// 元の通路GameObjectはColliderをNavMeshベイク用に残すため、MeshFilter/MeshRendererのみ破棄する
 /// </summary>
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -16,7 +16,7 @@ public class CorridorMeshCombiner
 {
     private const string kCombinedRootName = "CombinedCorridors";
 
-    // 1チャンクあたりの頂点数上限。16bit上限(65535)に安全マージンを取る。
+    // 1チャンクあたりの頂点数上限。16bit上限(65535)に安全マージンを取る
     private const int kMaxVerticesPerChunk = 60000;
     private const float kWeldPositionTolerance = 1e-4f;
 
@@ -98,7 +98,7 @@ public class CorridorMeshCombiner
     }
 
     /// <summary>
-    /// 1マテリアル分のCombineInstanceを、頂点数上限を超えないようチャンク分割して結合する。
+    /// 1マテリアル分のCombineInstanceを、頂点数上限を超えないようチャンク分割して結合する
     /// </summary>
     private void CombineGroup(Material material, List<CombineInstance> instances, Transform parent)
     {
@@ -110,7 +110,7 @@ public class CorridorMeshCombiner
         {
             int vertexCount = GetSubMeshVertexCount(instance);
 
-            // 追加すると上限を超える場合は、現在のチャンクを先に確定する。
+            // 追加すると上限を超える場合は、現在のチャンクを先に確定する
             if (chunk.Count > 0 && chunkVertexCount + vertexCount > kMaxVerticesPerChunk)
             {
                 CreateCombinedObject(material, chunk, parent, chunkIndex++);
@@ -127,8 +127,8 @@ public class CorridorMeshCombiner
     }
 
     /// <summary>
-    /// チャンク分割用に、対象サブメッシュのおおよその頂点数を返す。
-    /// サブメッシュの頂点数が取得できない場合はメッシュ全体の頂点数で安全側に見積もる。
+    /// チャンク分割用に、対象サブメッシュのおおよその頂点数を返す
+    /// サブメッシュの頂点数が取得できない場合はメッシュ全体の頂点数で安全側に見積もる
     /// </summary>
     private int GetSubMeshVertexCount(CombineInstance instance)
     {
@@ -137,7 +137,7 @@ public class CorridorMeshCombiner
     }
 
     /// <summary>
-    /// 1チャンク分のCombineInstanceを結合し、MeshFilter/MeshRendererを持つ子GameObjectを生成する。
+    /// 1チャンク分のCombineInstanceを結合し、MeshFilter/MeshRendererを持つ子GameObjectを生成する
     /// </summary>
     private void CreateCombinedObject(Material material, List<CombineInstance> chunk, Transform parent, int chunkIndex)
     {
@@ -155,7 +155,7 @@ public class CorridorMeshCombiner
     }
 
     /// <summary>
-    /// 位置がほぼ同一（回転による浮動小数点誤差の範囲内）の頂点を1つに統合する。
+    /// 位置がほぼ同一（回転による浮動小数点誤差の範囲内）の頂点を1つに統合する
     /// </summary>
     private void WeldVertices(Mesh mesh,float tolerance)
     {

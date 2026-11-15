@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// 息を止める（ホールド）能力。止めている間は足音・呼吸ノイズを抑えて敵に気づかれにくくする。
-/// 息ゲージを使い切ると強制的に「あえぎ（息切れ）」状態になり、一時的に大きな音を立てる。
-/// 実際のノイズ反映は PlayerStealthStatus が本コンポーネントの状態を参照して行う。
+/// 息を止める（ホールド）能力。止めている間は足音・呼吸ノイズを抑えて敵に気づかれにくくする
+/// 息ゲージを使い切ると強制的に「あえぎ（息切れ）」状態になり、一時的に大きな音を立てる
+/// 実際のノイズ反映は PlayerStealthStatus が本コンポーネントの状態を参照して行う
 /// </summary>
 [RequireComponent(typeof(InputPlayerController))]
 public class PlayerBreath : MonoBehaviour
@@ -23,13 +23,13 @@ public class PlayerBreath : MonoBehaviour
     private float _breath;
     private float _gaspTimer;
 
-    /// 現在、息を止めているか。
+    /// 現在、息を止めているか
     public bool IsHoldingBreath { get; private set; }
 
-    ///ゲージ切れによるあえぎ（息切れ）中か。
+    ///ゲージ切れによるあえぎ（息切れ）中か
     public bool IsGasping => _gaspTimer > 0f;
 
-    /// あえぎ中に適用する足音半径。
+    /// あえぎ中に適用する足音半径
     public float GaspNoiseRadius => _gaspNoiseRadius;
 
     private void Awake()

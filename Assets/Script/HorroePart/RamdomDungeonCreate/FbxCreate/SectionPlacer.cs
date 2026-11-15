@@ -27,8 +27,8 @@ public class SectionPlacer
     }
 
     /// <summary>
-    /// 全セクションに部屋とプレイヤーを配置する。
-    /// 戻り値のTransformはEnemySpawnerへの注入に使用するため、NavMeshベイク後に渡すこと。
+    /// 全セクションに部屋とプレイヤーを配置する
+    /// 戻り値のTransformはEnemySpawnerへの注入に使用するため、NavMeshベイク後に渡すこと
     /// </summary>
     public Transform Place(SectionData[] sections, Transform roomParent)
     {
@@ -62,7 +62,7 @@ public class SectionPlacer
 
     /// <summary>
     /// NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
-    /// 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
+    /// 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する
     /// </summary>
     private static GameObject InstantiateAgentsDisabled(GameObject prefab, Vector3 worldPosition, Transform roomParent)
     {

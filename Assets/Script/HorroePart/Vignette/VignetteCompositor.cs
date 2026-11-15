@@ -3,9 +3,9 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>
-/// 同一 GameObject 上の各 IVignetteSource を合算し、Post Processing の Vignette へ書き込む唯一の入口。
-/// Volume/Vignette の所有と書き込みをここへ集約し、演出の中身は各 Source に委譲する。
-/// LateUpdate で合算するため、各 Source の Update 更新が済んだ後の値を使う。
+/// 同一 GameObject 上の各 IVignetteSource を合算し、Post Processing の Vignette へ書き込む唯一の入口
+/// Volume/Vignette の所有と書き込みをここへ集約し、演出の中身は各 Source に委譲する
+/// LateUpdate で合算するため、各 Source の Update 更新が済んだ後の値を使う
 /// </summary>
 [RequireComponent(typeof(PermanentVignette))]
 public class VignetteCompositor : MonoBehaviour
@@ -32,8 +32,7 @@ public class VignetteCompositor : MonoBehaviour
             return;
         }
 
-        // sharedProfile を直接書き換えないよう複製し、このインスタンス専用の Vignette を得る。
-        _volume.profile = Instantiate(_volume.sharedProfile);
+        _volume.profile = Instantiate(_volume.sharedProfile);	// sharedProfile を直接書き換えないよう複製し、このインスタンス専用の Vignette を得る
 
         if (!_volume.profile.TryGet(out _vignette))
             _vignette = _volume.profile.Add<Vignette>(overrides: true);

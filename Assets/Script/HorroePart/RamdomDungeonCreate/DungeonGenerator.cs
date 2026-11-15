@@ -1,8 +1,8 @@
 ﻿/// <summary>
-/// ダンジョン生成の起点となるMonoBehaviour。
+/// ダンジョン生成の起点となるMonoBehaviour
 /// GridBuilder・SectionPlacer・CorridorPlacerを順に呼び出し、
-/// グリッド構築 → 部屋配置 → 通路配置の流れを制御する。
-/// NavMesh はダンジョン全体を配置し終えた後にランタイムでベイクする。
+/// グリッド構築 → 部屋配置 → 通路配置の流れを制御する
+/// NavMesh はダンジョン全体を配置し終えた後にランタイムでベイクする
 /// </summary>
 using DungeonSystem;
 using HorrorGame.UI;
@@ -32,8 +32,7 @@ public class DungeonGenerator : MonoBehaviour
     [Tooltip("お札を配置する高さ（床からのYオフセット）。")]
     [SerializeField] private float _ofudaSpawnOffsetY = 0.3f;
 
-    // ItemInitializer が配置済みのお札を初期化するために参照する。
-    public Transform OfudaParent => _ofudaParent;
+    public Transform OfudaParent => _ofudaParent;	// ItemInitializer が配置済みのお札を初期化するために参照する
 
     [Header("NavMesh")]
     [Tooltip("この GameObject にアタッチした NavMeshSurface を指定する。" +
@@ -44,13 +43,12 @@ public class DungeonGenerator : MonoBehaviour
     [SerializeField] private bool _isDebugMode;
     [SerializeField] private Transform _debugParent;
 
-    // Plasyerの位置をItemInitializerが知る必要があるため必要
-    public event Action<Transform> OnRoomPlaced;
+    public event Action<Transform> OnRoomPlaced;	// Plasyerの位置をItemInitializerが知る必要があるため必要
 
 
     /// <summary>
-    /// Awake タイミングで外部から RoomDataBase を上書きする。
-    /// HorrorSceneConfigurator が Generate() より前に呼び出す。
+    /// Awake タイミングで外部から RoomDataBase を上書きする
+    /// HorrorSceneConfigurator が Generate() より前に呼び出す
     /// </summary>
     public void SetRoomDataBase(RoomDataBase data) => _roomDataBase = data;
 
@@ -74,8 +72,8 @@ public class DungeonGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// ダンジョンを生成する。
-    /// 複数箇所から呼び直せるよう、初期化も内包している。
+    /// ダンジョンを生成する
+    /// 複数箇所から呼び直せるよう、初期化も内包している
     /// </summary>
     public void Generate()
     {
@@ -88,20 +86,20 @@ public class DungeonGenerator : MonoBehaviour
         var (grid, sections) = gridBuilder.Build(_bluePrint, _roomDataBase);
         _grid = grid;
 
-        // 部屋・廊下を配置してから NavMesh をベイクし、その後に敵を生成する。
-        // 敵の NavMeshAgent は有効な NavMesh が存在しないと配置に失敗するため順序が重要。
+        // 部屋・廊下を配置してから NavMesh をベイクし、その後に敵を生成する
+        // 敵の NavMeshAgent は有効な NavMesh が存在しないと配置に失敗するため順序が重要
         var playerTransform = sectionPlacer.Place(sections, _roomParent);
         PlaceCorridorsAndBakeNavMesh(corridorPlacer, grid);
         enemySpawner.Place(sections, _enemyParent);
 
         // 通路セルへお札をランダム配置する。取得処理・UI初期化は OnRoomPlaced 経由で
-        // ItemInitializer が行うため、Invoke より前に配置しておく。
+        // ItemInitializer が行うため、Invoke より前に配置しておく
         ofudaPlacer.Place(grid, _ofudaParent);
 
         VisualizeIfDebug(grid, sections);
 
-        // 部屋・廊下・敵・お札・NavMesh の配置がすべて完了した後に発火する。
-        // これにより ItemInitializer は生成が完全に終わった状態で初期化できる。
+        // 部屋・廊下・敵・お札・NavMesh の配置がすべて完了した後に発火する
+        // これにより ItemInitializer は生成が完全に終わった状態で初期化できる
         OnRoomPlaced?.Invoke(_roomParent);
     }
 

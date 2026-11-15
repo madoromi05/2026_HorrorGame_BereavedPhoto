@@ -1,7 +1,7 @@
 ﻿/// <summary>
-/// FieldBluePrint をもとにセクションを生成するクラス。
+/// FieldBluePrint をもとにセクションを生成するクラス
 /// マップ分割・役割割り当て・RoomGridData のアサインのみを担当し、
-/// グリッドへの書き込みは行わない。
+/// グリッドへの書き込みは行わない
 /// </summary>
 using DungeonSystem;
 using System.Collections.Generic;
@@ -9,12 +9,11 @@ using UnityEngine;
 
 public class SectionGenerator
 {
-    // マップ外周との境界マージン（グリッド単位）
-    private const int kMargin = 1;
+    private const int kMargin = 1;	// マップ外周との境界マージン（グリッド単位）
 
     /// <summary>
-    /// bluePrint の分割設定に従い SectionData 配列を生成して返す。
-    /// Start セクションはランダムに 1 つ選ばれ、残りは Normal になる。
+    /// bluePrint の分割設定に従い SectionData 配列を生成して返す
+    /// Start セクションはランダムに 1 つ選ばれ、残りは Normal になる
     /// </summary>
     public SectionData[] Generate(FieldBluePrint bluePrint, RoomDataBase roomDataBase)
     {
@@ -24,11 +23,10 @@ public class SectionGenerator
         int totalCount = divide.x * divide.y;
         var sections = new SectionData[totalCount];
 
-        // セクションのグリッド座標を先に確定し、シャッフルして割り当て順を決める
-        var shuffledIndices = CreateShuffledIndices(totalCount);
+        var shuffledIndices = CreateShuffledIndices(totalCount);	// セクションのグリッド座標を先に確定し、シャッフルして割り当て順を決める
 
-        // RoomDataBase の定義順に MaxCount 分のロールを割り当てる。
-        // セクション数が合計 MaxCount に満たない場合は先着優先で打ち切る。
+        // RoomDataBase の定義順に MaxCount 分のロールを割り当てる
+        // セクション数が合計 MaxCount に満たない場合は先着優先で打ち切る
         var roleAssignments = BuildRoleAssignments(roomDataBase, shuffledIndices);
 
         for (int x = 0; x < divide.x; x++)
@@ -58,8 +56,8 @@ public class SectionGenerator
     }
 
     /// <summary>
-    /// 0 〜 totalCount-1 のインデックスをランダムな順番に並べたリストを返す。
-    /// セクションへのロール割り当て順序をランダム化するために使用する。
+    /// 0 〜 totalCount-1 のインデックスをランダムな順番に並べたリストを返す
+    /// セクションへのロール割り当て順序をランダム化するために使用する
     /// </summary>
     private List<int> CreateShuffledIndices(int totalCount)
     {
@@ -76,8 +74,8 @@ public class SectionGenerator
     }
 
     /// <summary>
-    /// RoomDataBase に登録された全 RoomGridData を1件ずつセクションへ割り当てる。
-    /// セクション総数を超えた分は無視し、余ったセクションは通路点になる。
+    /// RoomDataBase に登録された全 RoomGridData を1件ずつセクションへ割り当てる
+    /// セクション総数を超えた分は無視し、余ったセクションは通路点になる
     /// </summary>
     private Dictionary<int, (RoomType role, int idx)> BuildRoleAssignments(RoomDataBase roomDataBase, List<int> shuffledIndices)
     {

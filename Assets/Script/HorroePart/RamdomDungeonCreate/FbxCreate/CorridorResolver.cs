@@ -1,6 +1,6 @@
 ﻿/// <summary>
-/// 指定セルの隣接状況からCorridorTypeと回転角度(Y軸)を返す。
-/// 隣接4方向にCorridor/Doorがあれば接続ありと判定する。
+/// 指定セルの隣接状況からCorridorTypeと回転角度(Y軸)を返す
+/// 隣接4方向にCorridor/Doorがあれば接続ありと判定する
 /// </summary>
 using DungeonSystem;
 using UnityEngine;
@@ -13,7 +13,7 @@ public class CorridorResolver
     private const int kWest = 3;
 
     /// <summary>
-    /// 一グリッド受け取り、隣接するセルの状態を解析してCorridorTypeと回転角度を返す。
+    /// 一グリッド受け取り、隣接するセルの状態を解析してCorridorTypeと回転角度を返す
     /// </summary>
     public (CorridorType type, float rotationY) Resolve(GridType[,] grid, Vector2Int pos)
     {
@@ -33,7 +33,7 @@ public class CorridorResolver
     }
 
     /// <summary>
-    /// 指定座標の接続状態を解析し、配置すべきCorridorTypeと回転角度を返す。
+    /// 指定座標の接続状態を解析し、配置すべきCorridorTypeと回転角度を返す
     /// </summary>
     private (CorridorType type, float rotationY) DetermineCorridorType(bool[] connected)
     {
@@ -79,7 +79,6 @@ public class CorridorResolver
             return (CorridorType.DeadEnd, 270f);            // 開口部East：東から接続
         }
 
-        // 孤立セル（接続なし）
-        return (CorridorType.Straight, 0f);
+        return (CorridorType.Straight, 0f);	// 孤立セル（接続なし）
     }
 }

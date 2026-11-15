@@ -3,9 +3,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// ボタンで開閉するデバッグオーバーレイ。
-/// Canvas 上に配置し、_toggleButton に UI Button をアサインして使用する。
-/// DontDestroyOnLoad のためシーンをまたいで動作する。
+/// ボタンで開閉するデバッグオーバーレイ
+/// Canvas 上に配置し、_toggleButton に UI Button をアサインして使用する
+/// DontDestroyOnLoad のためシーンをまたいで動作する
 /// ウィンドウの枠とタブバーだけを描き、選ばれたタブの中身は IDebugTab の実装（Assets/Script/Debug/）に描かせる
 /// </summary>
 public class GameDebugGUI : MonoBehaviour

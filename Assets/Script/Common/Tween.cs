@@ -3,15 +3,15 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// 時間をかけて進み具合を 0 から 1 へ進める共通のコルーチン。
-/// フェードや演出の補間を、クラスごとに書き直さないために置く。
-/// 進み具合は Time.deltaTime で数えるので、timeScale の影響を受ける。
+/// 時間をかけて進み具合を 0 から 1 へ進める共通のコルーチン
+/// フェードや演出の補間を、クラスごとに書き直さないために置く
+/// 進み具合は Time.deltaTime で数えるので、timeScale の影響を受ける
 /// </summary>
 public static class Tween
 {
     /// <summary>
-    /// duration 秒かけて、進み具合 t（0〜1）を毎フレーム apply へ渡す。最後に必ず 1 を渡して終わる。
-    /// duration が 0 以下なら、待たずに 1 を渡す。
+    /// duration 秒かけて、進み具合 t（0〜1）を毎フレーム apply へ渡す。最後に必ず 1 を渡して終わる
+    /// duration が 0 以下なら、待たずに 1 を渡す
     /// </summary>
     public static IEnumerator Run(float duration, Action<float> apply)
     {

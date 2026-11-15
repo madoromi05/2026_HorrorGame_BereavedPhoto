@@ -6,8 +6,8 @@ using UnityEngine.UI;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// アイテム取得時にアイテム名と説明文をオーバーレイ表示するUIクラス。
-    /// Canvas配下のパネルにアタッチし、ItemPickupからShow()を呼ぶ。
+    /// アイテム取得時にアイテム名と説明文をオーバーレイ表示するUIクラス
+    /// Canvas配下のパネルにアタッチし、ItemPickupからShow()を呼ぶ
     /// </summary>
     public class ItemGetUIPresenter : RevealUIPresenterBase
     {
@@ -22,7 +22,7 @@ namespace HorrorGame.UI
         }
 
         /// <summary>
-        /// アイテムデータを受け取りオーバーレイを表示する。ItemPickupから呼ばれる。
+        /// アイテムデータを受け取りオーバーレイを表示する。ItemPickupから呼ばれる
         /// </summary>
         public void Show(ItemData itemData)
         {

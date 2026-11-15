@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// オプションパネルの開閉と FPS 設定を担うコントローラー。
-/// AlbumController と同様に TitleSceneController から呼び出される。
-/// FPS 設定は揮発性（PlayerPrefs への保存なし）で、起動時は 60fps をデフォルトとする。
+/// オプションパネルの開閉と FPS 設定を担うコントローラー
+/// AlbumController と同様に TitleSceneController から呼び出される
+/// FPS 設定は揮発性（PlayerPrefs への保存なし）で、起動時は 60fps をデフォルトとする
 /// </summary>
 public class OptionController : MonoBehaviour
 {
@@ -43,7 +43,7 @@ public class OptionController : MonoBehaviour
     }
 
     // vSyncCount が 1 以上の場合 targetFrameRate は無視されるため、
-    // 確実に制限を反映させるために 0 へ強制する。
+    // 確実に制限を反映させるために 0 へ強制する
     private void ApplyFrameRate(int fps)
     {
         QualitySettings.vSyncCount = 0;

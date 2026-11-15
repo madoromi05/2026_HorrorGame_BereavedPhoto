@@ -3,8 +3,8 @@ using DungeonSystem;
 using UnityEngine;
 
 /// <summary>
-/// A* で経路を探し、通る道を Corridor としてグリッドへ書き込む部品。
-/// 部屋の中・ドア・既にある通路は書き換えない。
+/// A* で経路を探し、通る道を Corridor としてグリッドへ書き込む部品
+/// 部屋の中・ドア・既にある通路は書き換えない
 /// </summary>
 public class CorridorCarver
 {
@@ -19,8 +19,8 @@ public class CorridorCarver
     }
 
     /// <summary>
-    /// start から end へ通路を掘り、通った道を返す。道は start と end を含む。
-    /// 道が見つからなければ、何も書き換えずに null を返す。
+    /// start から end へ通路を掘り、通った道を返す。道は start と end を含む
+    /// 道が見つからなければ、何も書き換えずに null を返す
     /// </summary>
     public List<Vector2Int> Carve(Vector2Int start, Vector2Int end)
     {

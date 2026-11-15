@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// シーンを跨いだゲーム進行状態を管理するシングルトン（DontDestroyOnLoad）。
-/// 本番用ではないため PlayerPrefs は使用せず、実行中のみ状態を保持する。
-/// RuntimeInitializeOnLoadMethod で自動生成するため手動配置不要。
+/// シーンを跨いだゲーム進行状態を管理するシングルトン（DontDestroyOnLoad）
+/// 本番用ではないため PlayerPrefs は使用せず、実行中のみ状態を保持する
+/// RuntimeInitializeOnLoadMethod で自動生成するため手動配置不要
 /// </summary>
 public class GameProgressManager : MonoBehaviour
 {
@@ -93,8 +93,8 @@ public class GameProgressManager : MonoBehaviour
     };
 
     /// <summary>
-    /// 現在ステージを完了させ、次のステージへ遷移する。
-    /// ホラーパート完了時にアルバムページを解放する。
+    /// 現在ステージを完了させ、次のステージへ遷移する
+    /// ホラーパート完了時にアルバムページを解放する
     /// </summary>
     public void LoadNextScene()
     {
@@ -113,8 +113,8 @@ public class GameProgressManager : MonoBehaviour
 
     /// <summary>
     /// 次シーンをバックグラウンドでプリロードする。allowSceneActivation = false のため
-    /// ActivatePreloadedScene() が呼ばれるまでシーンは切り替わらない。
-    /// ストーリー・準備パートの開始時に呼び出し、終了時に ActivatePreloadedScene() で切り替える。
+    /// ActivatePreloadedScene() が呼ばれるまでシーンは切り替わらない
+    /// ストーリー・準備パートの開始時に呼び出し、終了時に ActivatePreloadedScene() で切り替える
     /// </summary>
     public AsyncOperation PreloadNextScene()
     {
@@ -136,8 +136,8 @@ public class GameProgressManager : MonoBehaviour
     }
 
     /// <summary>
-    /// プリロード済みの AsyncOperation を有効化し、ステージを進める。
-    /// op が null の場合は通常の LoadNextScene() にフォールバックする。
+    /// プリロード済みの AsyncOperation を有効化し、ステージを進める
+    /// op が null の場合は通常の LoadNextScene() にフォールバックする
     /// </summary>
     public void ActivatePreloadedScene(AsyncOperation op)
     {

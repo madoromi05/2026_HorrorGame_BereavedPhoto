@@ -5,20 +5,20 @@ using UnityEngine;
 namespace HorrorGame.Item
 {
     /// <summary>
-    /// プレイヤーが獲得したアイテムを管理するコンポーネント。
-    /// PlayerInteractorと同じGameObjectにアタッチして使用する。
+    /// プレイヤーが獲得したアイテムを管理するコンポーネント
+    /// PlayerInteractorと同じGameObjectにアタッチして使用する
     /// </summary>
     public class Inventory : MonoBehaviour
     {
-        /// アイテム取得時に発火。UIやドア判定で購読する。
+        /// アイテム取得時に発火。UIやドア判定で購読する
         public event Action<ItemData> OnItemAdded;
 
-        /// アイテム個数変化時に発火。HUDの更新に使用する。
+        /// アイテム個数変化時に発火。HUDの更新に使用する
         public event Action<ItemType, int> OnItemCountChanged;
 
         private readonly Dictionary<ItemType, int> _acquiredItems = new();
 
-        /// アイテムを取得済みリストに追加し、各イベントを発火する。
+        /// アイテムを取得済みリストに追加し、各イベントを発火する
         public void AddItem(ItemData itemData)
         {
             if (itemData == null)
@@ -35,7 +35,7 @@ namespace HorrorGame.Item
             DebugCustom.Log($"[Inventory] 取得: {itemData.DisplayName}");
         }
 
-        /// 指定アイテムを無音で初期付与する。ゲーム開始時の初期アイテム設定に使用する。
+        /// 指定アイテムを無音で初期付与する。ゲーム開始時の初期アイテム設定に使用する
         public void InitializeItems(ItemType type, int count)
         {
             if (count <= 0) return;
@@ -44,7 +44,7 @@ namespace HorrorGame.Item
             OnItemCountChanged?.Invoke(type, _acquiredItems[type]);
         }
 
-        /// アイテムを1個消費する。消費できた場合 true を返す。
+        /// アイテムを1個消費する。消費できた場合 true を返す
         public bool ConsumeItem(ItemType type)
         {
             if (!HasItem(type)) return false;
@@ -53,11 +53,11 @@ namespace HorrorGame.Item
             return true;
         }
 
-        /// 指定種類のアイテムを1個以上取得しているか。ドア判定などに使う。
+        /// 指定種類のアイテムを1個以上取得しているか。ドア判定などに使う
         public bool HasItem(ItemType type) =>
             _acquiredItems.TryGetValue(type, out int c) && c > 0;
 
-        /// 指定種類のアイテム所持数を返す。
+        /// 指定種類のアイテム所持数を返す
         public int GetItemCount(ItemType type) =>
             _acquiredItems.TryGetValue(type, out int c) ? c : 0;
 

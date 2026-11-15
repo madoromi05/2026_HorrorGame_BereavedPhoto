@@ -2,9 +2,9 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// NavMeshAgent を使った敵AI。
+/// NavMeshAgent を使った敵AI
 /// スタートルームをプレイヤーが脱出した時点で Activate() が呼ばれ、
-/// 以降はプレイヤーを常時追跡しながら常にプレイヤー方向を向く。
+/// 以降はプレイヤーを常時追跡しながら常にプレイヤー方向を向く
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MonoBehaviour
@@ -25,8 +25,7 @@ public class EnemyController : MonoBehaviour
     private bool            _isActivated;
     private Coroutine       _stunCoroutine;		// 動いているスタン。null ならスタン中ではない
 
-    // 目的地の決め方を差し替える拡張点（HandEnemy の先回りなど）。無ければ現在位置を追う。
-    private IChaseDestinationProvider _destinationProvider;
+    private IChaseDestinationProvider _destinationProvider;	// 目的地の決め方を差し替える拡張点（HandEnemy の先回りなど）。無ければ現在位置を追う
 
     public bool IsActivated => _isActivated;
 
@@ -73,8 +72,8 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// この敵をシーンから退場させる。解析完了などの外部トリガーから呼ぶ。
-    /// 今後フェードや消滅演出を足す場合はここに集約する。
+    /// この敵をシーンから退場させる。解析完了などの外部トリガーから呼ぶ
+    /// 敵の退場は必ずここを通す（退場の仕方を変えるときの入口を 1 か所にするため）
     /// </summary>
     public void Despawn()
     {
@@ -82,7 +81,7 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定した種類（GhostType）の敵をすべて退場させる。
+    /// 指定した種類（GhostType）の敵をすべて退場させる
     /// </summary>
     public static void DespawnByType(EnemyType type)
     {
@@ -93,7 +92,7 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// この敵の移動速度を、別種類の解析完了時用の速度（_speedAfterAnalysis）に切り替える。
+    /// この敵の移動速度を、別種類の解析完了時用の速度（_speedAfterAnalysis）に切り替える
     /// </summary>
     public void ApplySpeedAfterAnalysis()
     {
@@ -102,8 +101,8 @@ public class EnemyController : MonoBehaviour
     }
 
     /// <summary>
-    /// 指定した種類（GhostType）の敵すべての移動速度を、各自の _speedAfterAnalysis に切り替える。
-    /// 別種類の解析完了時に、残っている種類を加速させる用途で呼ぶ。
+    /// 指定した種類（GhostType）の敵すべての移動速度を、各自の _speedAfterAnalysis に切り替える
+    /// 別種類の解析完了時に、残っている種類を加速させる用途で呼ぶ
     /// </summary>
     public static void ApplySpeedAfterAnalysisByType(EnemyType type)
     {

@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// ゲーム中メニュー（ESC キーで開閉）。
-/// OptionMenuController を利用して音声・操作設定を提供する。
-/// 開いている間は Time.timeScale=0 でゲームを一時停止し、カーソルを表示する。
+/// ゲーム中メニュー（ESC キーで開閉）
+/// OptionMenuController を利用して音声・操作設定を提供する
+/// 開いている間は Time.timeScale=0 でゲームを一時停止し、カーソルを表示する
 /// </summary>
 public class GameMenuController : MonoBehaviour
 {
@@ -54,11 +54,11 @@ public class GameMenuController : MonoBehaviour
     }
 
     /// <summary>
-    /// オプション画面の「タイトルへ戻る」ボタンから呼ぶ。
+    /// オプション画面の「タイトルへ戻る」ボタンから呼ぶ
     /// メニューを開いている間は Time.timeScale=0 で停止しているため、
     /// シーン遷移前に必ず 1 へ戻す（LoadScene は timeScale をリセットしないため、
-    /// このリセットを怠るとタイトルシーンが停止状態で読み込まれる）。
-    /// カーソルはタイトル側の TitleSceneController.Start で再設定される。
+    /// このリセットを怠るとタイトルシーンが停止状態で読み込まれる）
+    /// カーソルはタイトル側の TitleSceneController.Start で再設定される
     /// </summary>
     public void OnReturnToTitle()
     {

@@ -4,9 +4,9 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// GameOverScene にアタッチするコントローラー。
+/// GameOverScene にアタッチするコントローラー
 /// GameProgressManager のステージは GameOverHandler が変更しないため、
-/// リトライ時は同じホラーシーンに戻ることができる。
+/// リトライ時は同じホラーシーンに戻ることができる
 /// </summary>
 public class GameOverSceneController : MonoBehaviour
 {
@@ -18,8 +18,7 @@ public class GameOverSceneController : MonoBehaviour
     /// <summary>ホラーシーンを再ロードする。</summary>
     public void OnRetry()
     {
-        // ホラーシーンは1つに統合されたため、常に単一のホラーシーンへ戻る。
-        SceneManager.LoadScene(GameProgressManager.SceneHorrorName);
+        SceneManager.LoadScene(GameProgressManager.SceneHorrorName);	// ホラーシーンは1つに統合されたため、常に単一のホラーシーンへ戻る
     }
 
     /// <summary>タイトルへ戻る（ステージは変更しない）。</summary>

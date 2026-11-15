@@ -27,16 +27,15 @@ public class RoomDataBase : ScriptableObject
 
     [SerializeField] private RoomEntry[] _entries;
     private Dictionary<RoomType, RoomEntry> _entryMap;
-    // シリアライズフィールドを汚染しないよう、結合済みRoomGridDatasはランタイム専用で保持
-    private Dictionary<RoomType, RoomGridData[]> _mergedRoomGridDatas;
+    private Dictionary<RoomType, RoomGridData[]> _mergedRoomGridDatas;	// シリアライズフィールドを汚染しないよう、結合済みRoomGridDatasはランタイム専用で保持
     // 同一RoomTypeに複数エントリ（＝物理サイズの異なるPrefab違い）がある場合、
-    // RoomGridDataごとに「本来対応するPrefab」を引けるようにするための対応表。
+    // RoomGridDataごとに「本来対応するPrefab」を引けるようにするための対応表
     // これが無いと GetPrefab(RoomType) が常に最初のエントリのPrefabを返し、
     // ランダムに選ばれたRoomGridData（例: 32x32用）と実際にInstantiateされるPrefab（例: 40x40）が
-    // 食い違うバグになる。
+    // 食い違うバグになる
     private Dictionary<RoomGridData, GameObject> _roomGridDataToPrefab;
-    // 敵は RoomType 単位ではなく RoomGridData（＝エントリ／バリエーション）単位で引けるようにする。
-    // これにより同一RoomTypeの各部屋が、それぞれのエントリの EnemyEntries を反映できる。
+    // 敵は RoomType 単位ではなく RoomGridData（＝エントリ／バリエーション）単位で引けるようにする
+    // これにより同一RoomTypeの各部屋が、それぞれのエントリの EnemyEntries を反映できる
     private Dictionary<RoomGridData, EnemyEntry[]> _roomGridDataToEnemyEntries;
 
     private void OnEnable()
@@ -55,8 +54,8 @@ public class RoomDataBase : ScriptableObject
             }
 
             // 同一RoomTypeは RoomGridDatas を結合するが、Prefab と EnemyEntries は
-            // 各エントリ自身のものを RoomGridData ごとに紐付けて記録する。
-            // これで部屋（バリエーション）ごとに異なる敵を配置できる。
+            // 各エントリ自身のものを RoomGridData ごとに紐付けて記録する
+            // これで部屋（バリエーション）ごとに異なる敵を配置できる
             if (entry.RoomGridDatas != null)
             {
                 var d = entry.RoomGridDatas;
@@ -82,10 +81,10 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定のRoomGridDataが本来対応しているPrefabを返す。
+    /// 指定のRoomGridDataが本来対応しているPrefabを返す
     /// 同一RoomTypeに複数のPrefabバリエーションが登録されている場合でも、
-    /// RoomGridDataを実際に生成したエントリのPrefabを正しく取得できる。
-    /// 対応が見つからない場合は roomType の代表Prefab（先頭エントリ）にフォールバックする。
+    /// RoomGridDataを実際に生成したエントリのPrefabを正しく取得できる
+    /// 対応が見つからない場合は roomType の代表Prefab（先頭エントリ）にフォールバックする
     /// </summary>
     public GameObject GetPrefab(RoomType roomType, RoomGridData roomGridData)
     {
@@ -96,8 +95,8 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定RoomTypeのRoomGridDataをランダムに返す。
-    /// RoomGridDatasが空の場合はnullを返す。
+    /// 指定RoomTypeのRoomGridDataをランダムに返す
+    /// RoomGridDatasが空の場合はnullを返す
     /// </summary>
     public RoomGridData GetRoomGridData(RoomType roomType, int index)
     {
@@ -111,8 +110,8 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定RoomTypeに登録されているRoomGridDataの数を返す。
-    /// 登録されていない場合は0を返す。
+    /// 指定RoomTypeに登録されているRoomGridDataの数を返す
+    /// 登録されていない場合は0を返す
     /// </summary>
     public int GetRoomGridDataCount(RoomType roomType)
     {
@@ -122,10 +121,10 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定RoomTypeの敵エントリ一覧を返す。未設定の場合は空配列を返す。
+    /// 指定RoomTypeの敵エントリ一覧を返す。未設定の場合は空配列を返す
     /// 同一RoomTypeに複数エントリがある場合は先頭エントリの設定を返すため、
     /// 部屋（バリエーション）ごとに敵を変えたい場合は
-    /// <see cref="GetEnemyEntries(RoomGridData)"/> を使うこと。
+    /// <see cref="GetEnemyEntries(RoomGridData)"/> を使うこと
     /// </summary>
     public EnemyEntry[] GetEnemyEntries(RoomType roomType)
     {
@@ -136,10 +135,10 @@ public class RoomDataBase : ScriptableObject
     }
 
     /// <summary>
-    /// 指定のRoomGridData（＝エントリ／バリエーション）に対応する敵エントリ一覧を返す。
+    /// 指定のRoomGridData（＝エントリ／バリエーション）に対応する敵エントリ一覧を返す
     /// 同一RoomTypeに複数のバリエーションが登録されていても、
-    /// 実際に配置された部屋のエントリの EnemyEntries を正しく取得できる。
-    /// 対応が見つからない場合は空配列を返す。
+    /// 実際に配置された部屋のエントリの EnemyEntries を正しく取得できる
+    /// 対応が見つからない場合は空配列を返す
     /// </summary>
     public EnemyEntry[] GetEnemyEntries(RoomGridData roomGridData)
     {

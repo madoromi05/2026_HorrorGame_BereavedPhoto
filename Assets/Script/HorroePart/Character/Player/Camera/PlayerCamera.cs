@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// FPSカメラの上下回転のみを制御する。
-/// Y軸回転はFPSMoverが制御する。
+/// FPSカメラの上下回転のみを制御する
+/// Y軸回転はFPSMoverが制御する
 /// </summary>
 [RequireComponent(typeof(InputPlayerController))]
 public class PlayerCamera : MonoBehaviour
@@ -36,8 +36,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void SetSensitivity(float v) => _pitchSensitivity = v;	// オプション画面で変えた感度をすぐ反映する
 
-    // DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する
-    public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;
+    public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;	// DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する
 
     // ピッチを 0 にリセットしてカメラを水平に戻す
     public void ResetPitch()
@@ -66,7 +65,7 @@ public class PlayerCamera : MonoBehaviour
     /// <summary>
     /// Look入力は1フレーム内に複数回発火することがあり、マウスのデルタ値はフレーム内で
     /// 累積されているため、都度加算すると過剰回転になる。ここでは最新値を保持するだけにし、
-    /// 実際のPitch適用は Update で1フレームにつき1回だけ行う。
+    /// 実際のPitch適用は Update で1フレームにつき1回だけ行う
     /// </summary>
     private void HandleLook(Vector2 input) => _pendingLookY = input.y;
 

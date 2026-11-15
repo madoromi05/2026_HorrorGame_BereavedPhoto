@@ -1,7 +1,7 @@
 /// <summary>
-/// 通路（GridType.Corridor）セルの中からランダムに選んだ位置へお札（ItemPickupプレハブ）を配置する。
-/// EnemySpawner / CorridorPlacer と同じく、DungeonGenerator から呼ばれる配置専用クラス。
-/// 取得処理・UI初期化は既存の ItemPickup / ItemInitializer の仕組みに委ねる。
+/// 通路（GridType.Corridor）セルの中からランダムに選んだ位置へお札（ItemPickupプレハブ）を配置する
+/// EnemySpawner / CorridorPlacer と同じく、DungeonGenerator から呼ばれる配置専用クラス
+/// 取得処理・UI初期化は既存の ItemPickup / ItemInitializer の仕組みに委ねる
 /// </summary>
 using System.Collections.Generic;
 using DungeonSystem;
@@ -23,8 +23,8 @@ public class OfudaPlacer
     }
 
     /// <summary>
-    /// グリッド上の通路セルを収集し、重複なくランダムに選んだセル中心へお札を配置する。
-    /// 通路セルが _count 未満の場合は、存在する分だけ配置する。
+    /// グリッド上の通路セルを収集し、重複なくランダムに選んだセル中心へお札を配置する
+    /// 通路セルが _count 未満の場合は、存在する分だけ配置する
     /// </summary>
     public void Place(GridType[,] grid, Transform ofudaParent)
     {
@@ -40,7 +40,7 @@ public class OfudaPlacer
             PlaceOfuda(corridorCells[i], ofudaParent, i);
     }
 
-    // Fisher-Yates シャッフル。先頭 placeCount 個をランダム抽出するために全体を並び替える。
+    // Fisher-Yates シャッフル。先頭 placeCount 個をランダム抽出するために全体を並び替える
     private static void Shuffle(List<Vector2Int> cells)
     {
         for (int i = cells.Count - 1; i > 0; i--)
@@ -54,7 +54,7 @@ public class OfudaPlacer
     {
         var worldPos = GridUtil.CellCenterToWorld(gridPos, _gridSize, _spawnOffsetY);
 
-        // プレハブに設定された角度をそのまま反映する（無回転で固定しない）。
+        // プレハブに設定された角度をそのまま反映する（無回転で固定しない）
         var instance = Object.Instantiate(_ofudaPrefab, worldPos, _ofudaPrefab.transform.rotation, ofudaParent);
         instance.name = $"Ofuda_{gridPos}_{index}";
     }

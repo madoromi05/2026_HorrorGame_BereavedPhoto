@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// GameClearScene のエンディング演出コントローラー。
+/// GameClearScene のエンディング演出コントローラー
 /// ドアが開く演出（画像差し替え＋開閉音）の後、画面を白く塗り潰して場面を転換し、
-/// エンディング BGM を鳴らしながらクレジットを uGUI + コルーチンで下から上へスクロールする。
-/// スクロール完了 or スキップでタイトルへ遷移する。
+/// エンディング BGM を鳴らしながらクレジットを uGUI + コルーチンで下から上へスクロールする
+/// スクロール完了 or スキップでタイトルへ遷移する
 ///
 /// 白は「終着点」ではなく「通過点」として扱う。白で覆っている間にドアを捨て、
 /// 白が引くとクレジット背景が現れる、という目隠しの役割を持たせている
-/// （ドアからクレジットへの切り替わりを直接見せないため）。
+/// （ドアからクレジットへの切り替わりを直接見せないため）
 ///
 /// 窓口（Facade）。調整値はここの Inspector に置き、段（IEndingStep）は演出の始まりに作って渡し、毎フレーム動く係には使うたびに渡す
 /// 段を順に流すこと・白の裏で舞台を差し替えること・タイトルへ移る判断・カーソル固定だけをここで行う
@@ -101,7 +101,7 @@ public class GameClearDirector : MonoBehaviour
     private void Start()
     {
         // 前シーンの BGM が DontDestroyOnLoad の AudioManager 経由で鳴り続けるため、
-        // ClearScene 開始時に即停止する。エンディング BGM は EndingSequence 内で改めて鳴らす。
+        // ClearScene 開始時に即停止する。エンディング BGM は EndingSequence 内で改めて鳴らす
         AudioManager.Instance?.StopBgm(0f);
 
         GameCursor.Lock();
@@ -116,7 +116,7 @@ public class GameClearDirector : MonoBehaviour
         StartCoroutine(EndingSequence());
     }
 
-    // エンディング中はカーソルを固定し続け、スキップボタンの長押しを毎フレーム進める。
+    // エンディング中はカーソルを固定し続け、スキップボタンの長押しを毎フレーム進める
     private void Update()
     {
         KeepCursorLocked();
@@ -125,7 +125,7 @@ public class GameClearDirector : MonoBehaviour
     }
 
     // このシーンでは Start() の1回設定だと毎フレーム表示側に戻されてしまうため、
-    // 状態が崩れたフレームだけカーソル固定を再適用する（既に固定済みなら何もしない）。
+    // 状態が崩れたフレームだけカーソル固定を再適用する（既に固定済みなら何もしない）
     private void KeepCursorLocked()
     {
         if (GameCursor.IsLocked) return;
@@ -141,7 +141,7 @@ public class GameClearDirector : MonoBehaviour
         _creditScroll    = new CreditScrollStep(_creditRoot, _scrollStartY, _scrollEndY, _scrollSpeed);
     }
 
-    // ドアが開く演出 → 白転 → BGM → クレジットスクロール → タイトル遷移。
+    // ドアが開く演出 → 白転 → BGM → クレジットスクロール → タイトル遷移
     private IEnumerator EndingSequence()
     {
         foreach (var step in new IEndingStep[] { _doorOpen, _whiteTransition, _creditScroll })	// 演出の順番はここだけで決まる
@@ -151,7 +151,7 @@ public class GameClearDirector : MonoBehaviour
     }
 
     // 白で覆われている間に舞台を整える（この後に白が引く）。位置決めを白の裏で済ませないと、
-    // 白が引く途中でクレジットが画面中央に居座ったまま見えてしまう。
+    // 白が引く途中でクレジットが画面中央に居座ったまま見えてしまう
     private void SwapStageBehindWhite()
     {
         _doorOpen.Hide();
@@ -159,7 +159,7 @@ public class GameClearDirector : MonoBehaviour
         AudioManager.Instance.PlayBgm(BgmType.Ending);
     }
 
-    // タイトルへ遷移する（二重実行防止）。暗転しきってからロードする。
+    // タイトルへ遷移する（二重実行防止）。暗転しきってからロードする
     private void GoToTitle()
     {
         if (_isFinishing) return;

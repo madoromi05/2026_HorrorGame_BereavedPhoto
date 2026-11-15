@@ -1,8 +1,8 @@
 using UnityEngine;
 
-// 平面オブジェクト（Sprite等）を常にメインカメラへ正面を向けるコンポーネント。
+// 平面オブジェクト（Sprite等）を常にメインカメラへ正面を向けるコンポーネント
 // 地面に立つキャラクターや木を想定し、ピッチ（上下の傾き）は変化させず
-// ヨー（左右）のみ追従させることで、カメラを見上げ/見下げても不自然に傾かないようにしている。
+// ヨー（左右）のみ追従させることで、カメラを見上げ/見下げても不自然に傾かないようにしている
 public class Billboard : MonoBehaviour
 {
     private Transform _cameraTransform;
@@ -19,7 +19,7 @@ public class Billboard : MonoBehaviour
         _cameraTransform = Camera.main.transform;
     }
 
-    // カメラの移動・回転が確定した後に向きを合わせたいため、Updateではなく LateUpdate を使う。
+    // カメラの移動・回転が確定した後に向きを合わせたいため、Updateではなく LateUpdate を使う
     private void LateUpdate()
     {
         if (_cameraTransform == null) return;

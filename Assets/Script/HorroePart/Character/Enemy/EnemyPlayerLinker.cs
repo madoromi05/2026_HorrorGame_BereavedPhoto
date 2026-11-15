@@ -1,7 +1,7 @@
 /// <summary>
 /// DungeonGenerator.OnRoomPlaced を受け取り、
-/// スポーン済みの全 EnemyController にプレイヤー参照を渡す仲介コンポーネント。
-/// EnemySpawner がプレイヤーを知る必要をなくすため、Player はタグで動的検索する。
+/// スポーン済みの全 EnemyController にプレイヤー参照を渡す仲介コンポーネント
+/// EnemySpawner がプレイヤーを知る必要をなくすため、Player はタグで動的検索する
 /// </summary>
 using UnityEngine;
 

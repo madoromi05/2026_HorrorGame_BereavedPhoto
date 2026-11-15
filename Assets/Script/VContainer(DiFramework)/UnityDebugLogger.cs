@@ -1,6 +1,6 @@
 /// <summary>
-/// UnityEngine.Debugへ出力するIDebugLoggerの実装。
-/// DEBUGシンボルが有効な場合のみ出力する。
+/// UnityEngine.Debugへ出力するIDebugLoggerの実装
+/// DEBUGシンボルが有効な場合のみ出力する
 /// </summary>
 public sealed class UnityDebugLogger : IDebugLogger
 {

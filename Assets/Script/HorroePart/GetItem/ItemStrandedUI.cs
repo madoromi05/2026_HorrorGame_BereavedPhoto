@@ -5,8 +5,8 @@ using UnityEngine.UI;
 namespace HorrorGame.UI
 {
     /// <summary>
-    /// インベントリパネル内の1アイテム枠。
-    /// Prefabにアタッチして InventoryDisplayUI から生成する。
+    /// インベントリパネル内の1アイテム枠
+    /// Prefabにアタッチして InventoryDisplayUI から生成する
     /// </summary>
     public class ItemStrandedUI : MonoBehaviour
     {

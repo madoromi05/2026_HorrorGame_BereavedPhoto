@@ -3,8 +3,8 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// サウンド管理のエントリポイント（MonoBehaviour Singleton / DontDestroyOnLoad）。
-/// Resources/AudioManager プレハブを RuntimeInitializeOnLoadMethod で自動生成する。
+/// サウンド管理のエントリポイント（MonoBehaviour Singleton / DontDestroyOnLoad）
+/// Resources/AudioManager プレハブを RuntimeInitializeOnLoadMethod で自動生成する
 /// 種類から素材を引くのは SoundLibrary、鳴らすのは BgmPlayer / SePlayer、音量は AudioMixerProxy
 /// ここは窓口（Facade）として、それらへ渡すことと、ゲームオーバー後の SE 抑止だけを持つ
 /// </summary>
@@ -14,11 +14,11 @@ public class AudioManager : MonoBehaviour
 
     private const float kDefaultBgmFade = 0.8f;	// BGM を切り替える・止めるときの、既定のフェード秒数
 
-    // ゲームオーバー確定後、ゲームオーバー SE 以外の SE 再生を抑止する状態。
-    // シーンをまたいで持続しないよう、次シーンのロードで自動解除する。
+    // ゲームオーバー確定後、ゲームオーバー SE 以外の SE 再生を抑止する状態
+    // シーンをまたいで持続しないよう、次シーンのロードで自動解除する
     private bool _seSuppressed;
 
-    /// SE 抑止中か（EnemySoundPlayer など AudioManager を経由しない音源が参照する）。
+    /// SE 抑止中か（EnemySoundPlayer など AudioManager を経由しない音源が参照する）
     public bool IsSeSuppressed => _seSuppressed;
 
     [Header("サブシステム")]
@@ -84,12 +84,11 @@ public class AudioManager : MonoBehaviour
             SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // 次シーンへ移った時点で SE 抑止を解除する（遷移先の SE を巻き込まないため）。
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => _seSuppressed = false;
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => _seSuppressed = false;	// 次シーンへ移った時点で SE 抑止を解除する（遷移先の SE を巻き込まないため）
 
     // ---- ゲームオーバー ----
     /// ゲームオーバー確定時の音声処理。BGM を即停止し、ゲームオーバー SE を鳴らしてから
-    /// 以降の SE 再生を抑止する（抑止は次シーンのロードで自動解除）。
+    /// 以降の SE 再生を抑止する（抑止は次シーンのロードで自動解除）
     public void EnterGameOver(SeType gameOverSe)
     {
         StopBgm(0f);
@@ -98,17 +97,17 @@ public class AudioManager : MonoBehaviour
     }
 
     // ---- ゲームオーバー演出音（SE 抑止をバイパスして鳴らす）----
-    /// ホワイトノイズ（砂嵐）のループ再生を開始する。
+    /// ホワイトノイズ（砂嵐）のループ再生を開始する
     public void StartGameOverNoise(float pitch = 1f)
     {
         var resource = TryGetSeResource(SeType.SignalNoise);
         if (resource != null) _sePlayer.PlayLoop(resource, 1f, pitch);
     }
 
-    /// ホワイトノイズを即停止する（テレビを消す瞬間に呼ぶ）。
+    /// ホワイトノイズを即停止する（テレビを消す瞬間に呼ぶ）
     public void StopGameOverNoise() => _sePlayer.StopLoop();
 
-    /// テレビ OFF 音など、演出音を抑止を無視して 1 回鳴らす。
+    /// テレビ OFF 音など、演出音を抑止を無視して 1 回鳴らす
     public void PlayGameOverSe(SeType type)
     {
         var resource = TryGetSeResource(type);
@@ -116,7 +115,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // ---- BGM ----（複数同時不可）
-    /// BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。
+    /// BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない
     public void PlayBgm(BgmType type, float crossFadeDuration = kDefaultBgmFade)
     {
         if (type == BgmType.None) { StopBgm(); return; }
@@ -129,11 +128,11 @@ public class AudioManager : MonoBehaviour
         _bgmPlayer.CrossFade(clip, crossFadeDuration);
     }
 
-    /// BGM をフェードアウトして停止する。
+    /// BGM をフェードアウトして停止する
     public void StopBgm(float fadeOut = kDefaultBgmFade) => _bgmPlayer.Stop(fadeOut);
 
     // ---- SE ----
-    /// SE を 2D で再生する（複数同時可）。
+    /// SE を 2D で再生する（複数同時可）
     public void PlaySe(SeType type, float volume = 1f, float pitch = 1f)
     {
         if (_seSuppressed) return;
@@ -141,7 +140,7 @@ public class AudioManager : MonoBehaviour
         if (resource != null) _sePlayer.Play(resource, volume, pitch);
     }
 
-    /// SE を指定座標の 3D 音源として再生する（複数同時可）。
+    /// SE を指定座標の 3D 音源として再生する（複数同時可）
     public void PlaySe3D(SeType type, Vector3 position, float volume = 1f, float pitch = 1f)
     {
         if (_seSuppressed) return;

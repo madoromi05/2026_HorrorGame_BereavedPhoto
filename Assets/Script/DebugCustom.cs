@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Diagnostics;
 /// <summary>
-/// エディタ実行時のみログを表示します。
+/// エディタ実行時のみログを表示します
 /// </summary>
 public static class DebugCustom
 {
@@ -30,8 +30,8 @@ public static class DebugCustom
     }
 
     /// <summary>
-    /// 複数の必須 [SerializeField] 参照をまとめて検証する（2変数以上用）。
-    /// null のフィールドごとに「[クラス名] <フィールド名> が未設定です」を LogError 出力する。
+    /// 複数の必須 [SerializeField] 参照をまとめて検証する（2変数以上用）
+    /// null のフィールドごとに「[クラス名] <フィールド名> が未設定です」を LogError 出力する
     /// </summary>
 
     [Conditional("DEVELOPMENT_BUILD"), Conditional("UNITY_EDITOR")]

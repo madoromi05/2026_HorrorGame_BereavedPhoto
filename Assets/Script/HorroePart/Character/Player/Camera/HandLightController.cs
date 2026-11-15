@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// 手持ちライトの点灯・消灯・点滅を一元管理する。
+/// 手持ちライトの点灯・消灯・点滅を一元管理する
 /// 点灯時間が上限に達すると点滅してから自動消灯し、
-/// 手動でOFFにするまで再点灯できない。
+/// 手動でOFFにするまで再点灯できない
 /// </summary>
 public class HandLightController : MonoBehaviour
 {
@@ -17,10 +17,8 @@ public class HandLightController : MonoBehaviour
     [SerializeField] private float _flickerStartTime = 5f;    // 残り何秒前から点滅を開始するか
     [SerializeField] private float _flickerInterval = 0.2f;   // 点滅間隔（秒）
 
-    // カメラから呼び出せる公開メソッド
-    public void ForceOff() => TurnOff();
-    // 外部からの点灯状態を参照
-    public bool IsLightOn => _isLightOn;
+    public void ForceOff() => TurnOff();	// カメラから呼び出せる公開メソッド
+    public bool IsLightOn => _isLightOn;	// 外部からの点灯状態を参照
 
     private InputPlayerController _inputController;
     private Light _mainLightComponent;
@@ -29,8 +27,7 @@ public class HandLightController : MonoBehaviour
     private float _lightOnTimer = 0f;
     private Vector3 _initialLocalPos;
 
-    // 点滅コルーチンの参照（手動OFFで中断するために保持）
-    private Coroutine _flickerCoroutine;
+    private Coroutine _flickerCoroutine;	// 点滅コルーチンの参照（手動OFFで中断するために保持）
 
     private void Awake()
     {
@@ -69,8 +66,8 @@ public class HandLightController : MonoBehaviour
     }
 
     /// <summary>
-    /// トグル入力を受けてON/OFFを切り替える。
-    /// 点滅中でも手動OFFを受け付け、タイマーをリセットする。
+    /// トグル入力を受けてON/OFFを切り替える
+    /// 点滅中でも手動OFFを受け付け、タイマーをリセットする
     /// </summary>
     private void HandleHandLightToggle()
     {
@@ -93,13 +90,12 @@ public class HandLightController : MonoBehaviour
     }
 
     /// <summary>
-    /// 手動・自動どちらから呼ばれても共通処理。
-    /// 点滅コルーチンを確実に停止してタイマーをリセットする。
+    /// 手動・自動どちらから呼ばれても共通処理
+    /// 点滅コルーチンを確実に停止してタイマーをリセットする
     /// </summary>
     private void TurnOff()
     {
-        // 既に消灯済みなら何もしない（構え時の ForceOff などで余計な切り替えSEを鳴らさない）
-        if (!_isLightOn) return;
+        if (!_isLightOn) return;	// 既に消灯済みなら何もしない（構え時の ForceOff などで余計な切り替えSEを鳴らさない）
 
         _isLightOn = false;
         _lightOnTimer = 0f;
@@ -114,14 +110,13 @@ public class HandLightController : MonoBehaviour
     }
 
     /// <summary>
-    /// 点滅を実行し、時間切れで自動消灯する。
+    /// 点滅を実行し、時間切れで自動消灯する
     /// </summary>
     private IEnumerator FlickerThenTurnOff()
     {
         float remainingTime = _maxLightDuration - _lightOnTimer;
 
-        // 消えかかりの開始を知らせるSE（点滅開始時に一度だけ）
-        AudioManager.Instance?.PlaySe(SeType.HandLightFlicker);
+        AudioManager.Instance?.PlaySe(SeType.HandLightFlicker);	// 消えかかりの開始を知らせるSE（点滅開始時に一度だけ）
 
         while (remainingTime > 0f)
         {

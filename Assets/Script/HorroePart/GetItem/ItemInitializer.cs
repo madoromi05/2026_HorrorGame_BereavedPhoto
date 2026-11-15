@@ -6,7 +6,7 @@ using UnityEngine;
 namespace HorrorGame.Dungeon
 {
     /// <summary>
-    /// ダンジョン生成後に部屋内のItemとUIの初期化を行うクラス。
+    /// ダンジョン生成後に部屋内のItemとUIの初期化を行うクラス
     /// </summary>
     public class ItemInitializer : MonoBehaviour
     {
@@ -31,8 +31,8 @@ namespace HorrorGame.Dungeon
         }
 
         /// <summary>
-        /// roomParent配下の全MemoItem・ItemPickupにPresenterとInventoryを注入する。
-        /// SectionPlacer.Place()の後に呼ぶこと。
+        /// roomParent配下の全MemoItem・ItemPickupにPresenterとInventoryを注入する
+        /// SectionPlacer.Place()の後に呼ぶこと
         /// </summary>
         public void Initialize(Transform roomParent)
         {
@@ -42,7 +42,7 @@ namespace HorrorGame.Dungeon
                 DebugCustom.LogWarning("[ItemInitializer] Inventoryがプレイヤーに見つかりません。");
                 return;
             }
-                // 妨害アイテムを取得時に再配置するための情報を組み立てる。
+                // 妨害アイテムを取得時に再配置するための情報を組み立てる
                 var respawner = new ObstructionRespawner(
                 _dungeonGenerator.Grid,
                 _dungeonGenerator.GridSize,
@@ -51,8 +51,8 @@ namespace HorrorGame.Dungeon
             foreach (var memo in roomParent.GetComponentsInChildren<MemoItem>())
                 memo.Init(_memoUIPresenter, inventory);
 
-            // アイテム（ItemPickup）は部屋には配置せず、通路にランダム配置されたお札のみ初期化する。
-            // 部屋プレハブに埋め込まれた ItemPickup は SectionPlacer 側で除去済み。
+            // アイテム（ItemPickup）は部屋には配置せず、通路にランダム配置されたお札のみ初期化する
+            // 部屋プレハブに埋め込まれた ItemPickup は SectionPlacer 側で除去済み
             var ofudaParent = _dungeonGenerator.OfudaParent;
             if (ofudaParent != null)
             {

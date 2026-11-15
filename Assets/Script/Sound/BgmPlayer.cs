@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 /// <summary>
-/// BGM 専用プレイヤー（1チャンネル）。
-/// Play / Stop / CrossFade がコルーチンでフェードを管理する。
-/// AudioSource.volume でフェードするため、Mixer の BGM グループ音量と独立して動作する。
+/// BGM 専用プレイヤー（1チャンネル）
+/// Play / Stop / CrossFade がコルーチンでフェードを管理する
+/// AudioSource.volume でフェードするため、Mixer の BGM グループ音量と独立して動作する
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class BgmPlayer : MonoBehaviour
@@ -25,7 +25,7 @@ public class BgmPlayer : MonoBehaviour
             _source.outputAudioMixerGroup = _outputGroup;
     }
 
-    /// フェードインして再生。
+    /// フェードインして再生
     public void Play(AudioClip clip, float fadeIn = -1f)
     {
         if (clip == null) return;
@@ -34,7 +34,7 @@ public class BgmPlayer : MonoBehaviour
             FadeInRoutine(clip, fadeIn >= 0f ? fadeIn : _defaultFadeDuration));
     }
 
-    /// フェードアウトして停止。
+    /// フェードアウトして停止
     public void Stop(float fadeOut = -1f)
     {
         if (!_source.isPlaying) return;
@@ -43,7 +43,7 @@ public class BgmPlayer : MonoBehaviour
             FadeOutRoutine(fadeOut >= 0f ? fadeOut : _defaultFadeDuration));
     }
 
-    /// 現在の曲をフェードアウトし、新しい曲をフェードインする。
+    /// 現在の曲をフェードアウトし、新しい曲をフェードインする
     public void CrossFade(AudioClip newClip, float crossDuration = -1f)
     {
         if (newClip == null) return;

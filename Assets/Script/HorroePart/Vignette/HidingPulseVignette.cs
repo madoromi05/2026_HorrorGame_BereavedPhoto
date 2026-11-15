@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// 隠れ状態のときに加算される、脈打つ（揺らぐ）ビネット。
-/// フェードイン/アウトと正弦波パルスで「息をひそめる」緊張感を演出する。
-/// フェード中はパルスを抑え、フェード完了割合に応じて揺れを大きくする。
+/// 隠れ状態のときに加算される、脈打つ（揺らぐ）ビネット
+/// フェードイン/アウトと正弦波パルスで「息をひそめる」緊張感を演出する
+/// フェード中はパルスを抑え、フェード完了割合に応じて揺れを大きくする
 /// </summary>
 public class HidingPulseVignette : MonoBehaviour, IVignetteSource
 {
@@ -21,7 +21,7 @@ public class HidingPulseVignette : MonoBehaviour, IVignetteSource
     {
         get
         {
-            // フェードが完了している割合に応じてパルス振幅をスケール（フェード中は揺れない）。
+            // フェードが完了している割合に応じてパルス振幅をスケール（フェード中は揺れない）
             float fadeRatio = _target > 0f ? _current / _target : 0f;
             float pulse = _isHiding
                 ? Mathf.Sin(Time.time * _pulseFrequency * kTwoPi) * _pulseAmplitude * fadeRatio

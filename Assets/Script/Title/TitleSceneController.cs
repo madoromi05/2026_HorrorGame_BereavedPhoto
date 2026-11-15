@@ -3,8 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// TitleScene にアタッチするコントローラー。
-/// ニューゲーム / コンティニュー / アルバム開閉・オプション開閉を管理する。
+/// TitleScene にアタッチするコントローラー
+/// ニューゲーム / コンティニュー / アルバム開閉・オプション開閉を管理する
 /// </summary>
 public class TitleSceneController : MonoBehaviour
 {
@@ -32,7 +32,7 @@ public class TitleSceneController : MonoBehaviour
     private void Start()
     {
         // ゲームオーバー／クリア画面はカーソルを固定・非表示にするため、
-        // タイトルへ戻った時点で必ずマウス操作を有効化しておく。
+        // タイトルへ戻った時点で必ずマウス操作を有効化しておく
         GameCursor.Unlock();
 
         AudioManager.Instance?.PlayBgm(BgmType.Title);
@@ -45,8 +45,8 @@ public class TitleSceneController : MonoBehaviour
         var mgr = GameProgressManager.Instance;
         if (mgr == null) return;
 
-        // 暗転＋ドア音の演出を挟んでからホラーシーンへ遷移する。
-        // 演出完了コールバックで StartHorror() を呼ぶことで、暗転を見せてからロードする。
+        // 暗転＋ドア音の演出を挟んでからホラーシーンへ遷移する
+        // 演出完了コールバックで StartHorror() を呼ぶことで、暗転を見せてからロードする
         if (_introDirector != null)
             _introDirector.PlayStartSequence(mgr.StartHorror);
         else
@@ -61,7 +61,7 @@ public class TitleSceneController : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(scene);
     }
 
-    /// UI ボタンからも呼べる直接オープン。
+    /// UI ボタンからも呼べる直接オープン
     public void OnOption()
     {
         _optionController?.OpenOption();
@@ -74,7 +74,7 @@ public class TitleSceneController : MonoBehaviour
 
     // ---- 入力イベント ----
 
-    /// キー入力でオプションを開閉トグルする。
+    /// キー入力でオプションを開閉トグルする
     private void ToggleOption()
     {
         if (_optionController == null) return;
