@@ -1,12 +1,10 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.RenderGraphModule;
-using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>
 /// VHS（ビデオテープ風）ポストエフェクトを画面全体に適用する RendererFeature。
-/// 魚眼レンズ（FisheyeDistortionFeature）と同じく RenderGraph の Blit を 1 パス行う。
+/// 魚眼レンズ（FisheyeDistortionFeature）と同じく、FullscreenBlitPass で Blit を 1 パス行う。
 /// 効果は全画面に 1 つだけのため、シーン別設定の入口として static Apply を公開する。
 /// 各シーンの VhsController が自分の VhsProfile をここへ渡す。
 /// </summary>
@@ -38,7 +36,7 @@ public class VhsFeature : ScriptableRendererFeature
 
     // 共有マテリアルアセットを汚さないための実行時インスタンス。
     private Material _runtimeMaterial;
-    private VhsPass _pass;
+    private FullscreenBlitPass _pass;
 
     // 最後にシーンから指定されたプロファイル。Create と Apply の順序に依存しないよう static で保持する。
     private static VhsProfile _activeProfile;
@@ -49,7 +47,10 @@ public class VhsFeature : ScriptableRendererFeature
     public override void Create()
     {
         _runtimeMaterial = vhsMaterial != null ? new Material(vhsMaterial) : null;
-        _pass = new VhsPass(_runtimeMaterial) { renderPassEvent = renderPassEvent };
+        _pass = new FullscreenBlitPass(_runtimeMaterial, targetName: "_VhsTarget", passName: "VHS Effect")
+        {
+            renderPassEvent = renderPassEvent
+        };
         _current = this;
         ApplyActiveProfile();   // Create が後から走っても、保存済みプロファイルを反映する
     }
@@ -120,32 +121,5 @@ public class VhsFeature : ScriptableRendererFeature
         _runtimeMaterial.SetFloat(PropertyId.TrackingBandIntensity, p.trackingBandIntensity);
         _runtimeMaterial.SetFloat(PropertyId.Saturation, p.saturation);
         _runtimeMaterial.SetFloat(PropertyId.VignettePower, p.vignettePower);
-    }
-
-    private class VhsPass : ScriptableRenderPass
-    {
-        private readonly Material _material;
-
-        public VhsPass(Material material) => _material = material;
-
-        public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
-        {
-            // カメラのカラーテクスチャを取得する。
-            var resourceData = frameData.Get<UniversalResourceData>();
-            var source = resourceData.cameraColor;
-
-            // 書き込み先テクスチャを同じ設定で作成する（Blit は同一テクスチャの読み書き不可のため）。
-            var desc = renderGraph.GetTextureDesc(source);
-            desc.name = "_VhsTarget";
-            desc.clearBuffer = false;
-            TextureHandle destination = renderGraph.CreateTexture(desc);
-
-            // マテリアルの Pass 0 で source → destination にフルスクリーン Blit する。
-            RenderGraphUtils.BlitMaterialParameters blitParams = new(source, destination, _material, 0);
-            renderGraph.AddBlitPass(blitParams, "VHS Effect");
-
-            // 以降のパスがこの結果を参照するよう、カメラカラーの参照を差し替える。
-            resourceData.cameraColor = destination;
-        }
     }
 }

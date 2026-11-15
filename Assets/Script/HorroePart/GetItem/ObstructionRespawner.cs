@@ -33,10 +33,19 @@ namespace HorrorGame.Item
             position = default;
             if (_grid == null || _playerTransform == null) return false;
 
-            // ワールド座標 → グリッドセル（セル中心規約の逆算）
-            int playerX = Mathf.FloorToInt(_playerTransform.position.x / _gridSize);
-            int playerY = Mathf.FloorToInt(_playerTransform.position.z / _gridSize);
+            var playerCell = GridUtil.WorldToCell(_playerTransform.position, _gridSize);
+            if (!TryPickCell(playerCell, minTiles, out var cell)) return false;
 
+            position = GridUtil.CellCenterToWorld(cell, _gridSize, y);
+            return true;
+        }
+
+        /// <summary>
+        /// minTiles マス以上離れた歩行可能セルからランダムに 1 つ選ぶ。無ければ最も遠いセルを選ぶ
+        /// 歩行可能セルが 1 つも無ければ false
+        /// </summary>
+        private bool TryPickCell(Vector2Int playerCell, int minTiles, out Vector2Int cell)
+        {
             var candidates = new List<Vector2Int>();
             Vector2Int farthest = default;
             int farthestSqr = -1;
@@ -45,38 +54,30 @@ namespace HorrorGame.Item
 
             for (int x = 0; x < _grid.GetLength(0); x++)
             {
-                for (int yy = 0; yy < _grid.GetLength(1); yy++)
+                for (int y = 0; y < _grid.GetLength(1); y++)
                 {
-                    if (!IsWalkable(_grid[x, yy])) continue;
+                    if (!IsWalkable(_grid[x, y])) continue;
                     hasWalkable = true;
 
-                    int dx = x - playerX;
-                    int dy = yy - playerY;
+                    int dx = x - playerCell.x;
+                    int dy = y - playerCell.y;
                     int sqr = dx * dx + dy * dy;
 
                     if (sqr >= minSqr)
-                        candidates.Add(new Vector2Int(x, yy));
+                        candidates.Add(new Vector2Int(x, y));
 
                     if (sqr > farthestSqr)
                     {
                         farthestSqr = sqr;
-                        farthest = new Vector2Int(x, yy);
+                        farthest = new Vector2Int(x, y);
                     }
                 }
             }
 
-            if (!hasWalkable) return false;
-
-            // 10マス以上のセルがあればその中からランダム、無ければ最遠セルにフォールバック。
-            Vector2Int cell = candidates.Count > 0
+            cell = candidates.Count > 0
                 ? candidates[Random.Range(0, candidates.Count)]
                 : farthest;
-
-            position = new Vector3(
-                (cell.x + 0.5f) * _gridSize,
-                y,
-                (cell.y + 0.5f) * _gridSize);
-            return true;
+            return hasWalkable;
         }
 
         private static bool IsWalkable(GridType type) =>

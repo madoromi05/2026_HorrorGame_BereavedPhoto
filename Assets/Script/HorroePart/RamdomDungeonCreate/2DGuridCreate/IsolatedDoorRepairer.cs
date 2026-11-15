@@ -10,8 +10,7 @@ using UnityEngine;
 public class IsolatedDoorRepairer
 {
     private GridType[,] _grid;
-    private int _maxStraight;
-    private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
+    private CorridorCarver _carver;
 
     /// <summary>
     /// 孤立 Door の補修を実行する。
@@ -23,9 +22,9 @@ public class IsolatedDoorRepairer
         int maxStraight)
     {
         _grid = grid;
-        _maxStraight = maxStraight;
+        _carver = new CorridorCarver(grid, maxStraight);
 
-        var corridorCells = CollectCorridorCells();
+        var corridorCells = new HashSet<Vector2Int>(GridUtil.CellsOf(_grid, GridType.Corridor));
         if (corridorCells.Count == 0)
         {
             DebugCustom.LogWarning("[IsolatedDoorRepairer] corridorCells が空のため強制接続を実行します");
@@ -56,32 +55,20 @@ public class IsolatedDoorRepairer
             return;
         }
 
-        var target = FindNearestCorridorCell(exitCell.Value, corridorCells);
+        var target = GridUtil.FindNearest(exitCell.Value, corridorCells);
         if (target == null)
         {
             DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door {doorPos} の接続先が見つかりませんでした");
             return;
         }
 
-        var path = _pathfinder.FindPath(_grid, exitCell.Value, target.Value, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
+        var path = _carver.Carve(exitCell.Value, target.Value);
         if (path == null)
         {
             DebugCustom.LogWarning($"[IsolatedDoorRepairer] 孤立 Door A* 失敗: {exitCell.Value} -> {target.Value}");
             return;
         }
 
-        // 出口セルと経路を通路として書き込む
-        _grid[exitCell.Value.x, exitCell.Value.y] = GridType.Corridor;
-        foreach (var pos in path)
-        {
-            var cellType = _grid[pos.x, pos.y];
-            if (cellType == GridType.Door) continue;
-            if (cellType == GridType.Floor) continue;
-            if (cellType == GridType.Corridor) continue;
-            _grid[pos.x, pos.y] = GridType.Corridor;
-        }
-
-        corridorCells.Add(exitCell.Value);
         corridorCells.UnionWith(path);
     }
 
@@ -90,10 +77,10 @@ public class IsolatedDoorRepairer
     /// </summary>
     private bool IsDoorConnected(Vector2Int doorPos)
     {
-        foreach (var dir in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+        foreach (var dir in GridUtil.FourDirs)
         {
             var neighbor = doorPos + dir;
-            if (!IsInGrid(neighbor)) continue;
+            if (!GridUtil.IsInGrid(_grid, neighbor)) continue;
             if (_grid[neighbor.x, neighbor.y] == GridType.Corridor) return true;
         }
         return false;
@@ -105,43 +92,13 @@ public class IsolatedDoorRepairer
     /// </summary>
     private Vector2Int? FindExitCell(Vector2Int doorPos)
     {
-        foreach (var dir in new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right })
+        foreach (var dir in GridUtil.FourDirs)
         {
             var neighbor = doorPos + dir;
-            if (!IsInGrid(neighbor)) continue;
+            if (!GridUtil.IsInGrid(_grid, neighbor)) continue;
             if (_grid[neighbor.x, neighbor.y] == GridType.Empty)
                 return neighbor;
         }
         return null;
     }
-
-    private HashSet<Vector2Int> CollectCorridorCells()
-    {
-        var cells = new HashSet<Vector2Int>();
-        for (int x = 0; x < _grid.GetLength(0); x++)
-            for (int y = 0; y < _grid.GetLength(1); y++)
-                if (_grid[x, y] == GridType.Corridor)
-                    cells.Add(new Vector2Int(x, y));
-        return cells;
-    }
-
-    private Vector2Int? FindNearestCorridorCell(Vector2Int from, HashSet<Vector2Int> candidates)
-    {
-        Vector2Int? nearest = null;
-        float minDist = float.MaxValue;
-
-        foreach (var pos in candidates)
-        {
-            float dist = Vector2Int.Distance(from, pos);
-            if (dist >= minDist) continue;
-            minDist = dist;
-            nearest = pos;
-        }
-
-        return nearest;
-    }
-
-    private bool IsInGrid(Vector2Int pos)
-        => pos.x >= 0 && pos.x < _grid.GetLength(0)
-        && pos.y >= 0 && pos.y < _grid.GetLength(1);
 }

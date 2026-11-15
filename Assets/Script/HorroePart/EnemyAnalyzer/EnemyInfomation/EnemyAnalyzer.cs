@@ -9,6 +9,8 @@ using UnityEngine;
 /// </summary>
 public class EnemyAnalyzer : MonoBehaviour
 {
+    public const float kCompletePercent = 100f;	// 解析の完了。解析率はこの値まで上がる
+
     [SerializeField] private float _analyzeSpeed = 0.3f;
     [SerializeField] private AnalyzerUI _analyzerUI;
 
@@ -35,7 +37,7 @@ public class EnemyAnalyzer : MonoBehaviour
             foreach (EnemyType type in System.Enum.GetValues(typeof(EnemyType)))
             {
                 // 未解析の種類が1つでもあれば未完了
-                if (GetAnalyzePercent(type) < 100f)
+                if (GetAnalyzePercent(type) < kCompletePercent)
                     return false;
             }
             return true;
@@ -73,42 +75,58 @@ public class EnemyAnalyzer : MonoBehaviour
 
         if (!_currentGhostType.HasValue)
         {
-            _analyzerUI.OnAnalyzeUpdate(0f);
-            _analyzerUI.SetAnalyzingState(false);
-            _analyzerUI.SetCompleteState(false);
+            ShowNoTarget();
             return;
         }
 
+        var type = _currentGhostType.Value;
         float current = AnalyzePercent;
-        bool isComplete = current >= 100f;
+        bool isComplete = current >= kCompletePercent;
         bool isAnalyzing = false;
 
         if (!isComplete)
         {
             if (_enemyInRange)
             {
-                current = Mathf.Min(100f, current + _analyzeSpeed * Time.deltaTime);
+                current = Mathf.Min(kCompletePercent, current + _analyzeSpeed * Time.deltaTime);
                 isAnalyzing = true;
             }
 
-            _analyzePercents[_currentGhostType.Value] = current;
-            isComplete = current >= 100f;
+            _analyzePercents[type] = current;
+            isComplete = current >= kCompletePercent;
         }
 
+        ShowProgress(current, isComplete, isAnalyzing);
+        if (isComplete) CompleteTypeOnce(type);
+    }
+
+    private void ShowNoTarget()	// 狙っている敵がいないときの UI
+    {
+        _analyzerUI.OnAnalyzeUpdate(0f);
+        _analyzerUI.SetAnalyzingState(false);
+        _analyzerUI.SetCompleteState(false);
+    }
+
+    private void ShowProgress(float current, bool isComplete, bool isAnalyzing)
+    {
         _analyzerUI.OnAnalyzeUpdate(current);
         // [Task]_vignetteController.UpdateVignette(current);
 
         _analyzerUI.SetCompleteState(isComplete);
         _analyzerUI.SetAnalyzingState(isAnalyzing && !isComplete);
+    }
 
-        // その種類が新たに100%到達した瞬間を一度だけ検知し、SE再生と敵の退場を行う。
-        // 敵の消去処理そのものは EnemyController の責務に委譲する。
-        if (isComplete && _completedTypes.Add(_currentGhostType.Value))
-        {
-            AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
-            EnemyController.DespawnByType(_currentGhostType.Value);
-            BoostRemainingEnemies();
-        }
+    /// <summary>
+    /// その種類が初めて完了したときだけ、SE を鳴らして敵を退場させ、残りの種類を速くする
+    /// 敵の消去処理そのものは EnemyController の責務に委譲する
+    /// </summary>
+    private void CompleteTypeOnce(EnemyType type)
+    {
+        if (!_completedTypes.Add(type)) return;
+
+        AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
+        EnemyController.DespawnByType(type);
+        BoostRemainingEnemies();
     }
 
     /// <summary>
@@ -152,15 +170,8 @@ public class EnemyAnalyzer : MonoBehaviour
     /// </summary>
     public void DebugCompleteType(EnemyType type)
     {
-        _analyzePercents[type] = 100f;
-
-        // 通常のUpdate内の完了検知と同じく、種類ごとに一度だけ退場・SEを実行する。
-        if (_completedTypes.Add(type))
-        {
-            AudioManager.Instance?.PlaySe(SeType.AnalysisComplete);
-            EnemyController.DespawnByType(type);
-            BoostRemainingEnemies();
-        }
+        _analyzePercents[type] = kCompletePercent;
+        CompleteTypeOnce(type);
         DebugCustom.Log($"[Debug] 解析強制完了: {type}");
     }
 }

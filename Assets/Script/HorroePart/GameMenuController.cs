@@ -14,8 +14,7 @@ public class GameMenuController : MonoBehaviour
 
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+        GameCursor.Lock();
     }
 
     private void OnEnable()
@@ -41,8 +40,7 @@ public class GameMenuController : MonoBehaviour
         _isOpen = true;
         _optionMenu?.OpenOption();
         Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible   = true;
+        GameCursor.Unlock();
         _inputController?.SetPlayerInputEnabled(false);
     }
 
@@ -51,8 +49,7 @@ public class GameMenuController : MonoBehaviour
         _isOpen = false;
         _optionMenu?.CloseOption();
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+        GameCursor.Lock();
         _inputController?.SetPlayerInputEnabled(true);
     }
 

@@ -11,23 +11,17 @@ using UnityEngine;
 public class DeadEndConnector
 {
     private GridType[,] _grid;
-    private int _maxStraight;
-    private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
-
-    private static readonly Vector2Int[] kDirs =
-    {
-        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-    };
+    private CorridorCarver _carver;
 
     public void Connect(GridType[,] grid, int maxStraight)
     {
         _grid = grid;
-        _maxStraight = maxStraight;
+        _carver = new CorridorCarver(grid, maxStraight);
 
         const int kMaxPasses = 20;
         for (int pass = 0; pass < kMaxPasses; pass++)
         {
-            var corridorCells = CollectCorridorCells();
+            var corridorCells = new HashSet<Vector2Int>(GridUtil.CellsOf(_grid, GridType.Corridor));
             if (corridorCells.Count == 0) return;
 
             var deadEnds = FindDeadEnds();
@@ -49,25 +43,16 @@ public class DeadEndConnector
         foreach (var openDir in openDirs)
         {
             var exitCell = deadEnd + openDir;
-            if (!IsInGrid(exitCell)) continue;
+            if (!GridUtil.IsInGrid(_grid, exitCell)) continue;
             if (_grid[exitCell.x, exitCell.y] != GridType.Empty) continue;
 
-            var target = FindNearest(exitCell, corridorCells, deadEnd);
+            var target = GridUtil.FindNearest(exitCell, corridorCells, deadEnd);
             if (target == null) continue;
 
-            var path = _pathfinder.FindPath(_grid, exitCell, target.Value, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
+            var path = _carver.Carve(exitCell, target.Value);
             if (path == null) continue;
 
-            _grid[exitCell.x, exitCell.y] = GridType.Corridor;
-            foreach (var pos in path)
-            {
-                var cell = _grid[pos.x, pos.y];
-                if (cell == GridType.Door || cell == GridType.Floor || cell == GridType.Corridor) continue;
-                _grid[pos.x, pos.y] = GridType.Corridor;
-            }
-
-            corridorCells.Add(exitCell);
-            foreach (var pos in path) corridorCells.Add(pos);
+            corridorCells.UnionWith(path);
             return true;
         }
         return false;
@@ -78,63 +63,26 @@ public class DeadEndConnector
     {
         var result = new List<(Vector2Int, List<Vector2Int>)>();
 
-        for (int x = 0; x < _grid.GetLength(0); x++)
+        foreach (var pos in GridUtil.CellsOf(_grid, GridType.Corridor))
         {
-            for (int y = 0; y < _grid.GetLength(1); y++)
+            int connCount = 0;
+            var openDirs = new List<Vector2Int>();
+
+            foreach (var dir in GridUtil.FourDirs)
             {
-                if (_grid[x, y] != GridType.Corridor) continue;
-                var pos = new Vector2Int(x, y);
-
-                int connCount = 0;
-                var openDirs = new List<Vector2Int>();
-
-                foreach (var dir in kDirs)
-                {
-                    var n = pos + dir;
-                    if (!IsInGrid(n)) continue;
-                    var cell = _grid[n.x, n.y];
-                    if (cell == GridType.Corridor || cell == GridType.Door)
-                        connCount++;
-                    else if (cell == GridType.Empty)
-                        openDirs.Add(dir);
-                }
-
-                if (connCount == 1 && openDirs.Count > 0)
-                    result.Add((pos, openDirs));
+                var n = pos + dir;
+                if (!GridUtil.IsInGrid(_grid, n)) continue;
+                var cell = _grid[n.x, n.y];
+                if (cell == GridType.Corridor || cell == GridType.Door)
+                    connCount++;
+                else if (cell == GridType.Empty)
+                    openDirs.Add(dir);
             }
+
+            if (connCount == 1 && openDirs.Count > 0)
+                result.Add((pos, openDirs));
         }
 
         return result;
     }
-
-    private Vector2Int? FindNearest(Vector2Int from, HashSet<Vector2Int> candidates, Vector2Int exclude)
-    {
-        Vector2Int? nearest = null;
-        float minDist = float.MaxValue;
-
-        foreach (var pos in candidates)
-        {
-            if (pos == exclude) continue;
-            float dist = Vector2Int.Distance(from, pos);
-            if (dist >= minDist) continue;
-            minDist = dist;
-            nearest = pos;
-        }
-
-        return nearest;
-    }
-
-    private HashSet<Vector2Int> CollectCorridorCells()
-    {
-        var cells = new HashSet<Vector2Int>();
-        for (int x = 0; x < _grid.GetLength(0); x++)
-            for (int y = 0; y < _grid.GetLength(1); y++)
-                if (_grid[x, y] == GridType.Corridor)
-                    cells.Add(new Vector2Int(x, y));
-        return cells;
-    }
-
-    private bool IsInGrid(Vector2Int pos)
-        => pos.x >= 0 && pos.x < _grid.GetLength(0)
-        && pos.y >= 0 && pos.y < _grid.GetLength(1);
 }

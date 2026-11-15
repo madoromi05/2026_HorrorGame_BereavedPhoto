@@ -14,13 +14,11 @@ using UnityEngine;
 
 public class SectionConnector
 {
-    private GridType[,] _grid;
     private SectionData[] _sections;
     private Dictionary<SectionData, List<Vector2Int>> _sectionDoorMap;
     private Dictionary<SectionData, Vector2Int> _pathPointMap;
     private Dictionary<SectionData, HashSet<SectionData>> _adjacency;
-    private int _maxStraight;
-    private readonly AStarPathfinder _pathfinder = new AStarPathfinder();
+    private CorridorCarver _carver;
 
     /// <summary>
     /// MST で全セクションを接続したあと、追加分岐を生成する。
@@ -34,11 +32,10 @@ public class SectionConnector
         Dictionary<SectionData, Vector2Int> pathPointMap,
         FieldBluePrint bluePrint)
     {
-        _grid = grid;
         _sections = sections;
         _sectionDoorMap = sectionDoorMap;
         _pathPointMap = pathPointMap;
-        _maxStraight = bluePrint.MaxStraightCells;
+        _carver = new CorridorCarver(grid, bluePrint.MaxStraightCells);
 
         _adjacency = new Dictionary<SectionData, HashSet<SectionData>>();
         foreach (var section in sections)
@@ -61,8 +58,6 @@ public class SectionConnector
         {
             if (_adjacency[section].Count >= 2) continue;
 
-            var sectionCenter = section.GridPosition + section.GridSize / 2;
-
             SectionData best = null;
             float minDist = float.MaxValue;
 
@@ -71,8 +66,7 @@ public class SectionConnector
                 if (candidate == section) continue;
                 if (_adjacency[section].Contains(candidate)) continue;
 
-                float dist = Vector2Int.Distance(
-                    sectionCenter, candidate.GridPosition + candidate.GridSize / 2);
+                float dist = Vector2Int.Distance(section.Center, candidate.Center);
 
                 if (dist < minDist)
                 {
@@ -103,10 +97,7 @@ public class SectionConnector
                 {
                     if (connected.Contains(to)) continue;
 
-                    float dist = Vector2Int.Distance(
-                        from.GridPosition + from.GridSize / 2,
-                        to.GridPosition + to.GridSize / 2
-                    );
+                    float dist = Vector2Int.Distance(from.Center, to.Center);
 
                     if (dist < minDist)
                     {
@@ -139,8 +130,8 @@ public class SectionConnector
 
                 var startPos   = GetConnectionPoint(from, to);
                 var endPos     = GetConnectionPoint(to, from);
-                var fromCenter = from.GridPosition + from.GridSize / 2;
-                var toCenter   = to.GridPosition   + to.GridSize   / 2;
+                var fromCenter = from.Center;
+                var toCenter   = to.Center;
 
                 // from 側の接続点 → to の中心までの距離
                 int distFromSide = Mathf.Abs(startPos.x - toCenter.x)
@@ -165,20 +156,10 @@ public class SectionConnector
         var startPos = GetConnectionPoint(from, to);
         var endPos   = GetConnectionPoint(to, from);
 
-        var path = _pathfinder.FindPath(_grid, startPos, endPos, avoidCorridorAdjacency: true, maxStraight: _maxStraight);
-        if (path == null)
+        if (_carver.Carve(startPos, endPos) == null)
         {
             DebugCustom.LogWarning($"[SectionConnector] A* 失敗: {startPos} -> {endPos}");
             return false;
-        }
-
-        foreach (var pos in path)
-        {
-            var cellType = _grid[pos.x, pos.y];
-            if (cellType == GridType.Door)     continue;
-            if (cellType == GridType.Floor)    continue;
-            if (cellType == GridType.Corridor) continue;
-            _grid[pos.x, pos.y] = GridType.Corridor;
         }
 
         if (_adjacency != null)
@@ -192,37 +173,20 @@ public class SectionConnector
 
     private Vector2Int GetConnectionPoint(SectionData section, SectionData target)
     {
-        var targetCenter = target.GridPosition + target.GridSize / 2;
-
         if (_sectionDoorMap.TryGetValue(section, out var doors))
-            return FindNearest(doors, targetCenter);
+            return FindNearestDoor(doors, target.Center);
 
         return _pathPointMap[section];
     }
 
-    private Vector2Int FindNearest(List<Vector2Int> positions, Vector2Int target)
+    private Vector2Int FindNearestDoor(List<Vector2Int> doors, Vector2Int target)
     {
-        if (positions == null || positions.Count == 0)
+        if (doors == null || doors.Count == 0)
         {
-            DebugCustom.LogWarning("[SectionConnector] FindNearest: DoorPositions が空です。RoomGridData を確認してください。");
+            DebugCustom.LogWarning("[SectionConnector] FindNearestDoor: DoorPositions が空です。RoomGridData を確認してください。");
             return target;
         }
 
-        var nearest  = positions[0];
-        float minDist = float.MaxValue;
-
-        foreach (var pos in positions)
-        {
-            float dist = Vector2Int.Distance(pos, target);
-            if (dist >= minDist) continue;
-            minDist = dist;
-            nearest = pos;
-        }
-
-        return nearest;
+        return GridUtil.FindNearest(target, doors).Value;
     }
-
-    private bool IsInGrid(Vector2Int pos)
-        => pos.x >= 0 && pos.x < _grid.GetLength(0)
-        && pos.y >= 0 && pos.y < _grid.GetLength(1);
 }

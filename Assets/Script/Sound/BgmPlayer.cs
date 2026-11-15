@@ -60,27 +60,13 @@ public class BgmPlayer : MonoBehaviour
         _source.clip   = clip;
         _source.volume = 0f;
         _source.Play();
-        float t = 0f;
-        float inv = 1f / Mathf.Max(duration, 0.001f);
-        while (t < 1f)
-        {
-            t = Mathf.MoveTowards(t, 1f, Time.deltaTime * inv);
-            _source.volume = t;
-            yield return null;
-        }
+        yield return Tween.Run(duration, t => _source.volume = t);
     }
 
     private IEnumerator FadeOutRoutine(float duration)
     {
         float start = _source.volume;
-        float t = 0f;
-        float inv = 1f / Mathf.Max(duration, 0.001f);
-        while (t < 1f)
-        {
-            t = Mathf.MoveTowards(t, 1f, Time.deltaTime * inv);
-            _source.volume = Mathf.Lerp(start, 0f, t);
-            yield return null;
-        }
+        yield return Tween.Run(duration, t => _source.volume = Mathf.Lerp(start, 0f, t));
         _source.Stop();
     }
 

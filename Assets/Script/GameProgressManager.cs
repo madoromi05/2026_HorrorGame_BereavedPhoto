@@ -24,6 +24,8 @@ public class GameProgressManager : MonoBehaviour
 
     public const int AlbumPageCount = 4;
 
+    private const int kTargetFrameRate = 60;	// vSync を切って、この fps に揃える
+
     // インメモリのみ（実行中リセットされる）
     public GameStage CurrentStage { get; private set; } = GameStage.Title;
     public bool[] AlbumPages { get; private set; } = new bool[AlbumPageCount];
@@ -46,7 +48,7 @@ public class GameProgressManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = kTargetFrameRate;
         QualitySettings.vSyncCount = 0;
     }
 

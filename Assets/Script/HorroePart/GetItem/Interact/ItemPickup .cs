@@ -17,7 +17,7 @@ namespace HorrorGame.Item
         [SerializeField] private ItemData _item;
         [SerializeField] private int _obstructionRespawnMinTiles = 8;
         public bool CanInteract => _item != null;
-        public string HintText => _item != null ? $"[E] {_item.DisplayName}を取得" : string.Empty;
+        public string HintText => _item != null ? InteractHint.Format($"{_item.DisplayName}を取得") : string.Empty;
 
         private ItemGetUIPresenter _uiPresenter;
         private ObstructionRespawner _respawner;

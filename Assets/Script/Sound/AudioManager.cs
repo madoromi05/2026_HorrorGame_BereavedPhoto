@@ -5,10 +5,14 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// サウンド管理のエントリポイント（MonoBehaviour Singleton / DontDestroyOnLoad）。
 /// Resources/AudioManager プレハブを RuntimeInitializeOnLoadMethod で自動生成する。
+/// 種類から素材を引くのは SoundLibrary、鳴らすのは BgmPlayer / SePlayer、音量は AudioMixerProxy
+/// ここは窓口（Facade）として、それらへ渡すことと、ゲームオーバー後の SE 抑止だけを持つ
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
+
+    private const float kDefaultBgmFade = 0.8f;	// BGM を切り替える・止めるときの、既定のフェード秒数
 
     // ゲームオーバー確定後、ゲームオーバー SE 以外の SE 再生を抑止する状態。
     // シーンをまたいで持続しないよう、次シーンのロードで自動解除する。
@@ -45,6 +49,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioResource _seSignalNoise;   // ゲームオーバー時のホワイトノイズ
     [SerializeField] private AudioResource _seTvPowerOff;     // テレビを消す音
 
+    private SoundLibrary _library;
+
     // ---- 自動生成 ----
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void AutoCreate()
@@ -65,6 +71,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        _library = BuildLibrary();
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
@@ -110,10 +117,10 @@ public class AudioManager : MonoBehaviour
 
     // ---- BGM ----（複数同時不可）
     /// BGM をクロスフェードで切り替える。同じ曲が再生中の場合は何もしない。
-    public void PlayBgm(BgmType type, float crossFadeDuration = 0.8f)
+    public void PlayBgm(BgmType type, float crossFadeDuration = kDefaultBgmFade)
     {
         if (type == BgmType.None) { StopBgm(); return; }
-        var clip = GetBgmClip(type);
+        var clip = _library.GetBgm(type);
         if (clip == null)
         {
             DebugCustom.LogWarning($"[AudioManager] BGM クリップ未設定: {type}");
@@ -123,7 +130,7 @@ public class AudioManager : MonoBehaviour
     }
 
     /// BGM をフェードアウトして停止する。
-    public void StopBgm(float fadeOut = 0.8f) => _bgmPlayer.Stop(fadeOut);
+    public void StopBgm(float fadeOut = kDefaultBgmFade) => _bgmPlayer.Stop(fadeOut);
 
     // ---- SE ----
     /// SE を 2D で再生する（複数同時可）。
@@ -160,32 +167,33 @@ public class AudioManager : MonoBehaviour
     public float SeVolume  => _mixerProxy != null ? _mixerProxy.GetSeVolume()  : 1f;
 
     // ---- クリップ取得 ----
-    private AudioClip GetBgmClip(BgmType type) => type switch
-    {
-        BgmType.Title      => _bgmTitle,
-        BgmType.GameNormal => _bgmGameNormal,
-        BgmType.GameChase  => _bgmGameChase,
-        BgmType.Ending     => _bgmEnding,
-        _                  => null,
-    };
+    public AudioResource GetSeResource(SeType type) => _library.GetSe(type);
 
-    public AudioResource GetSeResource(SeType type) => type switch
+    private SoundLibrary BuildLibrary()	// Inspector の素材を種類ごとに表へ登録する。種類と素材の組はここだけで決まる
     {
-        SeType.EnemyMother      => _seEnemyMother,
-        SeType.EnemyFather      => _seEnemyFather,
-        SeType.ItemPickup       => _seItemPickup,
-        SeType.MemoPageTurn     => _seMemoPageTurn,
-        SeType.AnalysisComplete => _seAnalysisComplete,
-        SeType.FootStep         => _seFootStep,
-        SeType.StartRoomExit    => _seStartRoomExit,
-        SeType.GameOver         => _seGameOver,
-        SeType.HandLightToggle  => _seHandLightToggle,
-        SeType.HandLightFlicker => _seHandLightFlicker,
-        SeType.DoorOpen         => _seDoorOpen,
-        SeType.DoorClose        => _seDoorClose,
-        SeType.ObstructionItemHit => _seObstructionItemHit,
-        SeType.SignalNoise        => _seSignalNoise,
-        SeType.TvPowerOff         => _seTvPowerOff,
-        _                       => null,
-    };
+        var library = new SoundLibrary();
+
+        library.AddBgm(BgmType.Title,      _bgmTitle);
+        library.AddBgm(BgmType.GameNormal, _bgmGameNormal);
+        library.AddBgm(BgmType.GameChase,  _bgmGameChase);
+        library.AddBgm(BgmType.Ending,     _bgmEnding);
+
+        library.AddSe(SeType.EnemyMother,        _seEnemyMother);
+        library.AddSe(SeType.EnemyFather,        _seEnemyFather);
+        library.AddSe(SeType.ItemPickup,         _seItemPickup);
+        library.AddSe(SeType.MemoPageTurn,       _seMemoPageTurn);
+        library.AddSe(SeType.AnalysisComplete,   _seAnalysisComplete);
+        library.AddSe(SeType.FootStep,           _seFootStep);
+        library.AddSe(SeType.StartRoomExit,      _seStartRoomExit);
+        library.AddSe(SeType.GameOver,           _seGameOver);
+        library.AddSe(SeType.HandLightToggle,    _seHandLightToggle);
+        library.AddSe(SeType.HandLightFlicker,   _seHandLightFlicker);
+        library.AddSe(SeType.DoorOpen,           _seDoorOpen);
+        library.AddSe(SeType.DoorClose,          _seDoorClose);
+        library.AddSe(SeType.ObstructionItemHit, _seObstructionItemHit);
+        library.AddSe(SeType.SignalNoise,        _seSignalNoise);
+        library.AddSe(SeType.TvPowerOff,         _seTvPowerOff);
+
+        return library;
+    }
 }

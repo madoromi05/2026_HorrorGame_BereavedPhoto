@@ -74,15 +74,8 @@ public class ScreenFadeIn : MonoBehaviour
         if (_darkenOverlay == null)
             yield break;
 
-        float elapsed = 0f;
-        while (elapsed < _fadeInDuration)
-        {
-            elapsed += Time.deltaTime;
-            _darkenOverlay.alpha = Mathf.Clamp01(1f - elapsed / _fadeInDuration);
-            yield return null;
-        }
+        yield return Tween.FadeAlpha(_darkenOverlay, 1f, 0f, _fadeInDuration);
 
-        _darkenOverlay.alpha = 0f;
         _darkenOverlay.blocksRaycasts = false;
         // 明転後は全画面オーバーレイの描画コストを避けるため無効化する。
         _darkenOverlay.gameObject.SetActive(false);

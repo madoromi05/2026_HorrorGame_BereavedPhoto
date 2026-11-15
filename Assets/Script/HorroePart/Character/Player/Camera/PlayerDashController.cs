@@ -58,45 +58,49 @@ public class PlayerDashController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 疲労タイマーの消化（疲労中はダッシュ不可）
-        if (_isExhausted)
+        TickExhaust();
+
+        _mover.IsDashing = CanDash;
+        if (CanDash) ConsumeGauge();
+        else         RegenerateGauge();
+    }
+
+    // キーを押している ∧ ゲージが残っている ∧ 移動入力がある ∧ 疲労していない
+    private bool CanDash => _isSprintKeyHeld && _dashGauge > 0f && !_isExhausted
+                         && _moveInput.sqrMagnitude > PlayerMover.kMoveInputDeadZoneSqr;
+
+    private void TickExhaust()	// 疲労中はタイマーを減らし、0 で解ける
+    {
+        if (!_isExhausted) return;
+
+        _exhaustTimer -= Time.fixedDeltaTime;
+        if (_exhaustTimer <= 0f)
+            _isExhausted = false;
+    }
+
+    private void ConsumeGauge()	// ゲージを減らし、使い切ったら疲労にする
+    {
+        _dashGauge -= _dashConsumeRate * Time.fixedDeltaTime;
+        _regenDelayTimer = _dashRegenDelay;
+
+        if (_dashGauge <= 0f)
         {
-            _exhaustTimer -= Time.fixedDeltaTime;
-            if (_exhaustTimer <= 0f)
-                _isExhausted = false;
+            _dashGauge = 0f;
+            // ゲージ枯渇 → 一定時間ダッシュ不可＆息切れ（ノイズ増）の疲労状態へ
+            _isExhausted = true;
+            _exhaustTimer = _exhaustDuration;
         }
+    }
 
-        // ダッシュ実行条件: キーを押している ∧ ゲージが残っている ∧ 移動入力がある ∧ 疲労していない
-        bool isMoving = _moveInput.sqrMagnitude > 0.01f;
-        bool canDash = _isSprintKeyHeld && _dashGauge > 0f && isMoving && !_isExhausted;
-
-        if (canDash)
+    private void RegenerateGauge()	// 待ち時間の後でゲージを戻す
+    {
+        if (_regenDelayTimer > 0f)
         {
-            _mover.IsDashing = true;
-            _dashGauge -= _dashConsumeRate * Time.fixedDeltaTime;
-            _regenDelayTimer = _dashRegenDelay;
-
-            if (_dashGauge <= 0f)
-            {
-                _dashGauge = 0f;
-                // ゲージ枯渇 → 一定時間ダッシュ不可＆息切れ（ノイズ増）の疲労状態へ
-                _isExhausted = true;
-                _exhaustTimer = _exhaustDuration;
-            }
+            _regenDelayTimer -= Time.fixedDeltaTime;
         }
-        else
+        else if (_dashGauge < _dashMaxGauge)
         {
-            _mover.IsDashing = false;
-
-            // ゲージの回復処理
-            if (_regenDelayTimer > 0f)
-            {
-                _regenDelayTimer -= Time.fixedDeltaTime;
-            }
-            else if (_dashGauge < _dashMaxGauge)
-            {
-                _dashGauge = Mathf.Min(_dashGauge + _dashRegenRate * Time.fixedDeltaTime, _dashMaxGauge);
-            }
+            _dashGauge = Mathf.Min(_dashGauge + _dashRegenRate * Time.fixedDeltaTime, _dashMaxGauge);
         }
     }
 }

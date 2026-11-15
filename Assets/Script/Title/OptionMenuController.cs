@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -6,15 +5,11 @@ using TMPro;
 /// <summary>
 /// タイトル・ゲーム中共用のオプションパネル。
 /// タブ（音声 / 操作）をマウスで切替え、設定は PlayerPrefs で永続化する。
+/// ここはパネルの開閉の窓口（Facade）。音量スライダーは VolumeSliders、感度スライダーは SensitivitySlider、
+/// 音量を音へ映すのは VolumeApplier、SE の試し鳴らしは SePreviewDebouncer が持つ
 /// </summary>
 public class OptionMenuController : MonoBehaviour
 {
-    // ---- PlayerPrefs keys ----
-    public const string KeyMaster = "MasterVolume";
-    public const string KeyBgm    = "BgmVolume";
-    public const string KeySe     = "SeVolume";
-    public const string KeySens   = "MouseSensitivity";
-
     [Header("ルートパネル")]
     [SerializeField] private GameObject _optionPanel;
 
@@ -35,7 +30,9 @@ public class OptionMenuController : MonoBehaviour
     [SerializeField] private Button _closeButton;
 
     private bool _initialized;
-    private Coroutine _seDebounce;
+    private VolumeSliders _volumeSliders;
+    private SensitivitySlider _sensitivity;
+    private SePreviewDebouncer _sePreview;
 
 
     private void Start()
@@ -53,12 +50,14 @@ public class OptionMenuController : MonoBehaviour
 
         _closeButton?.onClick.AddListener(CloseOption);
 
-        _masterSlider?.onValueChanged.AddListener(OnMasterChanged);
-        _bgmSlider?.onValueChanged.AddListener(OnBgmChanged);
-        _seSlider?.onValueChanged.AddListener(OnSeChanged);
-        _sensitivitySlider?.onValueChanged.AddListener(OnSensitivityChanged);
+        _sePreview = new SePreviewDebouncer(this);
+        _volumeSliders = new VolumeSliders(_masterSlider, _bgmSlider, _seSlider, RequestSePreview);
+        _sensitivity = new SensitivitySlider(_sensitivitySlider);
 
-        ApplySavedSettings();
+        _volumeSliders.Bind();
+        _sensitivity.Bind();	// 感度の上限もここで合わせる。音量スライダーとは別の Slider なので、音量より後でも結果は同じ
+
+        VolumeApplier.ApplySaved();
     }
 
     // ---- 公開 API ----
@@ -80,69 +79,13 @@ public class OptionMenuController : MonoBehaviour
     public bool IsOpen => _optionPanel != null && _optionPanel.activeSelf;
 
 
-    // ---- スライダーコールバック ----
-
-    private void OnMasterChanged(float v)
-    {
-        AudioListener.volume = ToAppliedVolume(v);
-        PlayerPrefs.SetFloat(KeyMaster, v);
-    }
-
-    private void OnBgmChanged(float v)
-    {
-        AudioManager.Instance?.SetBgmVolume(ToAppliedVolume(v));
-        PlayerPrefs.SetFloat(KeyBgm, v);
-    }
-
-    private void OnSeChanged(float v)
-    {
-        AudioManager.Instance?.SetSeVolume(v);
-        PlayerPrefs.SetFloat(KeySe, v);
-
-        // スライダーが止まった直後に1回だけ SE を再生（デバウンス）
-        if (_seDebounce != null) StopCoroutine(_seDebounce);
-        _seDebounce = StartCoroutine(PlaySeAfterDelay());
-    }
-
-    private IEnumerator PlaySeAfterDelay()
-    {
-        yield return new WaitForSecondsRealtime(_sePlayDelay);
-        AudioManager.Instance?.PlaySe(_testSeType);
-        _seDebounce = null;
-    }
-
-    private void OnSensitivityChanged(float v)
-    {
-        PlayerPrefs.SetFloat(KeySens, v);
-
-        // ゲーム中なら即時反映
-        foreach (var cam in FindObjectsByType<PlayerCamera>(FindObjectsSortMode.None))
-            cam.SetSensitivity(v);
-        foreach (var mover in FindObjectsByType<PlayerMover>(FindObjectsSortMode.None))
-            mover.SetSensitivity(v);
-    }
-
     // ヘルパー
 
-    /// <summary>
-    /// スライダー値（0〜1、既定0.5）を実際の再生音量に変換する。
-    /// 0.5 で以前のデフォルト音量（フル）と同じ音量になるよう、実音量はスライダー値の2倍とする
-    /// （0.5〜1.0 はフル音量のまま。将来ブーストが必要になった場合の余地として上半分を残している）。
-    /// </summary>
-    private static float ToAppliedVolume(float sliderValue) => Mathf.Min(sliderValue * 2f, 1f);
-
-    private void ApplySavedSettings()
-    {
-        AudioListener.volume = ToAppliedVolume(PlayerPrefs.GetFloat(KeyMaster, 0.5f));
-        AudioManager.Instance?.SetBgmVolume(ToAppliedVolume(PlayerPrefs.GetFloat(KeyBgm, 0.5f)));
-        AudioManager.Instance?.SetSeVolume(PlayerPrefs.GetFloat(KeySe, 0.5f));
-    }
+    private void RequestSePreview() => _sePreview.Request(_sePlayDelay, _testSeType);	// Inspector の値を呼ぶたびに読む
 
     private void RefreshSliders()
     {
-        _masterSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyMaster, 0.5f));
-        _bgmSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeyBgm, 0.5f));
-        _seSlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySe, 0.5f));
-        _sensitivitySlider?.SetValueWithoutNotify(PlayerPrefs.GetFloat(KeySens, 0.5f));
+        _volumeSliders.Refresh();
+        _sensitivity.Refresh();
     }
 }

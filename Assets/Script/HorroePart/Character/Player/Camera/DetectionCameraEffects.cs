@@ -1,10 +1,12 @@
 using UnityEngine;
 
 /// <summary>
-/// 敵にプレイヤーが発見された瞬間と追跡中の画面演出を管理する。
+/// 敵にプレイヤーが発見された瞬間と追跡中の画面演出の窓口（Facade）
 ///
-/// 発見時: ヴィネットを強化し、カメラを一度強く揺らす。
-/// 追跡中に移動しているとき: カメラを軽く揺らし続ける。
+/// 発見時: カメラを一度強く揺らす（BurstShake）
+/// 追跡中に移動しているとき: カメラを軽く揺らし続ける（ChaseSway）
+/// 通常の歩行: ヘッドボブとライトボブ（BobWave・HandLightBob）
+/// 調整値はここの Inspector に置き、毎フレーム各部へ渡す。どの揺れを優先するかはここで決める
 /// </summary>
 public class DetectionCameraEffects : MonoBehaviour
 {
@@ -28,15 +30,11 @@ public class DetectionCameraEffects : MonoBehaviour
     [SerializeField] private GameObject _handLight;
     [SerializeField] private float _lightBobMagnitude = 0.04f;  // ローカル座標（m）
 
-    private PlayerMover _playerMover;
-    private EnemyController[] _enemies;
-    private float _enemyRefreshTimer;
-
-    private bool  _wasChased;
-    private float _burstTimer;
-    private float _perlinSeedX;
-    private float _perlinSeedY;
-    private Vector3 _handLightInitialLocalPos;
+    private PlayerMover  _playerMover;
+    private ChaseWatcher _chaseWatcher;
+    private BurstShake   _burst;
+    private BobWave      _bobWave;
+    private HandLightBob _lightBob;
 
     private void Awake()
     {
@@ -50,24 +48,16 @@ public class DetectionCameraEffects : MonoBehaviour
         if (_handLightController == null)
             _handLightController = GetComponent<HandLightController>();
 
-        if (_handLight != null)
-            _handLightInitialLocalPos = _handLight.transform.localPosition;
-
-        _perlinSeedX = Random.value * 100f;
-        _perlinSeedY = Random.value * 100f;
+        _lightBob     = new HandLightBob(_handLightController, _handLight);
+        _chaseWatcher = new ChaseWatcher();
+        _burst        = new BurstShake();
+        _bobWave      = new BobWave(_playerMover);
     }
 
     private void Update()
     {
-        RefreshEnemiesIfNeeded();
-
-        bool isChased = IsAnyChasing();
-
-        // 追跡開始を検出したらバーストシェイクをトリガー
-        if (isChased && !_wasChased)
-            _burstTimer = _burstDuration;
-
-        _wasChased = isChased;
+        bool isChased = _chaseWatcher.Tick(out bool chaseStarted);
+        if (chaseStarted) _burst.Play(_burstDuration);	// 追跡開始を検出したらバーストシェイクをトリガー
 
         bool isMoving = _playerMover != null &&
                         _playerMover.CurrentMoveState != PlayerMover.MoveState.Idle;
@@ -76,85 +66,41 @@ public class DetectionCameraEffects : MonoBehaviour
         if (_playerCamera != null)
             _playerCamera.SetShakeAngle(ComputeShake(isChased, isMoving));
 
-        // ライトボブ
         ApplyLightBob(isMoving, isChased);
     }
 
+    /// <summary>
+    /// 今のカメラの揺れを選んで返す
+    /// 優先順：発見時の強い揺れ → 追跡中に移動しているときの揺れ → 通常歩行のヘッドボブ
+    /// </summary>
     private Vector3 ComputeShake(bool isChased, bool isMoving)
     {
-        // 発見時の強い一回揺れ（タイマーが残っている間、先頭が最強で減衰）
-        if (_burstTimer > 0f)
-        {
-            _burstTimer -= Time.deltaTime;
-            float decay = Mathf.Max(0f, _burstTimer) / _burstDuration;
-            float t = Time.time * _burstFrequency;
-            float x = (Mathf.PerlinNoise(_perlinSeedX + t, 0f)      - 0.5f) * 2f;
-            float y = (Mathf.PerlinNoise(0f, _perlinSeedY + t * 0.9f) - 0.5f) * 2f;
-            return new Vector3(x, y, 0f) * (_burstMagnitude * decay);
-        }
+        if (_burst.IsPlaying)
+            return _burst.Tick(_burstDuration, _burstMagnitude, _burstFrequency);
 
-        // 追跡中 + 移動中の軽い揺れ（優先）
         if (isChased && isMoving)
-        {
-            float t = Time.time * _walkFrequency;
-            float x = Mathf.Sin(t * 1.1f) * _walkMagnitude;
-            float y = Mathf.Abs(Mathf.Sin(t * 0.7f)) * (_walkMagnitude * 0.4f);
-            return new Vector3(x, y, 0f);
-        }
+            return ChaseSway.Compute(_walkMagnitude, _walkFrequency);
 
-        // 通常歩行ヘッドボブ
         if (isMoving)
         {
-            var state = _playerMover.CurrentMoveState;
-            float freq = state == PlayerMover.MoveState.Dash ? _bobFrequency * 1.4f : _bobFrequency;
-            float mag  = state == PlayerMover.MoveState.Dash ? _bobMagnitude * 1.4f : _bobMagnitude;
-            float t = Time.time * freq;
-            float x = Mathf.Sin(t * 2f) * mag;
-            float y = Mathf.Sin(t) * (mag * 0.35f);
-            return new Vector3(x, y, 0f);
+            var wave = _bobWave.Sample(_bobMagnitude, _bobFrequency);
+            return new Vector3(wave.x, wave.y, 0f);		// 頭は横が大きく縦が小さい
         }
 
         return Vector3.zero;
     }
 
-    private void ApplyLightBob(bool isMoving, bool isChased)
+    private void ApplyLightBob(bool isMoving, bool isChased)	// 歩いていて追われていないときだけ、ライトを揺らす
     {
-        bool hasController = _handLightController != null;
-        bool hasFlashlight = _handLight != null;
-        if (!hasController && !hasFlashlight) return;
+        if (!_lightBob.HasTarget) return;
 
         if (!isMoving || isChased)
         {
-            if (hasController) _handLightController.SetBobOffset(Vector3.zero);
-            if (hasFlashlight) _handLight.transform.localPosition = _handLightInitialLocalPos;
+            _lightBob.Reset();
             return;
         }
 
-        var state = _playerMover.CurrentMoveState;
-        float freq = state == PlayerMover.MoveState.Dash ? _bobFrequency * 1.4f : _bobFrequency;
-        float mag = state == PlayerMover.MoveState.Dash ? _lightBobMagnitude * 1.4f : _lightBobMagnitude;
-
-        float t = Time.time * freq;
-        var offset = new Vector3(Mathf.Sin(t) * (mag * 0.35f), Mathf.Sin(t * 2f) * mag, 0f);
-
-        if (hasController) _handLightController.SetBobOffset(offset);
-        if (hasFlashlight) _handLight.transform.localPosition = _handLightInitialLocalPos + offset;
-    }
-
-    private void RefreshEnemiesIfNeeded()
-    {
-        _enemyRefreshTimer -= Time.deltaTime;
-        if (_enemyRefreshTimer > 0f) return;
-        _enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
-        _enemyRefreshTimer = 3f;
-    }
-
-    private bool IsAnyChasing()
-    {
-        if (_enemies == null) return false;
-        foreach (var e in _enemies)
-            if (e != null && e.IsActivated)
-                return true;
-        return false;
+        var wave = _bobWave.Sample(_lightBobMagnitude, _bobFrequency);
+        _lightBob.Set(new Vector3(wave.y, wave.x, 0f));	// ライトは縦が大きく横が小さい
     }
 }

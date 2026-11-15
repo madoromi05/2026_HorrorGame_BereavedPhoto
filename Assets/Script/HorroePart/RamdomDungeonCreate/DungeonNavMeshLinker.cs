@@ -10,43 +10,39 @@ using UnityEngine;
 /// </summary>
 public class DungeonNavMeshLinker : MonoBehaviour
 {
-    private static readonly Vector2Int[] kDirs =
-    {
-        Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left
-    };
-
     public void BuildLinks(GridType[,] grid, float gridSize)
     {
         var parent = new GameObject("NavMeshLinks").transform;
         parent.SetParent(transform);
 
-        int w = grid.GetLength(0);
-        int h = grid.GetLength(1);
-
-        for (int x = 0; x < w; x++)
-        for (int y = 0; y < h; y++)
-        {
-            if (grid[x, y] == GridType.Door)
-                TryCreateLink(grid, x, y, gridSize, parent);
-        }
+        foreach (var door in GridUtil.CellsOf(grid, GridType.Door))
+            TryCreateLink(grid, door, gridSize, parent);
     }
 
     private static void TryCreateLink(
-        GridType[,] grid, int x, int y, float gridSize, Transform parent)
+        GridType[,] grid, Vector2Int door, float gridSize, Transform parent)
     {
-        var center = new Vector3((x + 0.5f) * gridSize, 0f, (y + 0.5f) * gridSize);
+        if (!TryFindLinkEnds(grid, door, gridSize, out var roomOffset, out var corridorOffset)) return;
+        CreateLink(GridUtil.CellCenterToWorld(door, gridSize, 0f), roomOffset, corridorOffset, door, gridSize, parent);
+    }
 
-        Vector3 roomOffset    = Vector3.zero;
-        Vector3 corridorOffset = Vector3.zero;
+    /// <summary>
+    /// ドアの 4 方向から、最初に見つかった部屋側と廊下側のセル中心へのオフセットを返す。どちらかが無ければ false
+    /// </summary>
+    private static bool TryFindLinkEnds(GridType[,] grid, Vector2Int door, float gridSize,
+                                        out Vector3 roomOffset, out Vector3 corridorOffset)
+    {
+        roomOffset     = Vector3.zero;
+        corridorOffset = Vector3.zero;
         bool hasRoom     = false;
         bool hasCorridor = false;
 
-        foreach (var d in kDirs)
+        foreach (var d in GridUtil.ClockwiseDirs)
         {
-            int nx = x + d.x, ny = y + d.y;
-            if (nx < 0 || nx >= grid.GetLength(0) || ny < 0 || ny >= grid.GetLength(1)) continue;
+            var n = door + d;
+            if (!GridUtil.IsInGrid(grid, n)) continue;
 
-            var ct  = grid[nx, ny];
+            var ct  = grid[n.x, n.y];
             // 隣接セルの中心へのオフセット（セル境界ではなく中心がNavMesh上に確実に乗る）
             var off = new Vector3(d.x * gridSize, 0f, d.y * gridSize);
 
@@ -62,9 +58,13 @@ public class DungeonNavMeshLinker : MonoBehaviour
             }
         }
 
-        if (!hasRoom || !hasCorridor) return;
+        return hasRoom && hasCorridor;
+    }
 
-        var go = new GameObject($"NavMeshLink_{x}_{y}");
+    private static void CreateLink(Vector3 center, Vector3 roomOffset, Vector3 corridorOffset,
+                                   Vector2Int door, float gridSize, Transform parent)
+    {
+        var go = new GameObject($"NavMeshLink_{door.x}_{door.y}");
         go.transform.SetParent(parent);
         go.transform.position = center;
 

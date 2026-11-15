@@ -16,14 +16,25 @@ public class LightBeamEffect : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _particleAlpha = 0.2f; // 透明度（0=透明, 1=不透明）
     [SerializeField] private float _startOffset = 0.5f;                  // ライト原点からパーティクル発生開始までの距離（m）
 
+    private const float kMinTravelDistance = 0.1f;		// ライトの届く距離が開始位置より短くても、粒が前へ進むようにする
+    private const int   kMaxParticles      = 200;
+    private const float kConeBaseRadius    = 0.05f;	// ライトの根元のコーンの半径（m）
+    private const int   kBeamSortingOrder  = 1;		// 既定の 0 より手前に描く
+    private const float kMinParticleScreen = 0.005f;	// 画面上の大きさの下限（画面に対する比）
+    private const float kMaxParticleScreen = 1.5f;		// 画面上の大きさの上限（同上）
+    private const float kStandardModeFade  = 2f;		// Standard 系シェーダーの _Mode。2 が Fade
+
     private HandLightController _lightController;
     private Light _spotLight;
     private ParticleSystem _beamParticles;
 
+    private float ConeHalfAngle => _spotLight.spotAngle * 0.5f;	// spotAngle はコーン全体の角度。Shape は片側の角度を取る
+
+    private float TravelDistance => Mathf.Max(kMinTravelDistance, _spotLight.range - _startOffset);	// 開始位置の分だけ短い、粒が進む距離
+
     private void Awake()
     {
         _lightController = GetComponent<HandLightController>();
-
     }
 
     private void Start()
@@ -52,12 +63,9 @@ public class LightBeamEffect : MonoBehaviour
     {
         // スポットライトの角度・距離に合わせてコーン形状を更新
         var shape = _beamParticles.shape;
-        shape.angle = _spotLight.spotAngle * 0.5f;
-
-        // オフセット分だけ短い距離を速度に反映
-        float travelDistance = Mathf.Max(0.1f, _spotLight.range - _startOffset);
         var main = _beamParticles.main;
-        main.startSpeedMultiplier = travelDistance / _particleLifetime;
+        shape.angle = ConeHalfAngle;
+        main.startSpeedMultiplier = TravelDistance / _particleLifetime;
     }
 
     private ParticleSystem CreateBeamParticles(Transform parent)
@@ -71,17 +79,15 @@ public class LightBeamEffect : MonoBehaviour
         var ps = go.AddComponent<ParticleSystem>();
         var renderer = go.GetComponent<ParticleSystemRenderer>();
 
-        float travelDistance = Mathf.Max(0.1f, _spotLight.range - _startOffset);
-
         // --- Main ---
         var main = ps.main;
         main.loop = true;
         main.startLifetime = _particleLifetime;
-        main.startSpeed = travelDistance / _particleLifetime;
+        main.startSpeed = TravelDistance / _particleLifetime;
         main.startSize = _particleSize;
         main.startColor = new Color(_particleColor.r, _particleColor.g, _particleColor.b);
         main.simulationSpace = ParticleSystemSimulationSpace.World;
-        main.maxParticles = 200;
+        main.maxParticles = kMaxParticles;
         main.cullingMode = ParticleSystemCullingMode.AlwaysSimulate;
 
         // --- Emission ---
@@ -91,8 +97,8 @@ public class LightBeamEffect : MonoBehaviour
         // --- Shape: コーン形状でスポットライトに合わせる ---
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Cone;
-        shape.angle = _spotLight.spotAngle * 0.5f;
-        shape.radius = 0.05f;
+        shape.angle = ConeHalfAngle;
+        shape.radius = kConeBaseRadius;
         shape.radiusThickness = 1f;
 
         // --- Color over Lifetime: 先端に向かってフェードアウト ---
@@ -108,9 +114,9 @@ public class LightBeamEffect : MonoBehaviour
         // --- Renderer: 加算合成で光っぽく見せる ---
         renderer.material = CreateAdditiveMaterial();
         renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.sortingOrder = 1;
-        renderer.minParticleSize = 0.005f;
-        renderer.maxParticleSize = 1.5f;
+        renderer.sortingOrder = kBeamSortingOrder;
+        renderer.minParticleSize = kMinParticleScreen;
+        renderer.maxParticleSize = kMaxParticleScreen;
 
         ps.Play();
         return ps;
@@ -125,12 +131,12 @@ public class LightBeamEffect : MonoBehaviour
         var mat = new Material(shader);
 
         // 透明・加算合成モードを強制設定（シェーダーのデフォルトが不透明のため）
-        mat.SetFloat("_Mode", 2f);
+        mat.SetFloat("_Mode", kStandardModeFade);
         mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
         mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
         mat.SetOverrideTag("RenderType", "Transparent");
         mat.EnableKeyword("_ALPHABLEND_ON");
-        mat.renderQueue = 3000;
+        mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;	// 3000
 
         mat.color = Color.white;
         mat.enableInstancing = true;

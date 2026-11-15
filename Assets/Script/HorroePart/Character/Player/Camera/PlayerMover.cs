@@ -4,6 +4,7 @@ using UnityEngine;
 /// キャラクターの水平移動とY軸回転を制御する。
 /// CharacterController を使用するためコリジョンが有効。
 /// 移動速度は歩き・ダッシュの 2 段階のみ（MoveState で管理）。
+/// 足音は PlayerFootsteps が持つ。ここは移動した後に MoveState を渡すだけ
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(InputPlayerController))]
@@ -28,7 +29,6 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float _dashSpeed = 8f;
 
     [Header("感度、調整用設定")]
-    [SerializeField] private float _yawSensitivity = 0.5f;
     [SerializeField] private float _aimSensitivityMultiplier = 0.5f;
     [SerializeField] private float _aimSpeedMultiplier = 0.6f;
 
@@ -38,26 +38,31 @@ public class PlayerMover : MonoBehaviour
     [SerializeField] private float _dashStepInterval = 0.3f;
     [SerializeField] private float _dashStepPitch = 1.4f;
 
+    public const float kMoveInputDeadZoneSqr = 0.01f;	// これより小さい移動入力（長さの 2 乗）は止まっているとみなす
+
     private CharacterController _characterController;
     private InputPlayerController _inputCallbackController;
     private Vector2 _moveInput;
     private float _currentYaw;
-    private float _footStepTimer;
+    private PlayerFootsteps _footsteps;
     private bool _isAiming;
     private float _pendingLookX;
+    private float _yawSensitivity;	// GameSettings から受け取る
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _inputCallbackController = GetComponent<InputPlayerController>();
         _currentYaw = transform.eulerAngles.y;
+        _footsteps = new PlayerFootsteps();
 
-        if (PlayerPrefs.HasKey(OptionMenuController.KeySens))
-            _yawSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
+        _yawSensitivity = GameSettings.Sensitivity;
+        GameSettings.OnSensitivityChanged += SetSensitivity;
     }
 
-    // オプションメニューからマウス感度を即時反映する。
-    public void SetSensitivity(float v) => _yawSensitivity = v;
+    private void OnDestroy() => GameSettings.OnSensitivityChanged -= SetSensitivity;
+
+    private void SetSensitivity(float v) => _yawSensitivity = v;	// オプション画面で変えた感度をすぐ反映する
 
     /// <summary>
     /// スポーン時などに向き（Yaw）を外部から設定する。
@@ -137,13 +142,13 @@ public class PlayerMover : MonoBehaviour
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
         Vector3 right = Vector3.ProjectOnPlane(transform.right, Vector3.up).normalized;
 
-        Vector2 input = (IsDashing && _moveInput.sqrMagnitude < 0.01f)
+        Vector2 input = (IsDashing && _moveInput.sqrMagnitude < kMoveInputDeadZoneSqr)
             ? Vector2.zero
             : _moveInput;
 
         Vector3 movement = (forward * input.y + right * input.x) * speed * Time.fixedDeltaTime;
         _characterController.Move(movement);
-        UpdateFootStep(state);
+        _footsteps.Tick(state, Time.fixedDeltaTime, _walkStepInterval, _dashStepInterval, _dashStepPitch);
     }
 
     /// <summary>
@@ -153,27 +158,7 @@ public class PlayerMover : MonoBehaviour
     private MoveState GetMoveState()
     {
         if (IsDashing) return MoveState.Dash;
-        if (_moveInput.sqrMagnitude > 0.01f) return MoveState.Walk;
+        if (_moveInput.sqrMagnitude > kMoveInputDeadZoneSqr) return MoveState.Walk;
         return MoveState.Idle;
-    }
-
-    /// <summary>
-    /// Playerの移動状態に応じて足音を再生する。歩きとダッシュで間隔とピッチが変わる。
-    /// </summary>
-    private void UpdateFootStep(MoveState state)
-    {
-        if (state != MoveState.Walk && state != MoveState.Dash)
-        {
-            _footStepTimer = 0f;
-            return;
-        }
-
-        _footStepTimer -= Time.fixedDeltaTime;
-        if (_footStepTimer > 0f) return;
-
-        float pitch = state == MoveState.Dash ? _dashStepPitch : 1f;
-        float interval = state == MoveState.Dash ? _dashStepInterval : _walkStepInterval;
-        AudioManager.Instance?.PlaySe(SeType.FootStep, 1f, pitch);
-        _footStepTimer = interval;
     }
 }

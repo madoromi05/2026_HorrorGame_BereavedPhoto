@@ -96,18 +96,9 @@ public class TitleIntroDirector : MonoBehaviour
 
         _blurOverlay.enabled = true;
 
-        float elapsed = 0f;
-        while (elapsed < _focusInDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / _focusInDuration);
-            _blurMaterial.SetFloat(kBlurSizeId, Mathf.Lerp(_startBlurAmount, 0f, t));
-            yield return null;
-        }
+        yield return Tween.Run(_focusInDuration, t => _blurMaterial.SetFloat(kBlurSizeId, Mathf.Lerp(_startBlurAmount, 0f, t)));
 
-        // 鮮明になった後は無駄な全画面ブラー描画を避けるため非表示にする。
-        _blurMaterial.SetFloat(kBlurSizeId, 0f);
-        _blurOverlay.enabled = false;
+        _blurOverlay.enabled = false;	// 鮮明になった後は、全画面のブラーを描かないように隠す
     }
 
     // メニュー UI の alpha を 0 → 1 へ補間し、表示しきってから操作可能にする。
@@ -116,15 +107,8 @@ public class TitleIntroDirector : MonoBehaviour
         if (_menuGroup == null)
             yield break;
 
-        float elapsed = 0f;
-        while (elapsed < _menuFadeInDuration)
-        {
-            elapsed += Time.deltaTime;
-            _menuGroup.alpha = Mathf.Clamp01(elapsed / _menuFadeInDuration);
-            yield return null;
-        }
+        yield return Tween.FadeAlpha(_menuGroup, 0f, 1f, _menuFadeInDuration);
 
-        _menuGroup.alpha = 1f;
         _menuGroup.interactable = true;
         _menuGroup.blocksRaycasts = true;
     }
@@ -136,14 +120,7 @@ public class TitleIntroDirector : MonoBehaviour
         {
             _darkenOverlay.blocksRaycasts = true; // 暗転中の追加入力を遮断する
 
-            float elapsed = 0f;
-            while (elapsed < _darkenDuration)
-            {
-                elapsed += Time.deltaTime;
-                _darkenOverlay.alpha = Mathf.Clamp01(elapsed / _darkenDuration);
-                yield return null;
-            }
-            _darkenOverlay.alpha = 1f;
+            yield return Tween.FadeAlpha(_darkenOverlay, 0f, 1f, _darkenDuration);
         }
 
         onComplete?.Invoke();

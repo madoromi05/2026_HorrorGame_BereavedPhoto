@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,6 +11,9 @@ using UnityEngine.UI;
 /// 白は「終着点」ではなく「通過点」として扱う。白で覆っている間にドアを捨て、
 /// 白が引くとクレジット背景が現れる、という目隠しの役割を持たせている
 /// （ドアからクレジットへの切り替わりを直接見せないため）。
+///
+/// 窓口（Facade）。調整値はここの Inspector に置き、段（IEndingStep）は演出の始まりに作って渡し、毎フレーム動く係には使うたびに渡す
+/// 段を順に流すこと・白の裏で舞台を差し替えること・タイトルへ移る判断・カーソル固定だけをここで行う
 /// </summary>
 public class GameClearDirector : MonoBehaviour
 {
@@ -57,9 +59,13 @@ public class GameClearDirector : MonoBehaviour
     [SerializeField] private float _skipFadeDuration = 0.25f;
     [SerializeField] private float _skipVisibleAlpha = 0.5f;
 
-    private bool  _isHoldingSkip;    // スキップボタンを押している間 true
-    private float _skipHoldElapsed;  // 長押し経過秒数
     private bool  _isFinishing;      // タイトル遷移の二重実行防止
+
+    private DoorOpenStep        _doorOpen;
+    private WhiteTransitionStep _whiteTransition;
+    private CreditScrollStep    _creditScroll;
+    private CreditSkipHold      _skipHold;
+    private TitleReturnFade     _titleReturn;
 
     private void Awake()
     {
@@ -73,20 +79,23 @@ public class GameClearDirector : MonoBehaviour
             (nameof(_creditRoot),        _creditRoot),
             (nameof(_skipProgressImage), _skipProgressImage),
             (nameof(_skipCanvasGroup),   _skipCanvasGroup));
+
+        _skipHold    = new CreditSkipHold(_skipProgressImage, _skipCanvasGroup);	// 入力の購読に要るので OnEnable より前に作る
+        _titleReturn = new TitleReturnFade(_darkenOverlay);
     }
 
     private void OnEnable()
     {
         if (_input == null) return;
-        _input.OnMenuHeld     += BeginSkipHold;
-        _input.OnMenuReleased += EndSkipHold;
+        _input.OnMenuHeld     += _skipHold.Begin;
+        _input.OnMenuReleased += _skipHold.End;
     }
 
     private void OnDisable()
     {
         if (_input == null) return;
-        _input.OnMenuHeld     -= BeginSkipHold;
-        _input.OnMenuReleased -= EndSkipHold;
+        _input.OnMenuHeld     -= _skipHold.Begin;
+        _input.OnMenuReleased -= _skipHold.End;
     }
 
     private void Start()
@@ -95,21 +104,15 @@ public class GameClearDirector : MonoBehaviour
         // ClearScene 開始時に即停止する。エンディング BGM は EndingSequence 内で改めて鳴らす。
         AudioManager.Instance?.StopBgm(0f);
 
-        LockCursor();
+        GameCursor.Lock();
 
-        // スキップ用プログレスバーは初期状態で非表示（押している間だけフェードインさせる）。
-        _skipCanvasGroup.alpha = 0f;
-        _skipProgressImage.fillAmount = 0f;
+        BuildSteps();
+        _skipHold.HideAtStart();
+        _whiteTransition.HideAtStart();
+        _titleReturn.HideAtStart();
 
-        // 白転はドアが開いた後に始めるため、初回描画フレームから透明を確定させる。
-        _whiteOverlay.alpha = 0f;
-        // タイトル暗転もタイトル遷移時まで使わないため、初回描画前に透明を確定させる。
-        _darkenOverlay.alpha = 0f;
-
-        _doorImage.sprite = _doorClosed;
-        // クレジットは Canvas 上でドア画像より手前に描画されるため、
-        // 開始位置へ送るまで無効化しておく（ドア演出中に文字が透けて見えるのを防ぐ）。
-        _creditRoot.gameObject.SetActive(false);
+        _doorOpen.ShowClosed();
+        _creditScroll.HideUntilStart();
         StartCoroutine(EndingSequence());
     }
 
@@ -117,138 +120,50 @@ public class GameClearDirector : MonoBehaviour
     private void Update()
     {
         KeepCursorLocked();
-        UpdateSkipHold();
+        if (_skipHold.Tick(_skipHoldDuration, _skipFadeDuration, _skipVisibleAlpha))
+            GoToTitle();
     }
 
     // このシーンでは Start() の1回設定だと毎フレーム表示側に戻されてしまうため、
     // 状態が崩れたフレームだけカーソル固定を再適用する（既に固定済みなら何もしない）。
     private void KeepCursorLocked()
     {
-        if (!Cursor.visible && Cursor.lockState == CursorLockMode.Locked) return;
-        LockCursor();
+        if (GameCursor.IsLocked) return;
+        GameCursor.Lock();
     }
 
-    // 押している間だけプログレスバーをフェードインさせながら進め、
-    // 規定秒数まで押し続けたらクリア画面をスキップしてタイトルへ遷移する。
-    // 途中で離したら経過とバーをリセットし、フェードアウトさせる。
-    private void UpdateSkipHold()
+    // 演出の段を作る。調整値は演出が始まるときに読む
+    private void BuildSteps()
     {
-        float fadeTarget = _isHoldingSkip ? _skipVisibleAlpha : 0f;
-        float fadeStep   = _skipFadeDuration > 0f ? Time.deltaTime / _skipFadeDuration : 1f;
-        _skipCanvasGroup.alpha = Mathf.MoveTowards(_skipCanvasGroup.alpha, fadeTarget, fadeStep);
-
-        if (!_isHoldingSkip)
-        {
-            _skipHoldElapsed = 0f;
-            _skipProgressImage.fillAmount = 0f;
-            return;
-        }
-
-        _skipHoldElapsed += Time.deltaTime;
-        _skipProgressImage.fillAmount = _skipHoldElapsed / _skipHoldDuration;
-
-        if (_skipHoldElapsed >= _skipHoldDuration)
-            GoToTitle();
-    }
-
-    // 本編と同様、マウスを隠し位置基準を中心に固定する。
-    private void LockCursor()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+        _doorOpen        = new DoorOpenStep(_doorImage, _doorClosed, _doorOpened, _initialShowDuration, _afterDoorOpenWait);
+        _whiteTransition = new WhiteTransitionStep(_whiteOverlay, SeType.DoorClose,	// ドアが閉まる音は画面外の出来事として白転と重ねて鳴らす
+            _whitenDuration, _holdWhiteDuration, _whiteFadeOutDuration, SwapStageBehindWhite);
+        _creditScroll    = new CreditScrollStep(_creditRoot, _scrollStartY, _scrollEndY, _scrollSpeed);
     }
 
     // ドアが開く演出 → 白転 → BGM → クレジットスクロール → タイトル遷移。
     private IEnumerator EndingSequence()
     {
-        // 1枚目
-        yield return new WaitForSeconds(_initialShowDuration);
-
-        // 2枚目
-        _doorImage.sprite = _doorOpened;
-        yield return PlaySeAndWait(SeType.DoorOpen, _afterDoorOpenWait);
-
-        // 開いたドアを白で塗り潰す。ドアが閉まる音は画面外の出来事として白転と重ねて鳴らす。
-        AudioManager.Instance.PlaySe(SeType.DoorClose);
-        yield return FadeOverlay(_whiteOverlay, 0f, 1f, _whitenDuration);
-        yield return new WaitForSeconds(_holdWhiteDuration);
-
-        // 白で覆われている間に舞台を整えてから白を引く。位置決めを白の裏で済ませないと、
-        // 白が引く途中でクレジットが画面中央に居座ったまま見えてしまう。
-        _doorImage.gameObject.SetActive(false);
-        MoveCreditToStart();
-        AudioManager.Instance.PlayBgm(BgmType.Ending);
-        yield return FadeOverlay(_whiteOverlay, 1f, 0f, _whiteFadeOutDuration);
-
-        yield return ScrollCredit();
+        foreach (var step in new IEndingStep[] { _doorOpen, _whiteTransition, _creditScroll })	// 演出の順番はここだけで決まる
+            yield return step.Play();
 
         GoToTitle();
     }
 
-    // 指定オーバーレイの alpha を from → to へ補間する（ScreenFadeIn と同じく alpha 補間のみを担う）。
-    private IEnumerator FadeOverlay(CanvasGroup overlay, float from, float to, float duration)
+    // 白で覆われている間に舞台を整える（この後に白が引く）。位置決めを白の裏で済ませないと、
+    // 白が引く途中でクレジットが画面中央に居座ったまま見えてしまう。
+    private void SwapStageBehindWhite()
     {
-        overlay.alpha = from;
-
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            overlay.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(elapsed / duration));
-            yield return null;
-        }
-
-        overlay.alpha = to;
+        _doorOpen.Hide();
+        _creditScroll.MoveToStart();
+        AudioManager.Instance.PlayBgm(BgmType.Ending);
     }
-
-    // SE を鳴らし、そのクリップ長＋余韻ぶん待機する。クリップ未設定ならクリップ長は 0 扱い。
-    private IEnumerator PlaySeAndWait(SeType type, float extraWait)
-    {
-        AudioManager.Instance.PlaySe(type);
-        var clip = AudioManager.Instance.GetSeResource(type) as AudioClip;
-        float clipLength = clip != null ? clip.length : 0f;
-        yield return new WaitForSeconds(clipLength + extraWait);
-    }
-
-    // クレジットを画面下の開始位置へ送る。白で覆われている間に呼び、瞬間移動を見せない。
-    private void MoveCreditToStart()
-    {
-        _creditRoot.gameObject.SetActive(true);
-        Vector2 pos = _creditRoot.anchoredPosition;
-        pos.y = _scrollStartY;
-        _creditRoot.anchoredPosition = pos;
-    }
-
-    // クレジットを下から上へスクロールする。終了 Y 到達で終わる（スキップは長押しで別途処理）。
-    private IEnumerator ScrollCredit()
-    {
-        Vector2 pos = _creditRoot.anchoredPosition;
-
-        while (pos.y < _scrollEndY)
-        {
-            pos.y += _scrollSpeed * Time.deltaTime;
-            _creditRoot.anchoredPosition = pos;
-            yield return null;
-        }
-    }
-
-    // スキップ長押しの開始／終了。押している間だけ Update() でプログレスを進める。
-    private void BeginSkipHold() => _isHoldingSkip = true;
-    private void EndSkipHold()   => _isHoldingSkip = false;
 
     // タイトルへ遷移する（二重実行防止）。暗転しきってからロードする。
     private void GoToTitle()
     {
         if (_isFinishing) return;
         _isFinishing = true;
-        StartCoroutine(FadeOutAndLoadTitle());
-    }
-
-    // 全画面を黒く覆いきってからタイトルシーンをロードする。
-    private IEnumerator FadeOutAndLoadTitle()
-    {
-        _darkenOverlay.blocksRaycasts = true; // 暗転中の入力を遮断する
-        yield return FadeOverlay(_darkenOverlay, 0f, 1f, _darkenDuration);
-        SceneManager.LoadScene(GameProgressManager.SceneTitleName);
+        StartCoroutine(_titleReturn.Play(_darkenDuration));
     }
 }

@@ -1,6 +1,6 @@
 /// <summary>
-/// SectionDataをもとに部屋PrefabとプレイヤーをInstantiateする。
-/// 敵の生成はEnemySpawnerに委譲しており、このクラスは部屋配置のみを担う。
+/// SectionDataをもとに部屋PrefabをInstantiateする
+/// Start ルームを置いたら、プレイヤーの移動を PlayerStartPositioner に任せる。敵の生成は EnemySpawner が行う
 /// </summary>
 using DungeonSystem;
 using HorrorGame.Interaction;
@@ -11,12 +11,11 @@ using UnityEngine.AI;
 
 public class SectionPlacer
 {
-    private const float CellCenterOffset = 0.5f;
-    private const float FloorY = 0f;
+    private const float kFloorY = 0f;	// 部屋を置く床の高さ
 
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
-    private readonly Transform _player;
+    private readonly PlayerStartPositioner _playerPositioner;
     public SectionPlacer(
         RoomDataBase roomDataBase,
         float gridSize,
@@ -24,7 +23,7 @@ public class SectionPlacer
     {
         _roomDataBase = roomDataBase;
         _gridSize = gridSize;
-        _player = player;
+        _playerPositioner = new PlayerStartPositioner(player);
     }
 
     /// <summary>
@@ -42,7 +41,7 @@ public class SectionPlacer
             var instance = PlaceRoom(section, roomParent);
 
             if (section.Role == RoomType.Start)
-                playerTransform = PlayerTransform(instance);
+                playerTransform = _playerPositioner.MoveToStart(instance);
         }
 
         return playerTransform;
@@ -53,12 +52,10 @@ public class SectionPlacer
         var prefab = _roomDataBase.GetPrefab(section.Role, section.RoomGridData);
         if (prefab == null) return null;
 
-
-        var worldPos = CellToWorld(section, RoomCenterLocal(section.RoomGridData.GridSize), FloorY);
+        var worldPos = GridUtil.CellCenterToWorld(
+            section.RoomGridPosition + GridUtil.RoomCenterCell(section.RoomGridData.GridSize), _gridSize, kFloorY);
         var instance = InstantiateAgentsDisabled(prefab, worldPos, roomParent);
 
-        // NavMeshAgent.OnEnable が NavMesh ベイク前に発火してエラーになるのを防ぐため、
-        // 非アクティブ状態で Instantiate し、Agent を無効化してからアクティブ化する。
         instance.name = $"Room_{section.Role}_{section.GridPosition}";
         return instance;
     }
@@ -79,55 +76,4 @@ public class SectionPlacer
         instance.SetActive(true);
         return instance;
     }
-    /// <summary>
-    /// プレイヤーをStartルームの初期位置へ移動させる。
-    /// StartルームPrefab内のPlayerSpawnPointマーカーの位置・向きをそのまま使用する。
-    /// マーカーが無い場合はスポーン位置を決められないため、警告のみ出して現在位置を維持する
-    /// （部屋中央などへのフォールバックは行わない）。
-    /// </summary>
-    private Transform PlayerTransform(GameObject startRoomInstance)
-    {
-        var marker = startRoomInstance != null
-            ? startRoomInstance.GetComponentInChildren<PlayerSpawnPoint>(true)
-            : null;
-
-        if (marker == null)
-        {
-            DebugCustom.LogWarning(
-                "SectionPlacer: StartルームにPlayerSpawnPointマーカーが見つかりません。" +
-                "StartルームのPrefabにPlayerSpawnPointを配置してください。" +
-                "プレイヤーの位置は変更しません。");
-            return _player;
-        }
-
-        if (_player.TryGetComponent<CharacterController>(out var cc))
-            cc.enabled = false;
-
-        _player.position = marker.Position;
-
-        // PlayerMover は内部Yawを基準に回転を制御するため、直接rotationを書くだけでは
-        // 最初の視点入力で元に戻ってしまう。SetYaw経由で内部状態も同期させる。
-        if (_player.TryGetComponent<PlayerMover>(out var mover))
-            mover.SetYaw(marker.Yaw);
-        else
-            _player.rotation = Quaternion.Euler(0f, marker.Yaw, 0f);
-
-        if (cc != null)
-            cc.enabled = true;
-
-        return _player;
-    }
-
-    // 部屋ローカルのセル座標をワールド座標へ変換する（座標規約はここに一本化）
-    private Vector3 CellToWorld(SectionData section, Vector2 localCell, float y)
-    {
-        return new Vector3(
-            (section.RoomGridPosition.x + localCell.x + CellCenterOffset) * _gridSize,
-            y,
-            (section.RoomGridPosition.y + localCell.y + CellCenterOffset) * _gridSize);
-    }
-
-    // 部屋中央のローカルセル座標（偶数サイズの場合はセル境界）を返す。
-    private static Vector2 RoomCenterLocal(Vector2Int gridSize)
-        => new Vector2((gridSize.x - 1) * 0.5f, (gridSize.y - 1) * 0.5f);
 }

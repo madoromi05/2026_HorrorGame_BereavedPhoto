@@ -12,4 +12,6 @@ public class SectionData
     public Vector2Int RoomGridPosition; // 部屋の左上グリッド座標（セクション座標 + ランダムオフセット）
     public RoomType Role;
     public RoomGridData RoomGridData;
+
+    public Vector2Int Center => GridPosition + GridSize / 2;	// 区画の中心のセル。通路をつなぐ目安に使う
 }

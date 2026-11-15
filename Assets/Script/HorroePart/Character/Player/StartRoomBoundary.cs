@@ -16,6 +16,10 @@ public class StartRoomBoundary : MonoBehaviour
     [SerializeField] private float _revealDuration = 1f;        // 画像を出す長さ
     private bool _triggered;
 
+#if UNITY_EDITOR
+    private static readonly Color kGizmoColor = new Color(1f, 0.4f, 0f, 0.4f);	// 半透明のオレンジ
+#endif
+
     private void OnTriggerEnter(Collider other)
     {
         if (_triggered) return;
@@ -50,8 +54,8 @@ public class StartRoomBoundary : MonoBehaviour
 
     private void ActivateAllEnemies()
     {
-        var enemies = FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
-        DebugCustom.Log($"[StartRoomBoundary] Activate 呼び出し。対象敵数={enemies.Length}", this);
+        var enemies = EnemyRegistry.All;
+        DebugCustom.Log($"[StartRoomBoundary] Activate 呼び出し。対象敵数={enemies.Count}", this);
         foreach (var e in enemies)
             e.Activate();
 
@@ -65,7 +69,7 @@ public class StartRoomBoundary : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = new Color(1f, 0.4f, 0f, 0.4f);
+        Gizmos.color = kGizmoColor;
         if (TryGetComponent<BoxCollider>(out var col))
             Gizmos.DrawCube(transform.position, col.size);
     }

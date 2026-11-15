@@ -54,7 +54,7 @@ public class RoomGridPlacer
             {
                 var localPos = new Vector2Int(x, y);
                 var worldPos = section.RoomGridPosition + localPos;
-                if (!IsInGrid(grid, worldPos)) continue;
+                if (!GridUtil.IsInGrid(grid, worldPos)) continue;
 
                 grid[worldPos.x, worldPos.y] = ResolveCellType(roomData, localPos);
 
@@ -83,10 +83,6 @@ public class RoomGridPlacer
     /// </summary>
     private void PlacePath(SectionData section, Dictionary<SectionData, Vector2Int> pathPointMap)
     {
-        pathPointMap[section] = section.GridPosition + section.GridSize / 2;
+        pathPointMap[section] = section.Center;
     }
-
-    private bool IsInGrid(GridType[,] grid, Vector2Int pos)
-        => pos.x >= 0 && pos.x < grid.GetLength(0)
-        && pos.y >= 0 && pos.y < grid.GetLength(1);
 }

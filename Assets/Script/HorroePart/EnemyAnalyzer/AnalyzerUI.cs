@@ -34,7 +34,7 @@ public class AnalyzerUI : MonoBehaviour
 
     private void UpdateBar(float pct)
     {
-        _barFill.fillAmount = pct / 100f;
+        _barFill.fillAmount = pct / EnemyAnalyzer.kCompletePercent;
     }
 
     // フィールドのタイプライターを管理

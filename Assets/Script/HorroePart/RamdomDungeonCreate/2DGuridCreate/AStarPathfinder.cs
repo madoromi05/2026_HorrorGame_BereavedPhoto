@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// �O���b�h��� A* �o�H�T���BSectionConnector �� IsolatedDoorRepairer �����L����B
+/// グリッド上の A* 経路探索。CorridorCarver が通路を掘るときに使う
 /// </summary>
 public class AStarPathfinder
 {
+    private const int   kHashMultiplier           = 397;	// ハッシュ値を合成するときの乗数。よく使われる素数
+    private const float kBaseMoveCost             = 1.0f;	// 何も無いセルへ進むコスト
+    private const float kOpenCellMoveCost         = 0.5f;	// 既にあるドア・通路へ進むコスト。安くして既存の道に合流させる
+    private const float kCorridorAdjacencyPenalty = 1.5f;	// 既存の通路の隣へ進むときに足すコスト。2 列の通路を作りにくくする
+
     /// <summary>
-    /// �T���m�[�h�̏�Ԃ�\���\����
-    /// �ʒu�A�i�s�����A�����p������ێ�����B
+    /// 探索ノードの状態を表す構造体
+    /// 位置、進行方向、直線継続数を保持する
     /// </summary>
     private struct PathState : System.IEquatable<PathState>
     {
         public readonly Vector2Int Pos;
         public readonly Vector2Int Dir;
-        public readonly int Straight;   // �����p����
+        public readonly int Straight;   // 直線継続数
 
         public PathState(Vector2Int pos, Vector2Int dir, int straight)
         { Pos = pos; Dir = dir; Straight = straight; }
@@ -24,28 +29,21 @@ public class AStarPathfinder
         public override bool Equals(object obj) => obj is PathState s && Equals(s);
         public override int GetHashCode()
         {
-            //�n�b�V���l����������ۂ̏搔�Ƃ���397
             unchecked
             {
                 int h = Pos.x;
-                h = h * 397 ^ Pos.y;
-                h = h * 397 ^ Dir.x;
-                h = h * 397 ^ Dir.y;
-                return h * 397 ^ Straight;
+                h = h * kHashMultiplier ^ Pos.y;
+                h = h * kHashMultiplier ^ Dir.x;
+                h = h * kHashMultiplier ^ Dir.y;
+                return h * kHashMultiplier ^ Straight;
             }
         }
     }
 
-    // �����̒�`�i�㉺���E�j
-    private static readonly Vector2Int[] kDirs =
-    {
-        Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-    };
-
     /// <summary>
-    /// A* �� start ���� end �܂ł̌o�H��Ԃ��B�o�H�����݂��Ȃ��ꍇ�� null�B
-    /// maxStraight: �����p���̏���i0 = �������j�B
-    /// avoidCorridorAdjacency: �����ʘH�ɗאڂ���Z���̃R�X�g���グ�ĒʘH�̖�����}������B
+    /// A* で start から end までの経路を返す。経路が存在しない場合は null
+    /// maxStraight: 直線継続の上限（0 = 無制限）
+    /// avoidCorridorAdjacency: 既存通路に隣接するセルのコストを上げて通路の密着を抑制する
     /// </summary>
     public List<Vector2Int> FindPath(
         GridType[,] grid,
@@ -54,9 +52,7 @@ public class AStarPathfinder
         bool avoidCorridorAdjacency = false,
         int maxStraight = 0)
     {
-        var openSet = new SortedSet<(float f, int id)>(
-            Comparer<(float f, int id)>.Create((a, b) =>
-                a.f != b.f ? a.f.CompareTo(b.f) : a.id.CompareTo(b.id)));
+        var openSet = CreateOpenSet();
 
         var idState = new Dictionary<int, PathState>();
         var gCost = new Dictionary<PathState, float>();
@@ -81,46 +77,16 @@ public class AStarPathfinder
             if (cur.Pos == end)
                 return BuildPath(cameFrom, cur);
 
-            foreach (var dir in kDirs)
+            foreach (var dir in GridUtil.FourDirs)
             {
                 var nPos = cur.Pos + dir;
-                if (!IsInGrid(grid, nPos)) continue;
+                if (!GridUtil.IsInGrid(grid, nPos)) continue;
 
                 var cellType = grid[nPos.x, nPos.y];
-                if (cellType == GridType.Wall) continue;
-                if (cellType == GridType.Floor) continue;
+                if (!IsPassable(cellType)) continue;
+                if (!TryGetStraight(grid, cur, dir, nPos, start, maxStraight, out int newStraight)) continue;
 
-                int newStraight;
-                if (maxStraight <= 0)
-                {
-                    newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
-                }
-                else
-                {
-                    newStraight = ComputeStraight(grid, cur, dir, start);
-                    // Span of the whole straight open run: path so far + existing open cells ahead.
-                    int span = newStraight + CountOpenCells(grid, nPos + dir, dir, maxStraight);
-                    if (span > maxStraight) continue;
-                }
-
-                float moveCost = cellType switch
-                {
-                    GridType.Door => 0.5f,
-                    GridType.Corridor => 0.5f,
-                    _ => 1.0f,
-                };
-
-                if (avoidCorridorAdjacency && cellType == GridType.Empty)
-                {
-                    foreach (var adjDir in kDirs)
-                    {
-                        var adj = nPos + adjDir;
-                        if (adj == cur.Pos) continue;
-                        if (!IsInGrid(grid, adj)) continue;
-                        if (grid[adj.x, adj.y] == GridType.Corridor)
-                        { moveCost += 1.5f; break; }
-                    }
-                }
+                float moveCost = MoveCost(grid, cur.Pos, nPos, cellType, avoidCorridorAdjacency);
 
                 var next = new PathState(nPos, dir, newStraight);
                 float newG = gCost[cur] + moveCost;
@@ -137,6 +103,52 @@ public class AStarPathfinder
         if (maxStraight > 0)
             return FindPath(grid, start, end, avoidCorridorAdjacency, 0);
         return null;
+    }
+
+    private static SortedSet<(float f, int id)> CreateOpenSet()	// f が小さい順。同じ f なら先に入れた順
+        => new SortedSet<(float f, int id)>(
+            Comparer<(float f, int id)>.Create((a, b) =>
+                a.f != b.f ? a.f.CompareTo(b.f) : a.id.CompareTo(b.id)));
+
+    private static bool IsPassable(GridType type)	// 壁と部屋の中は通らない
+        => type != GridType.Wall && type != GridType.Floor;
+
+    /// <summary>
+    /// 次のセルまでの直進の長さを求める。maxStraight を超えるなら false
+    /// </summary>
+    private bool TryGetStraight(GridType[,] grid, PathState cur, Vector2Int dir, Vector2Int nPos,
+                                Vector2Int start, int maxStraight, out int newStraight)
+    {
+        if (maxStraight <= 0)
+        {
+            newStraight = (dir == cur.Dir) ? cur.Straight + 1 : 1;
+            return true;
+        }
+
+        newStraight = ComputeStraight(grid, cur, dir, start);
+        // Span of the whole straight open run: path so far + existing open cells ahead.
+        int span = newStraight + CountOpenCells(grid, nPos + dir, dir, maxStraight);
+        return span <= maxStraight;
+    }
+
+    private float MoveCost(GridType[,] grid, Vector2Int from, Vector2Int to, GridType toType, bool avoidCorridorAdjacency)
+    {
+        float cost = (toType == GridType.Door || toType == GridType.Corridor) ? kOpenCellMoveCost : kBaseMoveCost;
+        if (avoidCorridorAdjacency && toType == GridType.Empty && IsNextToCorridor(grid, to, from))
+            cost += kCorridorAdjacencyPenalty;
+        return cost;
+    }
+
+    private bool IsNextToCorridor(GridType[,] grid, Vector2Int cell, Vector2Int cameFrom)	// 来たセルを除く 4 方向に通路があるか
+    {
+        foreach (var dir in GridUtil.FourDirs)
+        {
+            var adj = cell + dir;
+            if (adj == cameFrom) continue;
+            if (!GridUtil.IsInGrid(grid, adj)) continue;
+            if (grid[adj.x, adj.y] == GridType.Corridor) return true;
+        }
+        return false;
     }
 
     private float Heuristic(Vector2Int a, Vector2Int b)
@@ -171,7 +183,7 @@ public class AStarPathfinder
     {
         int count = 0;
         var p = from;
-        while (count < limit && IsInGrid(grid, p) && IsOpenCell(grid[p.x, p.y]))
+        while (count < limit && GridUtil.IsInGrid(grid, p) && IsOpenCell(grid[p.x, p.y]))
         {
             count++;
             p += dir;
@@ -181,8 +193,4 @@ public class AStarPathfinder
 
     private bool IsOpenCell(GridType type)
         => type == GridType.Corridor || type == GridType.Door || type == GridType.Floor;
-
-    private bool IsInGrid(GridType[,] grid, Vector2Int pos)
-        => pos.x >= 0 && pos.x < grid.GetLength(0)
-        && pos.y >= 0 && pos.y < grid.GetLength(1);
 }

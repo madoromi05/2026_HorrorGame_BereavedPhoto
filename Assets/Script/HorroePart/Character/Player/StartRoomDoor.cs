@@ -13,7 +13,7 @@ public class StartRoomDoor : MonoBehaviour, IInteractable
     public event Action OnOpened;
 
     public bool   CanInteract => true;
-    public string HintText    => "【E】ドアを開ける";
+    public string HintText    => InteractHint.Format("ドアを開ける");
 
     public void OnInteract()
     {

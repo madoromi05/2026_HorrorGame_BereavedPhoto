@@ -8,7 +8,6 @@ using UnityEngine;
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform _cameraTransform;
-    [SerializeField] private float _pitchSensitivity = 0.5f;
     [SerializeField] private float _aimSensitivityMultiplier = 0.5f;
     [SerializeField] private float _minPitch = -90f;
     [SerializeField] private float _maxPitch = 90f;
@@ -19,6 +18,7 @@ public class PlayerCamera : MonoBehaviour
     private InputPlayerController _inputCallbackController;
     private PlayerMover _playerMover;
     private float _pendingLookY;
+    private float _pitchSensitivity;	// GameSettings から受け取る
 
     private void Awake()
     {
@@ -28,13 +28,13 @@ public class PlayerCamera : MonoBehaviour
         if (_cameraTransform == null)
             DebugCustom.LogError($"[PlayerCamera] _cameraTransform が未設定です。", this);
 
-        // 保存済み感度を読み込む（未保存なら Inspector 値をそのまま使う）
-        if (PlayerPrefs.HasKey(OptionMenuController.KeySens))
-            _pitchSensitivity = PlayerPrefs.GetFloat(OptionMenuController.KeySens);
+        _pitchSensitivity = GameSettings.Sensitivity;
+        GameSettings.OnSensitivityChanged += SetSensitivity;
     }
 
-    // オプションメニューからマウス感度を即時反映する
-    public void SetSensitivity(float v) => _pitchSensitivity = v;
+    private void OnDestroy() => GameSettings.OnSensitivityChanged -= SetSensitivity;
+
+    private void SetSensitivity(float v) => _pitchSensitivity = v;	// オプション画面で変えた感度をすぐ反映する
 
     // DetectionCameraEffects からシェイク角度（度）を毎フレーム注入する
     public void SetShakeAngle(Vector3 angle) => _shakeAngle = angle;

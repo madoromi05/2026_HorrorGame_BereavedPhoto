@@ -27,9 +27,29 @@ public class CorridorMeshCombiner
 
         var combinedRoot = new GameObject(kCombinedRootName);
         combinedRoot.transform.SetParent(corridorParent, false);
-        var rootWorldToLocal = combinedRoot.transform.worldToLocalMatrix;
 
-        // マテリアル単位でCombineInstanceをグルーピングする。
+        var groups = GroupByMaterial(meshFilters, combinedRoot.transform.worldToLocalMatrix);
+
+        if (groups.Count == 0)
+        {
+            Object.Destroy(combinedRoot);
+            return;
+        }
+
+        foreach (var (material, instances) in groups)
+        {
+            CombineGroup(material, instances, combinedRoot.transform);
+        }
+
+        DestroySourceMeshes(meshFilters);
+    }
+
+    /// <summary>
+    /// 各サブメッシュを、対応するマテリアルのグループに振り分ける
+    /// 単一サブメッシュ・複数サブメッシュ(Blender統合メッシュ)のどちらも正しく扱える
+    /// </summary>
+    private Dictionary<Material, List<CombineInstance>> GroupByMaterial(MeshFilter[] meshFilters, Matrix4x4 rootWorldToLocal)
+    {
         var groups = new Dictionary<Material, List<CombineInstance>>();
 
         foreach (var meshFilter in meshFilters)
@@ -44,8 +64,6 @@ public class CorridorMeshCombiner
 
             var localToRoot = rootWorldToLocal * meshFilter.transform.localToWorldMatrix;
 
-            // 各サブメッシュを、対応するマテリアルのグループに振り分ける。
-            // 単一サブメッシュ・複数サブメッシュ(Blender統合メッシュ)のどちらも正しく扱える。
             for (int s = 0; s < mesh.subMeshCount; s++)
             {
                 var material = s < materials.Length ? materials[s] : materials[materials.Length - 1];
@@ -66,18 +84,11 @@ public class CorridorMeshCombiner
             }
         }
 
-        if (groups.Count == 0)
-        {
-            Object.Destroy(combinedRoot);
-            return;
-        }
+        return groups;
+    }
 
-        foreach (var (material, instances) in groups)
-        {
-            CombineGroup(material, instances, combinedRoot.transform);
-        }
-
-        // 結合済みの元メッシュコンポーネントを破棄する（Colliderは残す）。
+    private void DestroySourceMeshes(MeshFilter[] meshFilters)	// 結合済みの元のメッシュを消す。Collider は NavMesh のベイク用に残す
+    {
         foreach (var meshFilter in meshFilters)
         {
             if (meshFilter.TryGetComponent<MeshRenderer>(out var renderer))
@@ -148,13 +159,30 @@ public class CorridorMeshCombiner
     /// </summary>
     private void WeldVertices(Mesh mesh,float tolerance)
     {
+        var remap = BuildWeldMap(mesh, tolerance, out var weldedPositions, out var weldedUVs);
+        var newTriangles = RemapTriangles(mesh, remap);
+
+        int subMeshCount = mesh.subMeshCount;
+        mesh.Clear();
+        mesh.SetVertices(weldedPositions);
+        if (weldedUVs.Count == weldedPositions.Count) mesh.SetUVs(0, weldedUVs);
+        mesh.subMeshCount = subMeshCount;
+        for (int s = 0; s < subMeshCount; s++)
+            mesh.SetTriangles(newTriangles[s], s);
+    }
+
+    /// <summary>
+    /// tolerance 以内で同じ位置の頂点を 1 つにまとめ、元の番号 → まとめた後の番号の表を返す
+    /// </summary>
+    private int[] BuildWeldMap(Mesh mesh, float tolerance, out List<Vector3> weldedPositions, out List<Vector2> weldedUVs)
+    {
         var vertices = mesh.vertices;
         var uvs = mesh.uv;
         var boneWeights = mesh.boneWeights;
 
-        var remap= new int[vertices.Length];
-        var weldedPositions = new List<Vector3>();
-        var weldedUVs = new List<Vector2>();
+        var remap = new int[vertices.Length];
+        weldedPositions = new List<Vector3>();
+        weldedUVs = new List<Vector2>();
         var keyToIndex = new Dictionary<(long, long, long), int>();
 
         float inv = 1f / tolerance;
@@ -163,34 +191,34 @@ public class CorridorMeshCombiner
         {
             var p = vertices[i];
             var key = (
-            (long)Mathf.Round(p.x * inv),
-            (long)Mathf.Round(p.y * inv),
-            (long)Mathf.Round(p.z * inv));
+                (long)Mathf.Round(p.x * inv),
+                (long)Mathf.Round(p.y * inv),
+                (long)Mathf.Round(p.z * inv));
 
-            if (!keyToIndex.TryGetValue(key, out var weldedIndex)) {
+            if (!keyToIndex.TryGetValue(key, out var weldedIndex))
+            {
                 weldedIndex = weldedPositions.Count;
                 keyToIndex[key] = weldedIndex;
                 weldedPositions.Add(p);
                 if (uvs.Length > i) weldedUVs.Add(uvs[i]);
             }
-        
+
             remap[i] = weldedIndex;
         }
-        
-        var subMeshCount = mesh.subMeshCount;
-        var newTriangles = new int[subMeshCount][];
-        for (int s = 0; s < subMeshCount; s++){
-           var tris = mesh.GetTriangles(s);
-           for (int t = 0; t < tris.Length; t++)
-           tris[t] = remap[tris[t]];
-           newTriangles[s] = tris;
+
+        return remap;
+    }
+
+    private int[][] RemapTriangles(Mesh mesh, int[] remap)	// 各サブメッシュの三角形を、まとめた後の頂点番号に付け替える
+    {
+        var newTriangles = new int[mesh.subMeshCount][];
+        for (int s = 0; s < mesh.subMeshCount; s++)
+        {
+            var tris = mesh.GetTriangles(s);
+            for (int t = 0; t < tris.Length; t++)
+                tris[t] = remap[tris[t]];
+            newTriangles[s] = tris;
         }
-        
-        mesh.Clear();
-        mesh.SetVertices(weldedPositions);
-        if (weldedUVs.Count == weldedPositions.Count) mesh.SetUVs(0, weldedUVs);
-        mesh.subMeshCount = subMeshCount;
-                for (int s = 0; s < subMeshCount; s++)
-                    mesh.SetTriangles(newTriangles[s], s);
+        return newTriangles;
     }
 }

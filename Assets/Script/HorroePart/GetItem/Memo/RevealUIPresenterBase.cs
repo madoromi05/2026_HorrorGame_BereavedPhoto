@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +7,10 @@ namespace HorrorGame.UI
     /// 円形リビールアニメーションで表示・クローズする共通基底クラス。
     /// MemoUIPresenter・ItemAcquiredUIPresenterが継承する。
     /// Show()/Hide()のオーバーライドで各UIの表示内容を設定すること。
+    ///
+    /// ここが持つのは、オーバーレイの開け閉め（入力・ライト・ヒントの切り替え）と拡張点（ShowBase・Hide・OnHoldComplete）だけ
+    /// 長押しの数え方は HoldProgressGauge、円形リビールは CircleRevealAnimator に任せる（委譲）
+    /// 共有の Inspector の値は派生クラスのコンポーネントとしてシーンに保存されるため、この基底に置く
     /// </summary>
     public abstract class RevealUIPresenterBase : MonoBehaviour
     {
@@ -20,20 +23,17 @@ namespace HorrorGame.UI
 
         protected bool _isShowing = false;
 
-        private float _holdElapsed = 0f;
-        private bool _isHolding = false;
-        private Coroutine _revealCoroutine;
-        private Material _revealMaterialInstance;		// アセットを書き換えないための複製。初めて開くときに作る
+        private HoldProgressGauge _holdGauge;
+        private CircleRevealAnimator _revealAnimator;
 
-        private const float kHoldDuration = 1f;
-        private const float kRevealDuration = 0.6f;
-        private readonly int kShaderRadius = Shader.PropertyToID("_Radius");
+        // Awake は派生クラスが使うため、係は初めて使う所で作る
+        private HoldProgressGauge HoldGauge => _holdGauge ??= new HoldProgressGauge(_holdProgressImage);
+        private CircleRevealAnimator RevealAnimator => _revealAnimator ??= new CircleRevealAnimator(this, _revealImage);
 
         protected virtual void Start()
         {
             _overlayPanel.SetActive(false);
-            _holdProgressImage.fillAmount = 0f;
-            _holdProgressImage.gameObject.SetActive(false);
+            HoldGauge.HideGauge();
         }
 
         private void OnEnable()
@@ -56,26 +56,15 @@ namespace HorrorGame.UI
 
         private void OnDestroy()
         {
-            if (_revealMaterialInstance != null) Destroy(_revealMaterialInstance);
+            _revealAnimator?.ReleaseMaterial();	// 一度も開いていなければ複製は無い
         }
 
         private void Update()
         {
-            if (!_isShowing || !_isHolding) return;
+            if (!_isShowing) return;
 
-            _holdElapsed += Time.deltaTime;
-            _holdProgressImage.fillAmount = _holdElapsed / kHoldDuration;
-
-            if (_holdElapsed >= kHoldDuration)
-            {
-                // ホールド完了。連続で再発火しないようホールド状態をリセットし、
-                // 再度「離す→押す」まで次のアクションを起こさないようにする。
-                _isHolding = false;
-                _holdElapsed = 0f;
-                _holdProgressImage.fillAmount = 0f;
-                _holdProgressImage.gameObject.SetActive(false);
+            if (HoldGauge.Tick())
                 OnHoldComplete();
-            }
         }
 
         /// <summary>
@@ -91,18 +80,13 @@ namespace HorrorGame.UI
         private void OnInteractHeld()
         {
             if (!_isShowing) return;
-            _isHolding = true;
-            _holdElapsed = 0f;
-            _holdProgressImage.gameObject.SetActive(true);
+            HoldGauge.Begin();
         }
 
         private void OnInteractReleased()
         {
             if (!_isShowing) return;
-            _isHolding = false;
-            _holdElapsed = 0f;
-            _holdProgressImage.fillAmount = 0f;
-            _holdProgressImage.gameObject.SetActive(false);
+            HoldGauge.Cancel();
         }
 
         /// <summary>
@@ -119,48 +103,16 @@ namespace HorrorGame.UI
 
             if (_playerLight != null)
                 _playerLight.SetActive(false);
-            if (_revealCoroutine != null)
-                StopCoroutine(_revealCoroutine);
-            _revealCoroutine = StartCoroutine(PlayRevealAnimation());
+            RevealAnimator.Restart();
         }
 
         public virtual void Hide()
         {
             _overlayPanel.SetActive(false);
             _isShowing = false;
-            _isHolding = false;
-            _holdElapsed = 0f;
-            _holdProgressImage.fillAmount = 0f;
-            _holdProgressImage.gameObject.SetActive(false);
+            HoldGauge.Cancel();
             _inputController.SetPlayerInputEnabled(true);
             _interactHintUI?.SetSuppressed(false);
-        }
-
-        /// <summary>
-        /// _Radiusを0から1.5にアニメーションして円形リビールを再生する。
-        /// 1.5まで広げるのはUV対角距離（最大0.5→0.707）を超えて画面端まで確実に表示するため。
-        /// </summary>
-        private IEnumerator PlayRevealAnimation()
-        {
-            if (_revealMaterialInstance == null)
-            {
-                _revealMaterialInstance = new Material(_revealImage.material);
-                _revealImage.material = _revealMaterialInstance;
-            }
-            _revealMaterialInstance.SetFloat(kShaderRadius, 0f);
-
-            float elapsed = 0f;
-            while (elapsed < kRevealDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / kRevealDuration;
-                float eased = 1f - Mathf.Pow(1f - t, 3f);
-                _revealMaterialInstance.SetFloat(kShaderRadius, Mathf.Lerp(0f, 1.5f, eased));
-                yield return null;
-            }
-
-            _revealMaterialInstance.SetFloat(kShaderRadius, 1.5f);
-            _revealCoroutine = null;
         }
     }
 }

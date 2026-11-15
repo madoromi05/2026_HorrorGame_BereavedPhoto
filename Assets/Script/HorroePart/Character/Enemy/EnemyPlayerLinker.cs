@@ -23,7 +23,7 @@ public class EnemyPlayerLinker : MonoBehaviour
         }
 
         var player = _playerMover.transform;
-        foreach (var enemy in FindObjectsByType<EnemyController>(FindObjectsSortMode.None))
+        foreach (var enemy in EnemyRegistry.All)
             enemy.SetPlayer(player);
     }
 }

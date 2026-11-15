@@ -9,6 +9,8 @@ using UnityEngine.AI;
 
 public class EnemySpawner
 {
+    private const float kScatterRadiusRatio = 0.5f;	// 複数体を散らす半径（セルの大きさに対する比）
+
     private readonly RoomDataBase _roomDataBase;
     private readonly float _gridSize;
     private readonly float _enemySpawnOffsetY;
@@ -48,7 +50,7 @@ public class EnemySpawner
             var worldPos = roomCenter;
             if (entry.SpawnCount > 1)
             {
-                var offset = Random.insideUnitCircle * _gridSize * 0.5f;
+                var offset = Random.insideUnitCircle * _gridSize * kScatterRadiusRatio;
                 worldPos += new Vector3(offset.x, 0f, offset.y);
             }
 
@@ -62,12 +64,6 @@ public class EnemySpawner
     }
 
     private Vector3 CalcRoomCenterWorldPosition(SectionData section)
-    {
-        var gridSize = section.RoomGridData.GridSize;
-        return new Vector3(
-            (section.RoomGridPosition.x + (gridSize.x - 1) * 0.5f + 0.5f) * _gridSize,
-            _enemySpawnOffsetY,
-            (section.RoomGridPosition.y + (gridSize.y - 1) * 0.5f + 0.5f) * _gridSize
-        );
-    }
+        => GridUtil.CellCenterToWorld(
+            section.RoomGridPosition + GridUtil.RoomCenterCell(section.RoomGridData.GridSize), _gridSize, _enemySpawnOffsetY);
 }

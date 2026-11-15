@@ -7,15 +7,7 @@ using UnityEngine;
 
 public class CorridorResolver
 {
-    private static readonly Vector2Int[] kDirections = new[]
-    {
-        Vector2Int.up,    // North
-        Vector2Int.right, // East
-        Vector2Int.down,  // South
-        Vector2Int.left   // West
-    };
-
-    private const int kNorth = 0;
+    private const int kNorth = 0;	// GridUtil.ClockwiseDirs の番号
     private const int kEast = 1;
     private const int kSouth = 2;
     private const int kWest = 3;
@@ -25,12 +17,13 @@ public class CorridorResolver
     /// </summary>
     public (CorridorType type, float rotationY) Resolve(GridType[,] grid, Vector2Int pos)
     {
-        bool[] connected = new bool[4];
+        var dirs = GridUtil.ClockwiseDirs;
+        bool[] connected = new bool[dirs.Length];
 
-        for (int i = 0; i < kDirections.Length; i++)
+        for (int i = 0; i < dirs.Length; i++)
         {
-            var neighbor = pos + kDirections[i];
-            if (!IsInGrid(grid, neighbor)) continue;
+            var neighbor = pos + dirs[i];
+            if (!GridUtil.IsInGrid(grid, neighbor)) continue;
 
             var cellType = grid[neighbor.x, neighbor.y];
             connected[i] = cellType == GridType.Corridor || cellType == GridType.Door;
@@ -88,11 +81,5 @@ public class CorridorResolver
 
         // 孤立セル（接続なし）
         return (CorridorType.Straight, 0f);
-    }
-
-    private bool IsInGrid(GridType[,] grid, Vector2Int pos)
-    {
-        return pos.x >= 0 && pos.x < grid.GetLength(0)
-            && pos.y >= 0 && pos.y < grid.GetLength(1);
     }
 }

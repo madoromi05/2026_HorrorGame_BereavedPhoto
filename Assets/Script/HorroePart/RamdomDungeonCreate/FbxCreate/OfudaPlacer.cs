@@ -30,7 +30,7 @@ public class OfudaPlacer
     {
         if (_ofudaPrefab == null || _count <= 0) return;
 
-        var corridorCells = CollectCorridorCells(grid);
+        var corridorCells = new List<Vector2Int>(GridUtil.CellsOf(grid, GridType.Corridor));
         if (corridorCells.Count == 0) return;
 
         int placeCount = Mathf.Min(_count, corridorCells.Count);
@@ -38,16 +38,6 @@ public class OfudaPlacer
 
         for (int i = 0; i < placeCount; i++)
             PlaceOfuda(corridorCells[i], ofudaParent, i);
-    }
-
-    private static List<Vector2Int> CollectCorridorCells(GridType[,] grid)
-    {
-        var cells = new List<Vector2Int>();
-        for (int x = 0; x < grid.GetLength(0); x++)
-            for (int y = 0; y < grid.GetLength(1); y++)
-                if (grid[x, y] == GridType.Corridor)
-                    cells.Add(new Vector2Int(x, y));
-        return cells;
     }
 
     // Fisher-Yates シャッフル。先頭 placeCount 個をランダム抽出するために全体を並び替える。
@@ -62,12 +52,7 @@ public class OfudaPlacer
 
     private void PlaceOfuda(Vector2Int gridPos, Transform ofudaParent, int index)
     {
-        // セル中心のワールド座標（CorridorPlacer と同じ座標規約）
-        var worldPos = new Vector3(
-            (gridPos.x + 0.5f) * _gridSize,
-            _spawnOffsetY,
-            (gridPos.y + 0.5f) * _gridSize
-        );
+        var worldPos = GridUtil.CellCenterToWorld(gridPos, _gridSize, _spawnOffsetY);
 
         // プレハブに設定された角度をそのまま反映する（無回転で固定しない）。
         var instance = Object.Instantiate(_ofudaPrefab, worldPos, _ofudaPrefab.transform.rotation, ofudaParent);

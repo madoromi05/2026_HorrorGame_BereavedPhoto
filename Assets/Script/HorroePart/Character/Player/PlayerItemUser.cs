@@ -12,6 +12,8 @@ public class PlayerItemUser : MonoBehaviour
     [SerializeField] private float      _throwSpeed    = 15f;
     [SerializeField] private float      _stunDuration  = 5f;
 
+    private const float kThrowStartDistance = 0.5f;	// カメラの少し前（m）から投げる。カメラの中から出さないため
+
     private Inventory             _inventory;
     private InputPlayerController _input;
 
@@ -44,7 +46,7 @@ public class PlayerItemUser : MonoBehaviour
         if (!_inventory.ConsumeItem(ItemType.ObstructionItem)) return;
 
         var cam       = Camera.main;
-        var spawnPos  = cam.transform.position + cam.transform.forward * 0.5f;
+        var spawnPos  = cam.transform.position + cam.transform.forward * kThrowStartDistance;
         var go        = Instantiate(_projectilePrefab, spawnPos, cam.transform.rotation);
 
         var projectileCol = go.GetComponent<Collider>();

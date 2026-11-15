@@ -94,11 +94,7 @@ public class DungeonDebugVisualizer
             for (int y = 0; y < grid.GetLength(1); y++)
             {
                 var color    = GetCellColor(grid[x, y]);
-                var worldPos = new Vector3(
-                    (x + 0.5f) * _gridSize,
-                    -0.5f,
-                    (y + 0.5f) * _gridSize
-                );
+                var worldPos = GridUtil.CellCenterToWorld(new Vector2(x, y), _gridSize, -0.5f);
                 _drawer.AddBox(worldPos, new Vector3(inner, 0.05f, inner), color);
             }
         }

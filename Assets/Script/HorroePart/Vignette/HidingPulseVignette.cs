@@ -10,6 +10,8 @@ public class HidingPulseVignette : MonoBehaviour, IVignetteSource
     [SerializeField] private float _pulseFrequency = 0.8f;                    // パルス周波数（Hz）
     [SerializeField, Range(0f, 0.2f)] private float _pulseAmplitude = 0.06f;  // パルス振幅
 
+    private const float kTwoPi = Mathf.PI * 2f;	// 周波数（回/秒）を角速度に直す
+
     private float _current;
     private float _target;
     private float _fadeSpeed;
@@ -22,7 +24,7 @@ public class HidingPulseVignette : MonoBehaviour, IVignetteSource
             // フェードが完了している割合に応じてパルス振幅をスケール（フェード中は揺れない）。
             float fadeRatio = _target > 0f ? _current / _target : 0f;
             float pulse = _isHiding
-                ? Mathf.Sin(Time.time * _pulseFrequency * Mathf.PI * 2f) * _pulseAmplitude * fadeRatio
+                ? Mathf.Sin(Time.time * _pulseFrequency * kTwoPi) * _pulseAmplitude * fadeRatio
                 : 0f;
             return _current + pulse;
         }

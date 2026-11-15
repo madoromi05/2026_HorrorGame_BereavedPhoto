@@ -38,6 +38,9 @@ public class EnemyController : MonoBehaviour
         TryGetComponent(out _destinationProvider);
     }
 
+    private void OnEnable()  => EnemyRegistry.Register(this);
+    private void OnDisable() => EnemyRegistry.Unregister(this);
+
     public void SetPlayer(Transform player)
     {
         if (player == null)
@@ -80,21 +83,13 @@ public class EnemyController : MonoBehaviour
 
     /// <summary>
     /// 指定した種類（GhostType）の敵をすべて退場させる。
-    /// GhostIdentity が子にあっても、EnemyController のルートごと消す。
     /// </summary>
     public static void DespawnByType(EnemyType type)
     {
-        int removed = 0;
-        foreach (var ghost in FindObjectsByType<GhostIdentity>(FindObjectsSortMode.None))
-        {
-            if (ghost.GhostType != type) continue;
-
-            var controller = ghost.GetComponentInParent<EnemyController>();
-            if (controller != null) controller.Despawn();
-            else                    Destroy(ghost.gameObject);
-            removed++;
-        }
-        DebugCustom.Log($"[EnemyController] {type} の敵 {removed} 体を退場させました。");
+        var targets = EnemyRegistry.OfType(type);
+        foreach (var controller in targets)
+            controller.Despawn();
+        DebugCustom.Log($"[EnemyController] {type} の敵 {targets.Count} 体を退場させました。");
     }
 
     /// <summary>
@@ -112,17 +107,10 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     public static void ApplySpeedAfterAnalysisByType(EnemyType type)
     {
-        int boosted = 0;
-        foreach (var ghost in FindObjectsByType<GhostIdentity>(FindObjectsSortMode.None))
-        {
-            if (ghost.GhostType != type) continue;
-
-            var controller = ghost.GetComponentInParent<EnemyController>();
-            if (controller == null) continue;
+        var targets = EnemyRegistry.OfType(type);
+        foreach (var controller in targets)
             controller.ApplySpeedAfterAnalysis();
-            boosted++;
-        }
-        DebugCustom.Log($"[EnemyController] {type} の敵 {boosted} 体の速度を切り替えました。");
+        DebugCustom.Log($"[EnemyController] {type} の敵 {targets.Count} 体の速度を切り替えました。");
     }
 
     public void Stun(float duration)
@@ -162,10 +150,8 @@ public class EnemyController : MonoBehaviour
         }
 
         // 常にプレイヤー方向を向く（Y軸のみ）
-        Vector3 dir = _player.position - transform.position;
-        dir.y = 0f;
-        if (dir.sqrMagnitude > 0.001f)
-            transform.rotation = Quaternion.LookRotation(dir);
+        if (FlatLook.TryGetRotation(_player.position - transform.position, out var toPlayer))
+            transform.rotation = toPlayer;
 
         // 移動先を定期更新
         _chaseDestTimer -= Time.deltaTime;

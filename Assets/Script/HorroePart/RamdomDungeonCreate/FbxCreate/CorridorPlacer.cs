@@ -25,15 +25,8 @@ public class CorridorPlacer
     /// </summary>
     public void Place(GridType[,] grid, Transform corridorParent)
     {
-        for (int x = 0; x < grid.GetLength(0); x++)
-        {
-            for (int y = 0; y < grid.GetLength(1); y++)
-            {
-                if (grid[x, y] != GridType.Corridor) continue;
-
-                PlaceCorridor(grid, new Vector2Int(x, y), corridorParent);
-            }
-        }
+        foreach (var cell in GridUtil.CellsOf(grid, GridType.Corridor))
+            PlaceCorridor(grid, cell, corridorParent);
     }
 
     /// <summary>
@@ -52,12 +45,7 @@ public class CorridorPlacer
         var prefab = _corridorDataBase.GetPrefab(corridorType);
         if (prefab == null) return;
 
-        // セルの中心座標に配置する（親のローカル空間上の座標）
-        var localPos = new Vector3(
-            (gridPos.x + 0.5f) * _gridSize,
-            0f,
-            (gridPos.y + 0.5f) * _gridSize
-        );
+        var localPos = GridUtil.CellCenterToWorld(gridPos, _gridSize, 0f);	// 親のローカル空間でのセルの中心
 
         var instance = Object.Instantiate(prefab, corridorParent);
 

@@ -7,9 +7,7 @@ using UnityEngine.Audio;
 /// 既存の Prefab にこのコンポーネントを追加するだけで動作する。
 ///
 /// オクルージョン：
-///   敵 → AudioListener 間に壁（_occlusionLayer）が存在すれば
-///   BoxCollider の厚さから dB 減衰量を推定し、ローパスフィルタも合わせて適用する。
-///   変化は _maxDbChangePerSecond でなめらかに追従するため音がブツ切れにならない。
+///   壁による減衰の見積もりと適用は SoundOcclusion が持つ。ここは Inspector の値で作り、毎フレーム呼ぶだけ
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(AudioLowPassFilter))]
@@ -33,19 +31,17 @@ public class EnemySoundPlayer : MonoBehaviour
     [SerializeField] private float _openCutoffHz         = 22000f;
     [SerializeField] private float _occludedCutoffHz     = 800f;
 
-    private AudioSource        _audioSource;
-    private AudioLowPassFilter _lowPassFilter;
-    private Transform          _listenerTransform;
-    private SeType             _seType;
+    private AudioSource    _audioSource;
+    private SoundOcclusion _occlusion;
+    private Transform      _listenerTransform;
+    private SeType         _seType;
 
     private float _seTimer;
-    private float _currentAttenuationDb;
-    private float _targetAttenuationDb;
 
     private void Awake()
     {
-        _audioSource   = GetComponent<AudioSource>();
-        _lowPassFilter = GetComponent<AudioLowPassFilter>();
+        _audioSource = GetComponent<AudioSource>();
+        var lowPassFilter = GetComponent<AudioLowPassFilter>();
 
         _audioSource.spatialBlend = 1f;
         _audioSource.rolloffMode  = AudioRolloffMode.Linear;
@@ -57,7 +53,7 @@ public class EnemySoundPlayer : MonoBehaviour
         if (_outputGroup != null)
             _audioSource.outputAudioMixerGroup = _outputGroup;
 
-        _lowPassFilter.cutoffFrequency = _openCutoffHz;
+        _occlusion = new SoundOcclusion(transform, _audioSource, lowPassFilter, _openCutoffHz);
 
         var identity = GetComponent<GhostIdentity>();
         _seType = identity != null && identity.GhostType == EnemyType.SmileEnemies
@@ -84,7 +80,7 @@ public class EnemySoundPlayer : MonoBehaviour
             return;
         }
 
-        UpdateOcclusion();
+        _occlusion.Tick(_listenerTransform, Time.deltaTime, OcclusionSettings());
 
         _seTimer -= Time.deltaTime;
         if (_seTimer <= 0f)
@@ -94,6 +90,9 @@ public class EnemySoundPlayer : MonoBehaviour
         }
     }
 
+    private SoundOcclusion.Settings OcclusionSettings() => new SoundOcclusion.Settings(	// Inspector の値を毎回読み直す
+        _occlusionLayer, _maxAttenuationDb, _dbPerMeter, _maxDbChangePerSecond, _openCutoffHz, _occludedCutoffHz);
+
     private void TryPlaySe()
     {
         var resource = AudioManager.Instance?.GetSeResource(_seType);
@@ -102,39 +101,5 @@ public class EnemySoundPlayer : MonoBehaviour
             _audioSource.resource = resource;
             _audioSource.Play();
         }
-    }
-
-    private void UpdateOcclusion()
-    {
-        if (_listenerTransform == null || _occlusionLayer == 0) return;
-
-        var toListener = _listenerTransform.position - transform.position;
-        float dist = toListener.magnitude;
-
-        _targetAttenuationDb = 0f;
-
-        if (dist > 0.1f && Physics.Raycast(transform.position, toListener / dist, out var hit, dist, _occlusionLayer))
-        {
-            if (hit.collider is BoxCollider box)
-            {
-                var ws = Vector3.Scale(box.size, box.transform.lossyScale);
-                float thickness = Mathf.Min(Mathf.Abs(ws.x), Mathf.Min(Mathf.Abs(ws.y), Mathf.Abs(ws.z)));
-                _targetAttenuationDb = Mathf.Min(thickness * _dbPerMeter, _maxAttenuationDb);
-            }
-            else
-            {
-                _targetAttenuationDb = _maxAttenuationDb * 0.5f;
-            }
-        }
-
-        float maxChange = _maxDbChangePerSecond * Time.deltaTime;
-        _currentAttenuationDb += Mathf.Clamp(
-            _targetAttenuationDb - _currentAttenuationDb,
-            -maxChange, maxChange);
-
-        _audioSource.volume = Mathf.Pow(10f, -_currentAttenuationDb / 20f);
-        _lowPassFilter.cutoffFrequency = Mathf.Lerp(
-            _openCutoffHz, _occludedCutoffHz,
-            _currentAttenuationDb / Mathf.Max(_maxAttenuationDb, 0.001f));
     }
 }

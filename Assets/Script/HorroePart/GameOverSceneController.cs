@@ -12,8 +12,7 @@ public class GameOverSceneController : MonoBehaviour
 {
     private void Start()
     {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible   = true;
+        GameCursor.Unlock();
     }
 
     /// <summary>ホラーシーンを再ロードする。</summary>
